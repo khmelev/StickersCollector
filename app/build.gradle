@@ -17,14 +17,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildToolsVersion '27.0.3'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
+
     //testImplementation "org.mockito:mockito-all:1.10.19"
+
     //androidTestImplementation 'com.android.support.test:runner:1.0.2'
+
     //androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
     //testImplementation 'com.squareup.okhttp3:mockwebserver:3.6.0'
 
     /**
@@ -36,12 +45,10 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibVersion"
     implementation "com.android.support:preference-v7:$rootProject.supportLibVersion"
     implementation "com.android.support:support-v4:$rootProject.supportLibVersion"
-
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
     implementation "android.arch.persistence.room:rxjava2:$rootProject.roomVersion"
     annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
     androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
-
     implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
@@ -50,10 +57,15 @@ dependencies {
     /**
      * Square Dependencies.
      */
+
     //implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+
     //implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+
     //implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
+
     //implementation "com.squareup.retrofit2:converter-scalars:$rootProject.retrofitVersion"
+
     //implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 
     /**
