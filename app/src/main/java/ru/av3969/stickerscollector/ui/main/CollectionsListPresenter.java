@@ -11,6 +11,7 @@ public class CollectionsListPresenter extends BasePresenter
         implements CollectionsListContract.Presenter {
 
     private CollectionsListContract.View view;
+
     private DataManager dataManager;
     private SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;

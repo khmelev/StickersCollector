@@ -41,8 +41,7 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         // Set up the toolbar.
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
         ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
