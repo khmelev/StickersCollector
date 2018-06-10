@@ -36,7 +36,8 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                 if (listener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        listener.onItemClick(itemView, position);
+                        CatalogCategory catalogCategory = catalogCategoryList.get(position);
+                        listener.onItemClick(itemView, catalogCategory.getId());
                     }
                 }
             });
@@ -67,7 +68,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
+        void onItemClick(View itemView, Long catId);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

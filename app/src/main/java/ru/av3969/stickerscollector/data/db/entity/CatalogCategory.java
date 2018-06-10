@@ -3,12 +3,16 @@ package ru.av3969.stickerscollector.data.db.entity;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToOne;
+import org.greenrobot.greendao.annotation.Transient;
 import org.greenrobot.greendao.annotation.Unique;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
 @Entity
 public class CatalogCategory {
+
+    @Transient
+    public static Long defaultId = 0L;
 
     @Id(autoincrement = true)
     private Long id;

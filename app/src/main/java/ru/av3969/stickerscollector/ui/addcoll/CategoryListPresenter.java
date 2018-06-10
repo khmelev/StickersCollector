@@ -29,16 +29,15 @@ public class CategoryListPresenter extends BasePresenter implements CategoryList
     }
 
     @Override
-    public void loadCategoryList() {
+    public void loadCategoryList(Long parentId) {
 
         compositeDisposable.add(
-                dataManager.loadCategoryList()
+                dataManager.loadCategoryList(parentId)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(catalogCategories ->
                             view.updateCategoryList(catalogCategories)
                         ));
-
     }
 
     @Override

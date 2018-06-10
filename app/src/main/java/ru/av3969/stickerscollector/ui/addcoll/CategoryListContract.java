@@ -12,7 +12,7 @@ public interface CategoryListContract {
 
     interface Presenter {
         void setView(View view);
-        void loadCategoryList();
+        void loadCategoryList(Long parentId);
         void onDestroy();
     }
 }

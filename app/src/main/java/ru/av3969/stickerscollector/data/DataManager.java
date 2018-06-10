@@ -7,6 +7,6 @@ import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 
 public interface DataManager {
 
-    Single<List<CatalogCategory>> loadCategoryList();
+    Single<List<CatalogCategory>> loadCategoryList(Long parentId);
 
 }

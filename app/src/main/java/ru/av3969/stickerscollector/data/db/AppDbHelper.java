@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
+import ru.av3969.stickerscollector.data.db.entity.CatalogCategoryDao;
 import ru.av3969.stickerscollector.data.db.entity.DaoMaster;
 import ru.av3969.stickerscollector.data.db.entity.DaoSession;
 
@@ -23,7 +24,16 @@ public class AppDbHelper implements DbHelper {
     }
 
     @Override
-    public List<CatalogCategory> selectCatalogCategoryList() {
-        return mDaoSession.getCatalogCategoryDao().loadAll();
+    public List<CatalogCategory> selectCatalogCategoryList(Long parentId) {
+        return mDaoSession.getCatalogCategoryDao().queryBuilder()
+                .where(CatalogCategoryDao.Properties.ParentId.eq(parentId))
+                .list();
+    }
+
+    @Override
+    public void updateCategoryAll(List<CatalogCategory> categoryList) {
+        for (CatalogCategory category : categoryList) {
+            mDaoSession.insertOrReplace(category);
+        }
     }
 }

@@ -2,7 +2,10 @@ package ru.av3969.stickerscollector;
 
 import org.junit.Test;
 
-import ru.av3969.stickerscollector.data.remote.Laststicker;
+import java.util.List;
+
+import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
+import ru.av3969.stickerscollector.data.remote.LaststickerHelper;
 
 import static org.junit.Assert.*;
 
@@ -19,8 +22,7 @@ public class ExampleUnitTest {
 
     @Test
     public void workingCorrent() {
-        Laststicker laststicker = new Laststicker();
-        System.out.println("Trying get category list:");
-        System.out.println(laststicker.test(laststicker.getCategoryUrl()));
+        LaststickerHelper laststickerHelper = new LaststickerHelper();
+        List<CatalogCategory> categoryList = laststickerHelper.getCategoryList();
     }
 }

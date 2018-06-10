@@ -8,6 +8,8 @@ public interface DbHelper {
 
     Long insertCatalogCategory(CatalogCategory catalogCategory);
 
-    List<CatalogCategory> selectCatalogCategoryList();
+    List<CatalogCategory> selectCatalogCategoryList(Long parentId);
+
+    void updateCategoryAll(List<CatalogCategory> categoryList);
 
 }
