@@ -1,14 +1,13 @@
 package ru.av3969.stickerscollector.data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Single;
-import ru.av3969.stickerscollector.data.db.AppDbHelper;
 import ru.av3969.stickerscollector.data.db.DbHelper;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
+import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.data.pref.PreferencesHelper;
 import ru.av3969.stickerscollector.data.remote.LaststickerHelper;
 
@@ -31,7 +30,12 @@ public class AppDataManager implements DataManager {
          return Single.fromCallable(() -> {
              List<CatalogCategory> categoryList = dbHelper.selectCatalogCategoryList(parentId);
              if(categoryList.isEmpty()) {
-                 dbHelper.updateCategoryAll(laststickerHelper.getCategoryList());
+                 List<CatalogCategory> lastStickerCategory = laststickerHelper.getCategoryList();
+                 if(parentId.equals(CatalogCategory.defaultId))
+                     dbHelper.inflateCategories(lastStickerCategory);
+                 else
+                    dbHelper.updateCategories(lastStickerCategory);
+
                  categoryList = dbHelper.selectCatalogCategoryList(parentId);
              }
              return categoryList;
@@ -39,14 +43,17 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Single<String> loadCollectionList(Long parentCat) {
+    public Single<List<CatalogCollection>> loadCollectionList(Long categoryId) {
         return Single.fromCallable(() -> {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            List<CatalogCollection> collectionList = dbHelper.selectCatalogCollectionList(categoryId);
+            if(collectionList.isEmpty()) {
+                CatalogCategory category = dbHelper.selectCatalogCategory(categoryId);
+                if (category != null) {
+                    dbHelper.inflateCollections(laststickerHelper.getCollectionList(category.getName(), categoryId));
+                    collectionList = dbHelper.selectCatalogCollectionList(categoryId);
+                }
             }
-            return "Test";
+            return collectionList;
         });
     }
 }

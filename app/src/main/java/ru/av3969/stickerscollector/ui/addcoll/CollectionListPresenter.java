@@ -29,14 +29,14 @@ public class CollectionListPresenter extends BasePresenter implements Collection
     }
 
     @Override
-    public void loadCollectionList(Long parentCat) {
+    public void loadCollectionList(Long categoryId) {
         view.showLoading();
         compositeDisposable.add(
-                dataManager.loadCollectionList(parentCat)
+                dataManager.loadCollectionList(categoryId)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(catalogCollection -> {
-                        view.updateCollectionList();
+                    .subscribe(collectionList -> {
+                        view.updateCollectionList(collectionList);
                         view.hideLoading();
                     }));
     }

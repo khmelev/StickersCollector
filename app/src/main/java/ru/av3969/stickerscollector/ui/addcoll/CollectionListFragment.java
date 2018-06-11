@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,11 +14,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
+import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.ui.base.BaseFragment;
 
 public class CollectionListFragment extends BaseFragment implements CollectionListContract.View {
@@ -24,11 +31,16 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     public static String FRAGMENT_TAG = "CollectionList";
     public static String ARGUMENT_PARENT_CAT = "ParentCategory";
 
+    private CollectionListAdapter adapter;
+
     private Long parentCatId;
     private AddCollectionActivityCallback activityCallback;
 
     @Inject
     CollectionListContract.Presenter presenter;
+
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
 
     @Override
     public void onAttach(Context context) {
@@ -60,6 +72,8 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
 
         activityCallback.setActionBarTitle(R.string.select_collection);
 
+        setupRecyclerView();
+
         presenter.setView(this);
         presenter.loadCollectionList(parentCatId);
 
@@ -69,6 +83,18 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     public void onDestroy() {
         presenter.onDestroy();
         super.onDestroy();
+    }
+
+    private void setupRecyclerView() {
+        adapter = new CollectionListAdapter(new ArrayList<>(), getContext());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        adapter.setOnItemClickListener(collectionId -> {
+            if (activityCallback != null) {
+                activityCallback.showMyCollectionAdd(collectionId);
+            }
+        });
     }
 
     @Override
@@ -82,7 +108,7 @@ public class CollectionListFragment extends BaseFragment implements CollectionLi
     }
 
     @Override
-    public void updateCollectionList() {
-
+    public void updateCollectionList(List<CatalogCollection> collectionList) {
+        adapter.replaceDataSet(collectionList);
     }
 }

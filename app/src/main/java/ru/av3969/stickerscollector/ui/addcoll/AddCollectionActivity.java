@@ -44,10 +44,7 @@ public class AddCollectionActivity extends BaseActivity implements AddCollection
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-//            actionBar.setTitle(R.string.select_category);
         }
-
-        showCategoryList(startCatId); //Сначала покажем корневые категории
     }
 
     @Override
@@ -56,6 +53,8 @@ public class AddCollectionActivity extends BaseActivity implements AddCollection
         getMenuInflater().inflate(R.menu.fragment_progress_bar, menu);
 
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
+
+        showCategoryList(startCatId); //запуск выбора категории
 
         return true;
     }

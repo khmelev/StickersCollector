@@ -6,4 +6,8 @@
     <string name="collection_name">Название коллекции</string>
     <string name="select_collection">Выберите коллекцию</string>
     <string name="loading">Загрузка...</string>
+    <string name="quantity">Количество</string>
+    <string name="stickersGenitive">наклеек</string>
+    <string name="cardsGenitive">карточек</string>
+    <string name="new_collection">Новая коллекция</string>
 </resources>

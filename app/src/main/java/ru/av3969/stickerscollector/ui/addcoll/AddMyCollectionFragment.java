@@ -1,5 +1,6 @@
 package ru.av3969.stickerscollector.ui.addcoll;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,8 +22,18 @@ public class AddMyCollectionFragment extends BaseFragment {
 
     private Long parentCollectionId;
 
+    private AddCollectionActivityCallback activityCallback;
+
     @BindView(R.id.collectionName)
     EditText collectionNameView;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if(context instanceof AddCollectionActivityCallback)
+            activityCallback = (AddCollectionActivityCallback) context;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +56,8 @@ public class AddMyCollectionFragment extends BaseFragment {
 
         ButterKnife.bind(this, view);
 
-        collectionNameView.setText("На основе коллекции "+String.valueOf(parentCollectionId));
+        activityCallback.setActionBarTitle(R.string.new_collection);
+
+        collectionNameView.setText("Создание на основе коллекции #"+String.valueOf(parentCollectionId));
     }
 }

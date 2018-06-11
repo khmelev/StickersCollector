@@ -82,17 +82,7 @@ public class CategoryListFragment extends BaseFragment implements CategoryListCo
         super.onDestroy();
     }
 
-    @Override
-    public void showLoading() {
-        activityCallback.showLoading();
-    }
-
-    @Override
-    public void hideLoading() {
-        activityCallback.hideLoading();
-    }
-
-    public void setupRecyclerView() {
+    private void setupRecyclerView() {
         adapter = new CategoryListAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -105,6 +95,16 @@ public class CategoryListFragment extends BaseFragment implements CategoryListCo
                     activityCallback.showCollectionList(targetId);
             }
         });
+    }
+
+    @Override
+    public void showLoading() {
+        activityCallback.showLoading();
+    }
+
+    @Override
+    public void hideLoading() {
+        activityCallback.hideLoading();
     }
 
     @Override

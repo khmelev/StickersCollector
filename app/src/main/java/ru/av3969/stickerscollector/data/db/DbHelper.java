@@ -3,13 +3,20 @@ package ru.av3969.stickerscollector.data.db;
 import java.util.List;
 
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
+import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 
 public interface DbHelper {
 
-    Long insertCatalogCategory(CatalogCategory catalogCategory);
+    CatalogCategory selectCatalogCategory(Long id);
 
     List<CatalogCategory> selectCatalogCategoryList(Long parentId);
 
-    void updateCategoryAll(List<CatalogCategory> categoryList);
+    void inflateCategories(List<CatalogCategory> categoryList);
+
+    void updateCategories(List<CatalogCategory> categoryList);
+
+    List<CatalogCollection> selectCatalogCollectionList(Long categoryId);
+
+    void inflateCollections(List<CatalogCollection> collectionList);
 
 }
