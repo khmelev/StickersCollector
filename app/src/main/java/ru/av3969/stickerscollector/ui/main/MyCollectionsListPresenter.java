@@ -7,25 +7,25 @@ import ru.av3969.stickerscollector.data.DataManager;
 import ru.av3969.stickerscollector.ui.base.BasePresenter;
 import ru.av3969.stickerscollector.utils.SchedulerProvider;
 
-public class CollectionsListPresenter extends BasePresenter
-        implements CollectionsListContract.Presenter {
+public class MyCollectionsListPresenter extends BasePresenter
+        implements MyCollectionsListContract.Presenter {
 
-    private CollectionsListContract.View view;
+    private MyCollectionsListContract.View view;
 
     private DataManager dataManager;
     private SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;
 
     @Inject
-    CollectionsListPresenter(DataManager dataManager, SchedulerProvider schedulerProvider,
-                                    CompositeDisposable compositeDisposable) {
+    MyCollectionsListPresenter(DataManager dataManager, SchedulerProvider schedulerProvider,
+                               CompositeDisposable compositeDisposable) {
         this.dataManager = dataManager;
         this.schedulerProvider = schedulerProvider;
         this.compositeDisposable = compositeDisposable;
     }
 
     @Override
-    public void setView(CollectionsListContract.View view) {
+    public void setView(MyCollectionsListContract.View view) {
         this.view = view;
     }
 

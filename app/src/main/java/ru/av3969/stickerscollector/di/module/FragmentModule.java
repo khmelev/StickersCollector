@@ -6,8 +6,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import ru.av3969.stickerscollector.di.PerFragment;
 import ru.av3969.stickerscollector.ui.addcoll.CategoryListContract;
 import ru.av3969.stickerscollector.ui.addcoll.CategoryListPresenter;
-import ru.av3969.stickerscollector.ui.main.CollectionsListContract;
-import ru.av3969.stickerscollector.ui.main.CollectionsListPresenter;
+import ru.av3969.stickerscollector.ui.addcoll.CollectionListContract;
+import ru.av3969.stickerscollector.ui.addcoll.CollectionListPresenter;
+import ru.av3969.stickerscollector.ui.main.MyCollectionsListContract;
+import ru.av3969.stickerscollector.ui.main.MyCollectionsListPresenter;
 import ru.av3969.stickerscollector.utils.AppSchedulerProvider;
 import ru.av3969.stickerscollector.utils.SchedulerProvider;
 
@@ -16,9 +18,9 @@ public class FragmentModule {
 
     @Provides
     @PerFragment
-    CollectionsListContract.Presenter provideCollectionsListContractPresenter(
-            CollectionsListPresenter collectionsListPresenter) {
-        return collectionsListPresenter;
+    MyCollectionsListContract.Presenter provideCollectionsListContractPresenter(
+            MyCollectionsListPresenter myCollectionsListPresenter) {
+        return myCollectionsListPresenter;
     }
 
     @Provides
@@ -26,6 +28,13 @@ public class FragmentModule {
     CategoryListContract.Presenter provideCategoryListContractPresenter(
             CategoryListPresenter categoryListPresenter) {
         return categoryListPresenter;
+    }
+
+    @Provides
+    @PerFragment
+    CollectionListContract.Presenter provideCollectionListContractPresenter(
+            CollectionListPresenter collectionListPresenter) {
+        return collectionListPresenter;
     }
 
     @Provides

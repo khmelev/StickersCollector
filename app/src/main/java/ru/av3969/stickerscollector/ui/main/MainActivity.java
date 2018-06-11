@@ -11,7 +11,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,8 +42,10 @@ public class MainActivity extends BaseActivity {
         // Set up the toolbar.
         setSupportActionBar(mToolbar);
         ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
-        ab.setDisplayHomeAsUpEnabled(true);
+        if (ab != null) {
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddCollectionActivity.class);
@@ -66,12 +67,12 @@ public class MainActivity extends BaseActivity {
 
     private void showCollectionsList() {
         FragmentManager fm = getSupportFragmentManager();
-        Fragment collectionsListFragment = fm.findFragmentByTag(CollectionsListFragment.FRAGMENT_TAG);
+        Fragment collectionsListFragment = fm.findFragmentByTag(MyCollectionsListFragment.FRAGMENT_TAG);
         if (collectionsListFragment == null) {
-            collectionsListFragment = new CollectionsListFragment();
+            collectionsListFragment = new MyCollectionsListFragment();
         }
         fm.beginTransaction()
-                .replace(R.id.container, collectionsListFragment, CollectionsListFragment.FRAGMENT_TAG)
+                .replace(R.id.container, collectionsListFragment, MyCollectionsListFragment.FRAGMENT_TAG)
                 .disallowAddToBackStack()
                 .commit();
     }

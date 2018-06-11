@@ -9,4 +9,5 @@ public interface DataManager {
 
     Single<List<CatalogCategory>> loadCategoryList(Long parentId);
 
+    Single<String> loadCollectionList(Long parentCat);
 }

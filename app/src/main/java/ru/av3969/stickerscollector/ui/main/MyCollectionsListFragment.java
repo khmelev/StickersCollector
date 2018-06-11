@@ -13,12 +13,12 @@ import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.ui.base.BaseFragment;
 
-public class CollectionsListFragment extends BaseFragment implements CollectionsListContract.View {
+public class MyCollectionsListFragment extends BaseFragment implements MyCollectionsListContract.View {
 
     public static String FRAGMENT_TAG = "CollectionsList";
 
     @Inject
-    public CollectionsListContract.Presenter presenter;
+    public MyCollectionsListContract.Presenter presenter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,7 +30,7 @@ public class CollectionsListFragment extends BaseFragment implements Collections
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_collections_list, container, false);
+        return inflater.inflate(R.layout.fragment_mycollections_list, container, false);
     }
 
     @Override

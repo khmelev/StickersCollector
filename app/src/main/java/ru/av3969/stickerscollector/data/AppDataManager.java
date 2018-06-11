@@ -19,7 +19,7 @@ public class AppDataManager implements DataManager {
     private LaststickerHelper laststickerHelper;
 
     @Inject
-    public AppDataManager(PreferencesHelper preferencesHelper, DbHelper dbHelper,
+    AppDataManager(PreferencesHelper preferencesHelper, DbHelper dbHelper,
                           LaststickerHelper laststickerHelper) {
         this.preferencesHelper = preferencesHelper;
         this.dbHelper = dbHelper;
@@ -36,5 +36,17 @@ public class AppDataManager implements DataManager {
              }
              return categoryList;
          });
+    }
+
+    @Override
+    public Single<String> loadCollectionList(Long parentCat) {
+        return Single.fromCallable(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "Test";
+        });
     }
 }

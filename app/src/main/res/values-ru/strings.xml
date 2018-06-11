@@ -3,4 +3,7 @@
     <string name="app_name">Коллекционер наклеек</string>
     <string name="settings">Настройки</string>
     <string name="select_category">Выберите категорию</string>
+    <string name="collection_name">Название коллекции</string>
+    <string name="select_collection">Выберите коллекцию</string>
+    <string name="loading">Загрузка...</string>
 </resources>

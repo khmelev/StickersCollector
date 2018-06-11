@@ -20,7 +20,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     private OnItemClickListener listener;
 
-    public CategoryListAdapter(List<CatalogCategory> catalogCategoryList) {
+    CategoryListAdapter(List<CatalogCategory> catalogCategoryList) {
         this.catalogCategoryList = catalogCategoryList;
     }
 
@@ -29,7 +29,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         @BindView(R.id.textItem1)
         TextView textItem1;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(v -> {
@@ -37,7 +37,8 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         CatalogCategory catalogCategory = catalogCategoryList.get(position);
-                        listener.onItemClick(itemView, catalogCategory.getId());
+                        listener.onItemClick(itemView, catalogCategory.getId(),
+                                catalogCategory.getParentId());
                     }
                 }
             });
@@ -68,7 +69,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View itemView, Long catId);
+        void onItemClick(View itemView, Long targetId, Long parentId);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

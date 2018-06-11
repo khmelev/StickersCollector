@@ -8,6 +8,8 @@ public interface CategoryListContract {
 
     interface View {
         void updateCategoryList(List<CatalogCategory> catalogCategoryList);
+        void showLoading();
+        void hideLoading();
     }
 
     interface Presenter {

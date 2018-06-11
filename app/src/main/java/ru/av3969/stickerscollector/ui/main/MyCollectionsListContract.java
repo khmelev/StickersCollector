@@ -1,6 +1,6 @@
 package ru.av3969.stickerscollector.ui.main;
 
-public interface CollectionsListContract {
+public interface MyCollectionsListContract {
 
     interface View {
         void updateCollectionsList();

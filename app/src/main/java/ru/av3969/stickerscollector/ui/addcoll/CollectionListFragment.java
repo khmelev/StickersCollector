@@ -4,45 +4,35 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.ui.base.BaseFragment;
 
-public class CategoryListFragment extends BaseFragment implements CategoryListContract.View {
+public class CollectionListFragment extends BaseFragment implements CollectionListContract.View {
 
-    public static String FRAGMENT_TAG1 = "CategoryListRoot";
-    public static String FRAGMENT_TAG2 = "CategoryListDetail";
-    public static String ARGUMENT_FILTER = "Filter";
+    public static String FRAGMENT_TAG = "CollectionList";
+    public static String ARGUMENT_PARENT_CAT = "ParentCategory";
 
-    private CategoryListAdapter adapter;
-
-    private Long catId;
-
+    private Long parentCatId;
     private AddCollectionActivityCallback activityCallback;
 
     @Inject
-    CategoryListContract.Presenter presenter;
-
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    CollectionListContract.Presenter presenter;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
         if(context instanceof AddCollectionActivityCallback)
             activityCallback = (AddCollectionActivityCallback) context;
     }
@@ -53,13 +43,13 @@ public class CategoryListFragment extends BaseFragment implements CategoryListCo
 
         getFragmentComponent().inject(this);
 
-        catId = getArguments().getLong(ARGUMENT_FILTER, CatalogCategory.defaultId);
+        parentCatId = getArguments().getLong(ARGUMENT_PARENT_CAT, CatalogCategory.defaultId);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_category_list, container, false);
+        return inflater.inflate(R.layout.fragment_collection_list, container, false);
     }
 
     @Override
@@ -68,12 +58,11 @@ public class CategoryListFragment extends BaseFragment implements CategoryListCo
 
         ButterKnife.bind(this, view);
 
-        activityCallback.setActionBarTitle(R.string.select_category);
-
-        setupRecyclerView();
+        activityCallback.setActionBarTitle(R.string.select_collection);
 
         presenter.setView(this);
-        presenter.loadCategoryList(catId);
+        presenter.loadCollectionList(parentCatId);
+
     }
 
     @Override
@@ -92,23 +81,8 @@ public class CategoryListFragment extends BaseFragment implements CategoryListCo
         activityCallback.hideLoading();
     }
 
-    public void setupRecyclerView() {
-        adapter = new CategoryListAdapter(new ArrayList<>());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        adapter.setOnItemClickListener((v, targetId, parentId) -> {
-            if (activityCallback != null) {
-                if(parentId.equals(CatalogCategory.defaultId))
-                    activityCallback.showCategoryList(targetId);
-                else
-                    activityCallback.showCollectionList(targetId);
-            }
-        });
-    }
-
     @Override
-    public void updateCategoryList(List<CatalogCategory> catalogCategoryList) {
-        adapter.replaceDataSet(catalogCategoryList);
+    public void updateCollectionList() {
+
     }
 }
