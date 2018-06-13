@@ -11,4 +11,6 @@ public interface DataManager {
     Single<List<CatalogCategory>> loadCategoryList(Long parentId);
 
     Single<List<CatalogCollection>> loadCollectionList(Long parentCat);
+
+    Single<CatalogCollection> loadCatalogCollection(Long id);
 }

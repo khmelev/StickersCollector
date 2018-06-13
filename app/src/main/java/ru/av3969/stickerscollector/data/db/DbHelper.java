@@ -19,4 +19,5 @@ public interface DbHelper {
 
     void inflateCollections(List<CatalogCollection> collectionList);
 
+    CatalogCollection selectCatalogCollection(Long id);
 }

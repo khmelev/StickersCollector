@@ -1,5 +1,6 @@
 package ru.av3969.stickerscollector.ui.addcoll;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,10 +16,10 @@ import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
+import ru.av3969.stickerscollector.ui.editcoll.EditCollectionActivity;
 
 public class AddCollectionActivity extends BaseActivity implements AddCollectionActivityCallback {
 
-    public static int REQUEST_ADD_COLL = 11;
     private static String START_CAT_ID = "startCatId";
 
     @BindView(R.id.toolbar)
@@ -129,20 +130,9 @@ public class AddCollectionActivity extends BaseActivity implements AddCollection
     }
 
     @Override
-    public void showMyCollectionAdd(Long parentColl) {
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment addCollectionFragment = fm.findFragmentByTag(AddMyCollectionFragment.FRAGMENT_TAG);
-        if (addCollectionFragment == null) {
-            addCollectionFragment = new AddMyCollectionFragment();
-        }
-
-        Bundle args = new Bundle();
-        args.putLong(AddMyCollectionFragment.ARGUMENT_PARENT_COLL, parentColl);
-        addCollectionFragment.setArguments(args);
-
-        fm.beginTransaction()
-                .replace(R.id.container, addCollectionFragment, AddMyCollectionFragment.FRAGMENT_TAG)
-                .addToBackStack(null)
-                .commit();
+    public void startEditCollectionActivity(Long parentColl) {
+        Intent intent = new Intent(this, EditCollectionActivity.class);
+        intent.putExtra(EditCollectionActivity.PARENT_COLLECTION, parentColl);
+        startActivity(intent);
     }
 }

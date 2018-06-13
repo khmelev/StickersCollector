@@ -26,9 +26,8 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
 
     private Resources resources;
 
-    CollectionListAdapter(List<CatalogCollection> catalogCollectionList, Context context) {
+    CollectionListAdapter(List<CatalogCollection> catalogCollectionList) {
         this.catalogCollectionList = catalogCollectionList;
-        this.resources = context.getResources();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -72,9 +71,8 @@ public class CollectionListAdapter extends RecyclerView.Adapter<CollectionListAd
         CatalogCollection catalogCollection = catalogCollectionList.get(position);
         holder.textTitle.setText(catalogCollection.getTitle());
         @StringRes int resStickersOrCards = catalogCollection.getStype().equals(CatalogCollection.stickerType)
-                ? R.string.stickersGenitive : R.string.cardsGenitive;
-        String strStickersOrCards = String.format(" %s: ", resources.getString(resStickersOrCards));
-        holder.textStickersOrCards.setText(strStickersOrCards);
+                ? R.string.quantity_of_stickers : R.string.quantity_of_cards;
+        holder.textStickersOrCards.setText(resStickersOrCards);
         holder.textNumberOfStickers.setText(String.valueOf(catalogCollection.getSize()));
     }
 

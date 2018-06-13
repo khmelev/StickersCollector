@@ -1,4 +1,4 @@
-package ru.av3969.stickerscollector.ui.addcoll;
+package ru.av3969.stickerscollector.ui.editcoll;
 
 import javax.inject.Inject;
 
@@ -7,16 +7,16 @@ import ru.av3969.stickerscollector.data.DataManager;
 import ru.av3969.stickerscollector.ui.base.BasePresenter;
 import ru.av3969.stickerscollector.utils.SchedulerProvider;
 
-public class CollectionListPresenter extends BasePresenter implements CollectionListContract.Presenter {
+public class EditCollectionPresenter extends BasePresenter implements EditCollectionContract.Presenter {
 
-    private CollectionListContract.View view;
+    EditCollectionContract.View view;
 
     private DataManager dataManager;
     private SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;
 
     @Inject
-    CollectionListPresenter(DataManager dataManager, SchedulerProvider schedulerProvider,
+    public EditCollectionPresenter(DataManager dataManager, SchedulerProvider schedulerProvider,
                                    CompositeDisposable compositeDisposable) {
         this.dataManager = dataManager;
         this.schedulerProvider = schedulerProvider;
@@ -24,22 +24,27 @@ public class CollectionListPresenter extends BasePresenter implements Collection
     }
 
     @Override
-    public void setView(CollectionListContract.View view) {
+    public void setView(EditCollectionContract.View view) {
         this.view = view;
     }
 
     @Override
-    public void loadCollectionList(Long categoryId) {
-        view.showLoading();
+    public void loadCollectionHead(Long parentCollection, Long collectionId) {
         compositeDisposable.add(
-                dataManager.loadCollectionList(categoryId)
+                dataManager.loadCatalogCollection(parentCollection)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(collectionList -> {
-                        view.updateCollectionList(collectionList);
+                    .subscribe(collection -> {
+                        view.updateCollectionHead(collection);
                         view.hideLoading();
                     })
         );
+    }
+
+    @Override
+    public void loadStickersList(Long parentCollection, Long collectionId) {
+        view.showLoading();
+
     }
 
     @Override

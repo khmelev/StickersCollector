@@ -10,7 +10,7 @@ public interface AddCollectionActivityCallback {
 
     void showCollectionList(Long parentCat);
 
-    void showMyCollectionAdd(Long parentColl);
+    void startEditCollectionActivity(Long parentColl);
 
     void showLoading();
 

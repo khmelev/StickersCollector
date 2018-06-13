@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/padding_big"
     android:paddingLeft="@dimen/padding_big"
+    android:paddingEnd="@dimen/padding_small"
+    android:paddingRight="@dimen/padding_small"
     android:paddingTop="@dimen/padding_small"
     android:paddingBottom="@dimen/padding_small">
 
@@ -20,11 +22,6 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/quantity" />
-
-        <TextView
             android:id="@+id/textStickersOrCards"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,6 +29,7 @@
 
         <TextView
             android:id="@+id/textNumberOfStickers"
+            android:paddingLeft="@dimen/padding_tiny"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />

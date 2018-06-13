@@ -49,7 +49,7 @@ public class MainActivity extends BaseActivity {
 
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddCollectionActivity.class);
-            startActivityForResult(intent, AddCollectionActivity.REQUEST_ADD_COLL);
+            startActivity(intent);
         });
 
         showCollectionsList();

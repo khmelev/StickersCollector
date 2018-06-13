@@ -56,4 +56,11 @@ public class AppDataManager implements DataManager {
             return collectionList;
         });
     }
+
+    @Override
+    public Single<CatalogCollection> loadCatalogCollection(Long id) {
+        return Single.fromCallable(() -> {
+            return dbHelper.selectCatalogCollection(id);
+        });
+    }
 }

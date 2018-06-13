@@ -61,4 +61,9 @@ public class AppDbHelper implements DbHelper {
             mDaoSession.getCatalogCollectionDao().insertOrReplace(collection);
         }
     }
+
+    @Override
+    public CatalogCollection selectCatalogCollection(Long id) {
+        return mDaoSession.getCatalogCollectionDao().load(id);
+    }
 }
