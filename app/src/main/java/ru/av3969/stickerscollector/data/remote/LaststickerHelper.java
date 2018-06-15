@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
+import ru.av3969.stickerscollector.data.db.entity.CatalogStickers;
 
 public class LaststickerHelper {
 
@@ -30,6 +31,10 @@ public class LaststickerHelper {
 
     private String getCategoryUrl() {
         return baseUrl + categoryPath;
+    }
+
+    private String getCollectionUrl(String collectionName) {
+        return baseUrl + categoryPath + collectionName + "/";
     }
 
     private String getCollectionsUrl(String categoryName) {
@@ -128,4 +133,22 @@ public class LaststickerHelper {
         return collectionList;
     }
 
+    public List<CatalogStickers> getStickersList(String collectionName, Long ownerId) throws IOException {
+        List<CatalogStickers> stickers = new ArrayList<>();
+
+        Document doc = Jsoup.connect(getCollectionUrl(collectionName)).get();
+
+        Element content = doc.selectFirst("table#checklist tbody");
+
+        for (Element tr : content.select("tr")) {
+            Element number = tr.selectFirst("td");
+            Element name = number.nextElementSibling();
+            Element section = name.nextElementSibling();
+            Element type = section.nextElementSibling();
+
+            stickers.add(new CatalogStickers(null, ownerId, number.text(), name.text(), section.text(), type.text()));
+        }
+
+        return stickers;
+    }
 }

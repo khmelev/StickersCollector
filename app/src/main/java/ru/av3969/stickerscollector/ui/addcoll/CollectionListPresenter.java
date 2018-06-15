@@ -32,7 +32,7 @@ public class CollectionListPresenter extends BasePresenter implements Collection
     public void loadCollectionList(Long categoryId) {
         view.showLoading();
         compositeDisposable.add(
-                dataManager.loadCollectionList(categoryId)
+                dataManager.loadCatalogCollectionList(categoryId)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(collectionList -> {

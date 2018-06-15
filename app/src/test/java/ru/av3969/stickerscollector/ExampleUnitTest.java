@@ -2,10 +2,12 @@ package ru.av3969.stickerscollector;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
+import ru.av3969.stickerscollector.data.db.entity.CatalogStickers;
 import ru.av3969.stickerscollector.data.remote.LaststickerHelper;
 
 import static org.junit.Assert.*;
@@ -25,6 +27,11 @@ public class ExampleUnitTest {
     public void workingCorrent() {
         LaststickerHelper laststickerHelper = new LaststickerHelper();
 //        List<CatalogCategory> categoryList = laststickerHelper.getCategoryList();
-        List<CatalogCollection> collectionList = laststickerHelper.getCollectionList("fifa_world_cup", 10L);
+//        List<CatalogCollection> collectionList = laststickerHelper.getCollectionList("fifa_world_cup", 10L);
+        try {
+            List<CatalogStickers> stickers = laststickerHelper.getStickersList("panini_fifa_world_cup_2018", 3852L);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

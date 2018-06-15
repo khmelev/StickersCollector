@@ -5,10 +5,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -17,6 +22,8 @@ import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
+import ru.av3969.stickerscollector.ui.vo.CollectionVO;
+import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
 public class EditCollectionActivity extends BaseActivity implements EditCollectionContract.View {
 
@@ -25,6 +32,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     private Long parentCollection;
     private Long collectionId;
+
+    private StickersListAdapter adapter;
 
     @Inject
     EditCollectionContract.Presenter presenter;
@@ -46,6 +55,9 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @BindView(R.id.collDescription)
     TextView collDescription;
+
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
 
     MenuItem miActionProgressItem;
 
@@ -76,6 +88,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setTitle(R.string.collection);
         }
+
+        setupRecyclerView();
     }
 
     @Override
@@ -86,6 +100,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
 
         presenter.loadCollectionHead(parentCollection, collectionId);
+        presenter.loadStickersList(parentCollection, collectionId);
 
         return true;
     }
@@ -103,20 +118,26 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         super.onDestroy();
     }
 
-    @Override
-    public void updateCollectionHead(CatalogCollection catalogCollection) {
-        collTitle.setText(catalogCollection.getTitle());
-        releaseYear.setText(String.valueOf(catalogCollection.getYear()));
-        @StringRes int resStickersOrCards = catalogCollection.getStype().equals(CatalogCollection.stickerType)
-                ? R.string.quantity_of_stickers : R.string.quantity_of_cards;
-        textStickersOrCards.setText(resStickersOrCards);
-        textNumberOfStickers.setText(String.valueOf(catalogCollection.getSize()));
-        collDescription.setText(catalogCollection.getDesc());
+    private void setupRecyclerView() {
+        adapter = new StickersListAdapter(new ArrayList<>());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
-    public void updateStickersList() {
+    public void updateCollectionHead(CollectionVO collectionVO) {
+        collTitle.setText(collectionVO.getTitle());
+        releaseYear.setText(String.valueOf(collectionVO.getYear()));
+        @StringRes int resStickersOrCards = collectionVO.getStype().equals(CatalogCollection.stickerType)
+                ? R.string.quantity_of_stickers : R.string.quantity_of_cards;
+        textStickersOrCards.setText(resStickersOrCards);
+        textNumberOfStickers.setText(String.valueOf(collectionVO.getSize()));
+        collDescription.setText(collectionVO.getDesc());
+    }
 
+    @Override
+    public void updateStickersList(List<StickerVO> stickers) {
+        adapter.replaceDataSet(stickers);
     }
 
     @Override

@@ -1,12 +1,16 @@
 package ru.av3969.stickerscollector.ui.editcoll;
 
+import java.util.List;
+
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
+import ru.av3969.stickerscollector.ui.vo.CollectionVO;
+import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
 public interface EditCollectionContract {
 
     interface View {
-        void updateCollectionHead(CatalogCollection catalogCollection);
-        void updateStickersList();
+        void updateCollectionHead(CollectionVO collectionVO);
+        void updateStickersList(List<StickerVO> stickers);
         void showLoading();
         void hideLoading();
     }
