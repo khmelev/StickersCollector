@@ -36,6 +36,11 @@ public class MyCollectionsListPresenter extends BasePresenter
 
     @Override
     public void loadCollectionsList() {
-
+        compositeDisposable.add(
+                dataManager.loadCollectionsVO()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(collectionsVO -> view.updateCollectionsList(collectionsVO))
+        );
     }
 }

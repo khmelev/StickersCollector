@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
+import ru.av3969.stickerscollector.ui.main.MainActivity;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
@@ -60,6 +61,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     RecyclerView recyclerView;
 
     MenuItem miActionProgressItem;
+    MenuItem miSave;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,8 +89,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setTitle(R.string.collection);
+            //ab.setDisplayShowTitleEnabled(false);
         }
-
         setupRecyclerView();
     }
 
@@ -98,11 +100,22 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         getMenuInflater().inflate(R.menu.edit_collection, menu);
 
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        miSave = menu.findItem(R.id.miSave);
 
         presenter.loadCollectionHead(parentCollection, collectionId);
         presenter.loadStickersList(parentCollection, collectionId);
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.miSave:
+                presenter.saveCollection();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -128,9 +141,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     public void updateCollectionHead(CollectionVO collectionVO) {
         collTitle.setText(collectionVO.getTitle());
         releaseYear.setText(String.valueOf(collectionVO.getYear()));
-        @StringRes int resStickersOrCards = collectionVO.getStype().equals(CatalogCollection.stickerType)
-                ? R.string.quantity_of_stickers : R.string.quantity_of_cards;
-        textStickersOrCards.setText(resStickersOrCards);
+        textStickersOrCards.setText(collectionVO.getStype().equals(CatalogCollection.stickerType)
+                ? R.string.quantity_of_stickers : R.string.quantity_of_cards);
         textNumberOfStickers.setText(String.valueOf(collectionVO.getSize()));
         collDescription.setText(collectionVO.getDesc());
     }
@@ -145,6 +157,9 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         if (miActionProgressItem != null) {
             miActionProgressItem.setVisible(true);
         }
+        if (miSave != null) {
+            miSave.setVisible(false);
+        }
     }
 
     @Override
@@ -152,5 +167,15 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         if (miActionProgressItem != null) {
             miActionProgressItem.setVisible(false);
         }
+        if (miSave != null) {
+            miSave.setVisible(true);
+        }
+    }
+
+    @Override
+    public void collectionSaved() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

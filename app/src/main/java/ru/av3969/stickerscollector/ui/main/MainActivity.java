@@ -17,8 +17,9 @@ import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.ui.addcoll.AddCollectionActivity;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
+import ru.av3969.stickerscollector.ui.editcoll.EditCollectionActivity;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MainActivityCallback {
 
     @BindView(R.id.fab_add_collection)
     FloatingActionButton fab;
@@ -75,5 +76,13 @@ public class MainActivity extends BaseActivity {
                 .replace(R.id.container, collectionsListFragment, MyCollectionsListFragment.FRAGMENT_TAG)
                 .disallowAddToBackStack()
                 .commit();
+    }
+
+    @Override
+    public void startEditCollectionActivity(Long parentCollectionId, Long collectionId) {
+        Intent intent = new Intent(this, EditCollectionActivity.class);
+        intent.putExtra(EditCollectionActivity.PARENT_COLLECTION, parentCollectionId);
+        intent.putExtra(EditCollectionActivity.COLLECTION_ID, collectionId);
+        startActivity(intent);
     }
 }

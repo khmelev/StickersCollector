@@ -5,10 +5,11 @@
     <string name="select_category">Выберите категорию</string>
     <string name="collection_name">Название коллекции</string>
     <string name="select_collection">Выберите коллекцию</string>
-    <string name="loading">Загрузка...</string>
+    <string name="loading">Загрузка&#8230;</string>
     <string name="quantity_of_stickers">Количество наклеек:</string>
     <string name="quantity_of_cards">Количество карточек:</string>
     <string name="new_collection">Новая коллекция</string>
     <string name="year_of_release">Год выпуска:</string>
     <string name="collection">Коллекция</string>
+    <string name="save">Сохранить</string>
 </resources>

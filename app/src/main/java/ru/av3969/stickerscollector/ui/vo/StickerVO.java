@@ -34,6 +34,14 @@ public class StickerVO {
         this.quantity = 0;
     }
 
+    public void incQuantity() {
+        this.quantity++;
+    }
+
+    public void decQuantity() {
+        this.quantity--;
+    }
+
     public Long getId() {
         return id;
     }

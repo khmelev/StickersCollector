@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import ru.av3969.stickerscollector.data.db.DbHelper;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
@@ -18,7 +19,9 @@ import ru.av3969.stickerscollector.data.db.entity.DepositoryCollection;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryStickers;
 import ru.av3969.stickerscollector.data.pref.PreferencesHelper;
 import ru.av3969.stickerscollector.data.remote.LaststickerHelper;
+import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
+import ru.av3969.stickerscollector.utils.Maper;
 
 public class AppDataManager implements DataManager {
 
@@ -68,8 +71,30 @@ public class AppDataManager implements DataManager {
 
     @Override
     public Single<CatalogCollection> loadCatalogCollection(Long id) {
+        return Single.fromCallable(() -> dbHelper.selectCatalogCollection(id));
+    }
+
+    @Override
+    public Single<CollectionVO> loadCollectionVO(Long parentCollection, Long collectionId) {
         return Single.fromCallable(() -> {
-            return dbHelper.selectCatalogCollection(id);
+            DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(collectionId);
+            if (depCollection == null) {
+                return new CollectionVO(dbHelper.selectCatalogCollection(parentCollection));
+            } else {
+                return new CollectionVO(dbHelper.selectCatalogCollection(parentCollection), depCollection);
+            }
+        });
+    }
+
+    @Override
+    public Single<List<CollectionVO>> loadCollectionsVO() {
+        return Single.fromCallable(() -> {
+            List<CollectionVO> collectionsVO = new ArrayList<>();
+            List<DepositoryCollection> depCollections = dbHelper.selectDepositoryCollectionList();
+            for(DepositoryCollection depCollection : depCollections) {
+                collectionsVO.add(new CollectionVO(depCollection.getCollection(), depCollection));
+            }
+            return collectionsVO;
         });
     }
 
@@ -111,9 +136,35 @@ public class AppDataManager implements DataManager {
 
     @Override
     public Single<DepositoryCollection> loadDepositoryCollection(Long id) {
-        return Single.fromCallable(() -> {
-            DepositoryCollection collection = dbHelper.selectDepositoryCollection(id);
-            return collection != null ? collection : new DepositoryCollection(null,null,"",0L,(short)0,0);
+        return Single.fromCallable(() -> dbHelper.selectDepositoryCollection(id));
+    }
+
+    @Override
+    public Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO) {
+        return Completable.fromCallable(() -> {
+            Long depCollectionId = dbHelper.insertDepositoryCollection(Maper.toDepositoryCollection(collectionVO));
+            DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(depCollectionId);
+
+            Integer totalQuantity = 0;
+            Short uniqueQuantity = 0;
+            List<DepositoryStickers> depStickers = new ArrayList<>();
+            for(StickerVO stickerVO : stickersVO) {
+                if(stickerVO.getId() != null || stickerVO.getQuantity() > 0) {
+                    DepositoryStickers depSticker = Maper.toDepositoryStickers(stickerVO);
+                    depSticker.setOwnerId(depCollectionId);
+                    depStickers.add(depSticker);
+                    totalQuantity += depSticker.getQuantity();
+                    if(stickerVO.getQuantity() > 0)
+                        uniqueQuantity++;
+                }
+            }
+            dbHelper.insertDepositoryStickersList(depStickers);
+
+            depCollection.setQuantity(totalQuantity);
+            depCollection.setUnique(uniqueQuantity);
+            dbHelper.insertDepositoryCollection(depCollection);
+
+            return true;
         });
     }
 }

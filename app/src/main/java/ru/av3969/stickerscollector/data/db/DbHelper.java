@@ -38,7 +38,13 @@ public interface DbHelper {
 
     DepositoryCollection selectDepositoryCollection(Long id);
 
+    List<DepositoryCollection> selectDepositoryCollectionList();
+
+    long insertDepositoryCollection(DepositoryCollection collection);
+
     // DepositoryStickers
 
     List<DepositoryStickers> selectDepositoryStickersList(Long ownerId);
+
+    void insertDepositoryStickersList(List<DepositoryStickers> stickersList);
 }

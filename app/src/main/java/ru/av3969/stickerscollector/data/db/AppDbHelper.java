@@ -13,6 +13,7 @@ import ru.av3969.stickerscollector.data.db.entity.CatalogStickersDao;
 import ru.av3969.stickerscollector.data.db.entity.DaoMaster;
 import ru.av3969.stickerscollector.data.db.entity.DaoSession;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryCollection;
+import ru.av3969.stickerscollector.data.db.entity.DepositoryCollectionDao;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryStickers;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryStickersDao;
 
@@ -99,6 +100,18 @@ public class AppDbHelper implements DbHelper {
         return mDaoSession.getDepositoryCollectionDao().load(id);
     }
 
+    @Override
+    public List<DepositoryCollection> selectDepositoryCollectionList() {
+        return mDaoSession.getDepositoryCollectionDao().queryBuilder()
+                .orderDesc(DepositoryCollectionDao.Properties.Id)
+                .list();
+    }
+
+    @Override
+    public long insertDepositoryCollection(DepositoryCollection collection) {
+        return mDaoSession.getDepositoryCollectionDao().insertOrReplace(collection);
+    }
+
     // DepositoryStickers
 
     @Override
@@ -106,5 +119,12 @@ public class AppDbHelper implements DbHelper {
         return mDaoSession.getDepositoryStickersDao().queryBuilder()
                 .where(DepositoryStickersDao.Properties.OwnerId.eq(ownerId))
                 .list();
+    }
+
+    @Override
+    public void insertDepositoryStickersList(List<DepositoryStickers> stickersList) {
+        for(DepositoryStickers sticker : stickersList) {
+            mDaoSession.getDepositoryStickersDao().insertOrReplace(sticker);
+        }
     }
 }

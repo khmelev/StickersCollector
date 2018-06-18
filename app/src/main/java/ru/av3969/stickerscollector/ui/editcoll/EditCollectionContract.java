@@ -13,12 +13,14 @@ public interface EditCollectionContract {
         void updateStickersList(List<StickerVO> stickers);
         void showLoading();
         void hideLoading();
+        void collectionSaved();
     }
 
     interface Presenter {
         void setView(View view);
         void loadCollectionHead(Long parentCollection, Long collectionId);
         void loadStickersList(Long parentCollection, Long collectionId);
+        void saveCollection();
         void onDestroy();
     }
 }

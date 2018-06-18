@@ -29,8 +29,23 @@ public class CollectionVO {
         this.quantity = depCollection.getQuantity();
     }
 
+    public CollectionVO(CatalogCollection catCollection) {
+        this.collectionId = catCollection.getId();
+        this.title = catCollection.getTitle();
+        this.year = catCollection.getYear();
+        this.stype = catCollection.getStype();
+        this.size = catCollection.getSize();
+        this.desc = catCollection.getDesc();
+        this.unique = 0;
+        this.quantity = 0;
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Long getCollectionId() {
+        return collectionId;
     }
 
     public String getTitle() {

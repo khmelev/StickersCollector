@@ -11,4 +11,6 @@
     <dimen name="margin_small">10dp</dimen>
     <dimen name="margin_medium">30dp</dimen>
     <dimen name="margin_big">40dp</dimen>
+
+    <dimen name="quantity_button_size">30dp</dimen>
 </resources>

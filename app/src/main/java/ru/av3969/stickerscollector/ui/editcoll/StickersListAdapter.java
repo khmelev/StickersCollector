@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,13 +19,11 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
 
     private List<StickerVO> stickers;
 
-    public StickersListAdapter(List<StickerVO> stickers) {
+    StickersListAdapter(List<StickerVO> stickers) {
         this.stickers = stickers;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-
-        View itemView;
 
         @BindView(R.id.number)
         TextView number;
@@ -32,11 +31,28 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
         TextView name;
         @BindView(R.id.type)
         TextView type;
+        @BindView(R.id.quantity)
+        TextView quantity;
+        @BindView(R.id.imageButtonPlus)
+        ImageButton btPlus;
+        @BindView(R.id.imageButtonMinus)
+        ImageButton btMinus;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            this.itemView = itemView;
             ButterKnife.bind(this, itemView);
+            btPlus.setOnClickListener(l -> {
+                StickerVO stiker = stickers.get(getAdapterPosition());
+                stiker.incQuantity();
+                quantity.setText(String.valueOf(stiker.getQuantity()));
+            });
+            btMinus.setOnClickListener(l -> {
+                StickerVO stiker = stickers.get(getAdapterPosition());
+                if(stiker.getQuantity() > 0) {
+                    stiker.decQuantity();
+                    quantity.setText(String.valueOf(stiker.getQuantity()));
+                }
+            });
         }
     }
 
@@ -53,6 +69,7 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
         holder.number.setText(stiker.getNumber());
         holder.name.setText(stiker.getName());
         holder.type.setText(stiker.getType());
+        holder.quantity.setText(String.valueOf(stiker.getQuantity()));
     }
 
     @Override
