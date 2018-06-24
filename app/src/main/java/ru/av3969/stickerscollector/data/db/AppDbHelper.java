@@ -16,6 +16,9 @@ import ru.av3969.stickerscollector.data.db.entity.DepositoryCollection;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryCollectionDao;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryStickers;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryStickersDao;
+import ru.av3969.stickerscollector.data.db.entity.Transaction;
+import ru.av3969.stickerscollector.data.db.entity.TransactionDao;
+import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 
 public class AppDbHelper implements DbHelper {
 
@@ -125,6 +128,29 @@ public class AppDbHelper implements DbHelper {
     public void insertDepositoryStickersList(List<DepositoryStickers> stickersList) {
         for(DepositoryStickers sticker : stickersList) {
             mDaoSession.getDepositoryStickersDao().insertOrReplace(sticker);
+        }
+    }
+
+    // Transaction
+
+    @Override
+    public List<Transaction> selectTransactionList(Long collectionId) {
+        return mDaoSession.getTransactionDao().queryBuilder()
+                .where(TransactionDao.Properties.CollectionId.eq(collectionId))
+                .list();
+    }
+
+    @Override
+    public void insertTransaction(Transaction transaction) {
+        mDaoSession.getTransactionDao().insert(transaction);
+    }
+
+    // Transaction Row
+
+    @Override
+    public void insertTransactionRowList(List<TransactionRow> transactionRowList) {
+        for(TransactionRow transactionRow : transactionRowList) {
+            mDaoSession.getTransactionRowDao().insert(transactionRow);
         }
     }
 }

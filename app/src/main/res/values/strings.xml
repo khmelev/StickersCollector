@@ -11,4 +11,10 @@
     <string name="year_of_release">Year of release:</string>
     <string name="collection">Collection</string>
     <string name="save">Save</string>
+    <string name="list">List</string>
+    <string name="transactions">Trans</string>
+    <string name="income">Income</string>
+    <string name="outlay">Outlay</string>
+    <string name="check">Check</string>
+    <string name="enter_separated_list">Enter sticker list separated with commas</string>
 </resources>

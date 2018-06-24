@@ -12,4 +12,10 @@
     <string name="year_of_release">Год выпуска:</string>
     <string name="collection">Коллекция</string>
     <string name="save">Сохранить</string>
+    <string name="list">Список</string>
+    <string name="transactions">Операции</string>
+    <string name="income">Приход</string>
+    <string name="outlay">Расход</string>
+    <string name="check">Проверить</string>
+    <string name="enter_separated_list">Введите список наклеек</string>
 </resources>

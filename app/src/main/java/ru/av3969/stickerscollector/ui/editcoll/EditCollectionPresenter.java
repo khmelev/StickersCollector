@@ -76,6 +76,18 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
+    public void loadTransactionList(Long collectionId) {
+        compositeDisposable.add(
+                dataManager.loadTransactionList(collectionId)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(transactions -> {
+                            view.updateTransactionList(transactions);
+                        })
+        );
+    }
+
+    @Override
     public void onDestroy() {
         compositeDisposable.clear();
         view = null;

@@ -4,6 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,12 +26,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
+import ru.av3969.stickerscollector.data.db.entity.Transaction;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
 import ru.av3969.stickerscollector.ui.main.MainActivity;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
-public class EditCollectionActivity extends BaseActivity implements EditCollectionContract.View {
+public class EditCollectionActivity extends BaseActivity implements EditCollectionContract.View, EditCollectionActivityCallback {
 
     public static final String PARENT_COLLECTION = "parentCollection";
     public static final String COLLECTION_ID = "collectionId";
@@ -34,7 +40,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     private Long parentCollection;
     private Long collectionId;
 
-    private StickersListAdapter adapter;
+    private Adapter pagerAdapter;
 
     @Inject
     EditCollectionContract.Presenter presenter;
@@ -57,8 +63,11 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     @BindView(R.id.collDescription)
     TextView collDescription;
 
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    @BindView(R.id.viewpager)
+    ViewPager viewPager;
+
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
 
     MenuItem miActionProgressItem;
     MenuItem miSave;
@@ -89,9 +98,10 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setTitle(R.string.collection);
-            //ab.setDisplayShowTitleEnabled(false);
         }
-        setupRecyclerView();
+
+        setupViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -131,10 +141,34 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         super.onDestroy();
     }
 
-    private void setupRecyclerView() {
-        adapter = new StickersListAdapter(new ArrayList<>());
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    private void setupViewPager(ViewPager viewPager) {
+
+        pagerAdapter = new Adapter(getSupportFragmentManager());
+        pagerAdapter.addFragment(new StickersListFragment(), getResources().getString(R.string.list));
+        pagerAdapter.addFragment(new IncomeFragment(), getResources().getString(R.string.income));
+        pagerAdapter.addFragment(new OutlayFragment(), getResources().getString(R.string.outlay));
+        pagerAdapter.addFragment(new TransactionListFragment(), getResources().getString(R.string.transactions));
+        viewPager.setAdapter(pagerAdapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Fragment currentPage = pagerAdapter.getItem(position);
+                if (currentPage instanceof StickersListFragment) {
+                    //loadStickersList();
+                } else if (currentPage instanceof TransactionListFragment) {
+                    presenter.loadTransactionList(collectionId);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
     }
 
     @Override
@@ -149,7 +183,18 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @Override
     public void updateStickersList(List<StickerVO> stickers) {
-        adapter.replaceDataSet(stickers);
+        Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
+        if(currentPage instanceof StickersListFragment) {
+            ((StickersListFragment)currentPage).updateStickersList(stickers);
+        }
+    }
+
+    @Override
+    public void updateTransactionList(List<Transaction> transactionList) {
+        Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
+        if(currentPage instanceof TransactionListFragment) {
+            ((TransactionListFragment)currentPage).updateTransactionList(transactionList);
+        }
     }
 
     @Override
@@ -177,5 +222,34 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    static class Adapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragments = new ArrayList<>();
+        private final List<String> mFragmentTitles = new ArrayList<>();
+
+        public Adapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragments.add(fragment);
+            mFragmentTitles.add(title);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragments.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitles.get(position);
+        }
     }
 }

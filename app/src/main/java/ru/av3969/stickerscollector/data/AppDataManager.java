@@ -3,6 +3,7 @@ package ru.av3969.stickerscollector.data;
 import android.annotation.SuppressLint;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.data.db.entity.CatalogStickers;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryCollection;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryStickers;
+import ru.av3969.stickerscollector.data.db.entity.Transaction;
+import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 import ru.av3969.stickerscollector.data.pref.PreferencesHelper;
 import ru.av3969.stickerscollector.data.remote.LaststickerHelper;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
@@ -142,9 +145,10 @@ public class AppDataManager implements DataManager {
     @Override
     public Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO) {
         return Completable.fromCallable(() -> {
+            //Записываем коллекцию
             Long depCollectionId = dbHelper.insertDepositoryCollection(Maper.toDepositoryCollection(collectionVO));
             DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(depCollectionId);
-
+            //Записываем наклейки в коллекции
             Integer totalQuantity = 0;
             Short uniqueQuantity = 0;
             List<DepositoryStickers> depStickers = new ArrayList<>();
@@ -154,16 +158,56 @@ public class AppDataManager implements DataManager {
                     depSticker.setOwnerId(depCollectionId);
                     depStickers.add(depSticker);
                     totalQuantity += depSticker.getQuantity();
-                    if(stickerVO.getQuantity() > 0)
+                    if(stickerVO.getQuantity() > 0) {
                         uniqueQuantity++;
+                    }
                 }
             }
             dbHelper.insertDepositoryStickersList(depStickers);
-
+            //Обновляем количество в коллекции
             depCollection.setQuantity(totalQuantity);
             depCollection.setUnique(uniqueQuantity);
             dbHelper.insertDepositoryCollection(depCollection);
 
+            //Записываем транзакцию
+            List<TransactionRow> transactionRowList = new ArrayList<>();
+            int transactionQuantity = 0;
+            for(StickerVO stickerVO : stickersVO) {
+                short deltaQuantity = (short)(stickerVO.getQuantity() - stickerVO.getStartQuantity());
+                if(deltaQuantity != 0) {
+                    transactionRowList.add(new TransactionRow(null, null, null, deltaQuantity));
+                    transactionQuantity += deltaQuantity;
+                }
+            }
+            if(transactionQuantity != 0) {
+                Transaction transaction = new Transaction(null,
+                        new Date(),
+                        Transaction.addType,
+                        depCollection.getId(),
+                        "Ручное изменение",
+                        transactionQuantity,
+                        true);
+                dbHelper.insertTransaction(transaction);
+                for(TransactionRow transactionRow : transactionRowList) {
+                    transactionRow.setOwnerId(transaction.getId());
+                }
+                dbHelper.insertTransactionRowList(transactionRowList);
+            }
+            return true;
+        });
+    }
+
+    @Override
+    public Single<List<Transaction>> loadTransactionList(Long collectionId) {
+        return Single.fromCallable(() -> {
+            return dbHelper.selectTransactionList(collectionId);
+        });
+    }
+
+    @Override
+    public Completable saveTransaction(Transaction transaction) {
+        return Completable.fromCallable(() -> {
+            dbHelper.insertTransaction(transaction);
             return true;
         });
     }

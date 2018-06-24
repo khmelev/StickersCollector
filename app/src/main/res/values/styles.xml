@@ -9,6 +9,13 @@
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
+    <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@android:color/white</item>
+    </style>
+
     <style name="AppTheme.WhiteAccent">
         <item name="colorAccent">@android:color/white</item>
     </style>
@@ -32,6 +39,21 @@
     </style>
 
     <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
+    </style>
+
+    <style name="Widget.Card" parent="android:Widget">
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Widget.CardContent" parent="android:Widget">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
 </resources>

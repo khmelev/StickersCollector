@@ -7,6 +7,7 @@ import io.reactivex.Single;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryCollection;
+import ru.av3969.stickerscollector.data.db.entity.Transaction;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
@@ -27,4 +28,8 @@ public interface DataManager {
     Single<DepositoryCollection> loadDepositoryCollection(Long id);
 
     Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO);
+
+    Single<List<Transaction>> loadTransactionList(Long collectionId);
+
+    Completable saveTransaction(Transaction transaction);
 }

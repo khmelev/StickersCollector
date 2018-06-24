@@ -109,6 +109,7 @@ public class CategoryListFragment extends BaseFragment implements CategoryListCo
 
     @Override
     public void updateCategoryList(List<CatalogCategory> catalogCategoryList) {
+        int a = 5;
         adapter.replaceDataSet(catalogCategoryList);
     }
 }

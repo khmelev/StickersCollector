@@ -13,6 +13,7 @@ public class StickerVO {
     private String section;
     private String type;
     private Short quantity;
+    private Short startQuantity;
 
     public StickerVO(CatalogStickers catSticker, DepositoryStickers depSticker) {
         this.id = depSticker.getId();
@@ -23,6 +24,7 @@ public class StickerVO {
         this.section = catSticker.getSection();
         this.type = catSticker.getType();
         this.quantity = depSticker.getQuantity();
+        this.startQuantity = this.quantity;
     }
 
     public StickerVO(CatalogStickers catSticker) {
@@ -32,6 +34,7 @@ public class StickerVO {
         this.section = catSticker.getSection();
         this.type = catSticker.getType();
         this.quantity = 0;
+        this.startQuantity = this.quantity;
     }
 
     public void incQuantity() {
@@ -72,5 +75,9 @@ public class StickerVO {
 
     public Short getQuantity() {
         return quantity;
+    }
+
+    public Short getStartQuantity() {
+        return startQuantity;
     }
 }
