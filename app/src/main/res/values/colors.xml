@@ -6,4 +6,5 @@
     <color name="colorPrimaryLight">#be9c91</color>
     <color name="windowBackground">#f7e1d2</color>
     <color name="almostWhite1">#e1e0e0</color>
+    <color name="red">#ff0000</color>
 </resources>

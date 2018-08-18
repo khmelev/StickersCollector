@@ -34,6 +34,10 @@
         <item name="android:textColor">@color/almostWhite1</item>
     </style>
 
+    <style name="Body1Red" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/red</item>
+    </style>
+
     <style name="FAB" parent="Widget.Design.FloatingActionButton">
         <item name="android:tint">@android:color/white</item>
     </style>

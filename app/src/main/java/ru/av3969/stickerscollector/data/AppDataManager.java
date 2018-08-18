@@ -3,6 +3,7 @@ package ru.av3969.stickerscollector.data;
 import android.annotation.SuppressLint;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -253,6 +254,8 @@ public class AppDataManager implements DataManager {
             for(Map.Entry<String, StickerVO> entry : parsedStickersMap.entrySet()) {
                 parsedStickersList.add(entry.getValue());
             }
+
+            Collections.sort(parsedStickersList, (a,b) -> (int)(a.getStickerId() - b.getStickerId()));
 
             return parsedStickersList;
         });

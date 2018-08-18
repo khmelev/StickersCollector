@@ -19,8 +19,15 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
 
     private List<StickerVO> stickers;
 
+    private Boolean checkRemains = false;
+
     StickersListAdapter(List<StickerVO> stickers) {
         this.stickers = stickers;
+    }
+
+    StickersListAdapter(List<StickerVO> stickers, Boolean checkRemains) {
+        this(stickers);
+        this.checkRemains = checkRemains;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -43,7 +50,14 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
             ButterKnife.bind(this, itemView);
             btPlus.setOnClickListener(l -> {
                 StickerVO stiker = stickers.get(getAdapterPosition());
-                stiker.incQuantity();
+                StickerVO linkedSticker = stiker.getLinkedSticker();
+                if(checkRemains) {
+                    if(linkedSticker != null && linkedSticker.getQuantity() > stiker.getQuantity())
+                        stiker.incQuantity();
+                } else {
+                    stiker.incQuantity();
+                }
+
                 quantity.setText(String.valueOf(stiker.getQuantity()));
             });
             btMinus.setOnClickListener(l -> {
@@ -66,10 +80,21 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         StickerVO stiker = stickers.get(position);
+
         holder.number.setText(stiker.getNumber());
         holder.name.setText(stiker.getName());
         holder.type.setText(stiker.getType());
         holder.quantity.setText(String.valueOf(stiker.getQuantity()));
+
+        if(stiker.getStickerId() == 0L) {
+            holder.btPlus.setVisibility(View.INVISIBLE);
+            holder.btMinus.setVisibility(View.INVISIBLE);
+            holder.quantity.setVisibility(View.INVISIBLE);
+        } else {
+            holder.btPlus.setVisibility(View.VISIBLE);
+            holder.btMinus.setVisibility(View.VISIBLE);
+            holder.quantity.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

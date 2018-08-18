@@ -105,7 +105,8 @@ public class IncomeOutlayFragment extends BaseFragment {
         setupRecyclerView();
 
         buttonCheck.setOnClickListener(v -> {
-            SoftKeyboard.hide(getContext(), getView());
+            if (getContext() != null && getView() != null)
+                SoftKeyboard.hide(getContext(), getView());
             activityCallback.parseIncomeStickers(inputStickerList.getText());
         });
 
@@ -115,7 +116,7 @@ public class IncomeOutlayFragment extends BaseFragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new StickersListAdapter(new ArrayList<>());
+        adapter = new StickersListAdapter(new ArrayList<>(), mode == OUTLAY_MODE);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
