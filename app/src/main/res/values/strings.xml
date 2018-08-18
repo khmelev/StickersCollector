@@ -17,4 +17,7 @@
     <string name="outlay">Outlay</string>
     <string name="check">Check</string>
     <string name="enter_separated_list">Enter sticker list separated with commas</string>
+    <string name="accept">Accept</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="back">Back</string>
 </resources>

@@ -32,4 +32,6 @@ public interface DataManager {
     Single<List<Transaction>> loadTransactionList(Long collectionId);
 
     Completable saveTransaction(Transaction transaction);
+
+    Single<List<StickerVO>> parseStickers(CharSequence stickerString, List<StickerVO> availableList);
 }

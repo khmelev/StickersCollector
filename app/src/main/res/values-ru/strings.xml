@@ -18,4 +18,7 @@
     <string name="outlay">Расход</string>
     <string name="check">Проверить</string>
     <string name="enter_separated_list">Введите список наклеек</string>
+    <string name="accept">Принять</string>
+    <string name="dismiss">Отменить</string>
+    <string name="back">Назад</string>
 </resources>

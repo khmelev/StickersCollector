@@ -81,4 +81,5 @@ dependencies {
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterkhifeVersion"
     implementation 'org.jsoup:jsoup:1.11.3'
     implementation 'org.greenrobot:greendao:3.2.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 }

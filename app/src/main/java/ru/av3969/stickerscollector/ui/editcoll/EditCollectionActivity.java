@@ -3,15 +3,12 @@ package ru.av3969.stickerscollector.ui.editcoll;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -145,8 +142,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
         pagerAdapter = new Adapter(getSupportFragmentManager());
         pagerAdapter.addFragment(new StickersListFragment(), getResources().getString(R.string.list));
-        pagerAdapter.addFragment(new IncomeFragment(), getResources().getString(R.string.income));
-        pagerAdapter.addFragment(new OutlayFragment(), getResources().getString(R.string.outlay));
+        pagerAdapter.addFragment(IncomeOutlayFragment.newIncomeFragment(), getResources().getString(R.string.income));
+        pagerAdapter.addFragment(IncomeOutlayFragment.newOutlayFragment(), getResources().getString(R.string.outlay));
         pagerAdapter.addFragment(new TransactionListFragment(), getResources().getString(R.string.transactions));
         viewPager.setAdapter(pagerAdapter);
 
@@ -222,6 +219,19 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    public void parseIncomeStickers(CharSequence stickerString) {
+        presenter.parseIncomeStickers(stickerString);
+    }
+
+    @Override
+    public void showIncomeStickers(List<StickerVO> stickers) {
+        Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
+        if(currentPage instanceof IncomeOutlayFragment) {
+            ((IncomeOutlayFragment) currentPage).showParsedStickes(stickers);
+        }
     }
 
     static class Adapter extends FragmentPagerAdapter {

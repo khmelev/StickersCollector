@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -209,6 +210,51 @@ public class AppDataManager implements DataManager {
         return Completable.fromCallable(() -> {
             dbHelper.insertTransaction(transaction);
             return true;
+        });
+    }
+
+    @Override
+    public Single<List<StickerVO>> parseStickers(CharSequence stickerString, List<StickerVO> availableList) {
+        return Single.fromCallable(() -> {
+            List<StickerVO> parsedStickersList = new ArrayList<>();
+            Map<String, StickerVO> parsedStickersMap = new HashMap<>();
+
+            Pattern splitPattern = Pattern.compile("[,./;:\\s_\n]+");
+            String[] stickerAr = splitPattern.split(stickerString);
+
+            if(stickerAr.length == 0) return parsedStickersList;
+
+            Map<String, StickerVO> availableMap = new HashMap<>();
+            for(StickerVO stickerVO : availableList) {
+                availableMap.put(stickerVO.getNumber(), stickerVO);
+            }
+
+            for(String sticker : stickerAr) {
+                StickerVO stickerVO = availableMap.get(sticker);
+                if(stickerVO == null) {
+                    //Не найден стикер в каталоге, наверно введен кривой номер
+                    StickerVO parsedSticker = new StickerVO(sticker, "???");
+                    parsedStickersMap.put(sticker, parsedSticker);
+                } else {
+                    //Найден стикер в каталоге
+                    StickerVO parsedSticker = parsedStickersMap.get(stickerVO.getNumber());
+                    if(parsedSticker == null) {
+                        //Еще не добавляли
+                        parsedSticker = new StickerVO(stickerVO);
+                        parsedSticker.incQuantity();
+                        parsedStickersMap.put(parsedSticker.getNumber(), parsedSticker);
+                    } else {
+                        //Уже добавляли, просто увеличим количество
+                        parsedSticker.incQuantity();
+                    }
+                }
+            }
+
+            for(Map.Entry<String, StickerVO> entry : parsedStickersMap.entrySet()) {
+                parsedStickersList.add(entry.getValue());
+            }
+
+            return parsedStickersList;
         });
     }
 }

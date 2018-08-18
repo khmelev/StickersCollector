@@ -37,6 +37,24 @@ public class StickerVO {
         this.startQuantity = this.quantity;
     }
 
+    public StickerVO(StickerVO stickerVO) {
+        this.id = stickerVO.getId();
+        this.stickerId = stickerVO.getStickerId();
+        this.number = stickerVO.getNumber();
+        this.name = stickerVO.getName();
+        this.section = stickerVO.getSection();
+        this.type = stickerVO.getType();
+        this.quantity = 0;
+        this.startQuantity = this.quantity;
+    }
+
+    public StickerVO(String number, String name) {
+        this.number = number;
+        this.name = name;
+        this.quantity = 0;
+        this.startQuantity = this.quantity;
+    }
+
     public void incQuantity() {
         this.quantity++;
     }
@@ -80,4 +98,5 @@ public class StickerVO {
     public Short getStartQuantity() {
         return startQuantity;
     }
+
 }

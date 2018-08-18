@@ -1,6 +1,7 @@
 package ru.av3969.stickerscollector.ui.editcoll;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -84,6 +85,16 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                         .subscribe(transactions -> {
                             view.updateTransactionList(transactions);
                         })
+        );
+    }
+
+    @Override
+    public void parseIncomeStickers(CharSequence stickerString) {
+        compositeDisposable.add(
+                dataManager.parseStickers(stickerString, stickersVO)
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(stickers -> view.showIncomeStickers(stickers))
         );
     }
 

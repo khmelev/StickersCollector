@@ -16,6 +16,7 @@ public interface EditCollectionContract {
         void showLoading();
         void hideLoading();
         void collectionSaved();
+        void showIncomeStickers(List<StickerVO> stickers);
     }
 
     interface Presenter {
@@ -24,6 +25,7 @@ public interface EditCollectionContract {
         void loadStickersList(Long parentCollection, Long collectionId);
         void loadTransactionList(Long collectionId);
         void saveCollection();
+        void parseIncomeStickers(CharSequence stickerString);
         void onDestroy();
     }
 }
