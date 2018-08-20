@@ -75,4 +75,6 @@ public class CollectionVO {
     public Integer getQuantity() {
         return quantity;
     }
+
+    public Boolean isSaved() { return id != null && id > 0L; }
 }

@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,16 +223,50 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
+    public void transactionSaved() {
+        Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
+        viewPager.setCurrentItem(pagerAdapter.getCount() - 1, true);
+    }
+
+    @Override
     public void parseIncomeStickers(CharSequence stickerString) {
         presenter.parseIncomeStickers(stickerString);
     }
 
     @Override
+    public void parseOutlayStickers(CharSequence stickerString) {
+        presenter.parseOutlayStickers(stickerString);
+    }
+
+    @Override
+    public void commitIncomeStickers() {
+        presenter.commitIncomeStickers();
+    }
+
+    @Override
+    public void commitOutlayStickers() {
+        presenter.commitOutlayStickers();
+    }
+
+    @Override
     public void showIncomeStickers(List<StickerVO> stickers) {
         Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
-        if(currentPage instanceof IncomeOutlayFragment) {
+        if(currentPage instanceof IncomeOutlayFragment && ((IncomeOutlayFragment) currentPage).incomeMode()) {
             ((IncomeOutlayFragment) currentPage).showParsedStickes(stickers);
         }
+    }
+
+    @Override
+    public void showOutlayStickers(List<StickerVO> stickers) {
+        Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
+        if(currentPage instanceof IncomeOutlayFragment && ((IncomeOutlayFragment) currentPage).outlayMode()) {
+            ((IncomeOutlayFragment) currentPage).showParsedStickes(stickers);
+        }
+    }
+
+    @Override
+    public void showError(CharSequence msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     static class Adapter extends FragmentPagerAdapter {

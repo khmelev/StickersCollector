@@ -107,10 +107,18 @@ public class IncomeOutlayFragment extends BaseFragment {
         buttonCheck.setOnClickListener(v -> {
             if (getContext() != null && getView() != null)
                 SoftKeyboard.hide(getContext(), getView());
-            activityCallback.parseIncomeStickers(inputStickerList.getText());
+            if (incomeMode())
+                activityCallback.parseIncomeStickers(inputStickerList.getText());
+            else
+                activityCallback.parseOutlayStickers(inputStickerList.getText());
         });
 
-        buttonAccept.setOnClickListener(v -> viewFlipper.showPrevious());
+        buttonAccept.setOnClickListener(v -> {
+            if(incomeMode())
+                activityCallback.commitIncomeStickers();
+            else
+                activityCallback.commitOutlayStickers();
+        });
 
         buttonDismiss.setOnClickListener(v -> viewFlipper.showPrevious());
     }

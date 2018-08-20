@@ -16,7 +16,10 @@ public interface EditCollectionContract {
         void showLoading();
         void hideLoading();
         void collectionSaved();
+        void transactionSaved();
         void showIncomeStickers(List<StickerVO> stickers);
+        void showOutlayStickers(List<StickerVO> stickers);
+        void showError(CharSequence msg);
     }
 
     interface Presenter {
@@ -26,6 +29,9 @@ public interface EditCollectionContract {
         void loadTransactionList(Long collectionId);
         void saveCollection();
         void parseIncomeStickers(CharSequence stickerString);
+        void parseOutlayStickers(CharSequence stickerString);
+        void commitIncomeStickers();
+        void commitOutlayStickers();
         void onDestroy();
     }
 }

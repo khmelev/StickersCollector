@@ -15,6 +15,7 @@ public class StickerVO {
     private Short quantity;
     private Short startQuantity;
     private StickerVO linkedSticker;
+    private DepositoryStickers depSticker;
 
     public StickerVO(CatalogStickers catSticker, DepositoryStickers depSticker) {
         this.id = depSticker.getId();
@@ -26,6 +27,7 @@ public class StickerVO {
         this.type = catSticker.getType();
         this.quantity = depSticker.getQuantity();
         this.startQuantity = this.quantity;
+        this.depSticker = depSticker;
     }
 
     public StickerVO(CatalogStickers catSticker) {
@@ -38,6 +40,7 @@ public class StickerVO {
         this.startQuantity = this.quantity;
     }
 
+    //для того что бы слинковать стикеры прихода или расхода с основным списком
     public StickerVO(StickerVO stickerVO) {
         this.id = stickerVO.getId();
         this.stickerId = stickerVO.getStickerId();
@@ -50,6 +53,7 @@ public class StickerVO {
         this.linkedSticker = stickerVO;
     }
 
+    //для не опознанных стикеров прихода или расхода
     public StickerVO(String number, String name) {
         this.stickerId = 0L;
         this.number = number;
@@ -62,8 +66,16 @@ public class StickerVO {
         this.quantity++;
     }
 
+    public  void incQuantityVal(Short val) {
+        this.quantity = (short)(this.quantity + val);
+    }
+
     public void decQuantity() {
         this.quantity--;
+    }
+
+    public  void decQuantityVal(Short val) {
+        this.quantity = (short)(this.quantity - val);
     }
 
     public Long getId() {
@@ -102,7 +114,19 @@ public class StickerVO {
         return startQuantity;
     }
 
+    public void flushStartQuantity() {
+        this.startQuantity = this.quantity;
+    }
+
     public StickerVO getLinkedSticker() {
         return linkedSticker;
+    }
+
+    public DepositoryStickers getDepSticker() {
+        return depSticker;
+    }
+
+    public void setDepSticker(DepositoryStickers depSticker) {
+        this.depSticker = depSticker;
     }
 }

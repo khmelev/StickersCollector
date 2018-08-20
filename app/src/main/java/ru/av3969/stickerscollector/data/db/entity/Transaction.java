@@ -34,7 +34,7 @@ public class Transaction {
 
     private Integer quantity;
 
-    private Boolean status;
+    private Boolean active;
 
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
@@ -44,16 +44,16 @@ public class Transaction {
     @Generated(hash = 947191939)
     private transient TransactionDao myDao;
 
-    @Generated(hash = 336027257)
-    public Transaction(Long id, Date date, Byte type, Long collectionId,
-            String title, Integer quantity, Boolean status) {
+    @Generated(hash = 1647658622)
+    public Transaction(Long id, Date date, Byte type, Long collectionId, String title,
+            Integer quantity, Boolean active) {
         this.id = id;
         this.date = date;
         this.type = type;
         this.collectionId = collectionId;
         this.title = title;
         this.quantity = quantity;
-        this.status = status;
+        this.active = active;
     }
 
     @Generated(hash = 750986268)
@@ -108,12 +108,12 @@ public class Transaction {
         this.quantity = quantity;
     }
 
-    public Boolean getStatus() {
-        return this.status;
+    public Boolean getActive() {
+        return this.active;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     @Generated(hash = 524422847)

@@ -1,7 +1,7 @@
 package ru.av3969.stickerscollector.ui.editcoll;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -18,6 +18,8 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
 
     private CollectionVO collectionVO;
     private List<StickerVO> stickersVO;
+    private List<StickerVO> incomeStickersVO;
+    private List<StickerVO> outlayStickersVO;
 
     private DataManager dataManager;
     private SchedulerProvider schedulerProvider;
@@ -94,8 +96,70 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                 dataManager.parseStickers(stickerString, stickersVO)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(stickers -> view.showIncomeStickers(stickers))
+                    .subscribe(stickers -> {
+                        this.incomeStickersVO = stickers;
+                        view.showIncomeStickers(stickers);
+                    })
         );
+    }
+
+    @Override
+    public void parseOutlayStickers(CharSequence stickerString) {
+        compositeDisposable.add(
+                dataManager.parseStickers(stickerString, stickersVO)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(stickers -> {
+                            this.outlayStickersVO = stickers;
+                            view.showOutlayStickers(stickers);
+                        })
+        );
+    }
+
+    @Override
+    public void commitIncomeStickers() {
+        if(collectionVO != null && collectionVO.isSaved()) {
+            List<StickerVO> stickersToSave = new ArrayList<>();
+            for (StickerVO incomeSticker : incomeStickersVO) {
+                StickerVO stickerVO = incomeSticker.getLinkedSticker();
+                if (stickerVO != null) {
+                    stickerVO.incQuantityVal(incomeSticker.getQuantity());
+                    stickersToSave.add(stickerVO);
+                }
+            }
+            if(!stickersToSave.isEmpty())
+                compositeDisposable.add(
+                        dataManager.commitDepositoryTransaction(collectionVO, stickersToSave, "Приход")
+                                .subscribeOn(schedulerProvider.io())
+                                .observeOn(schedulerProvider.ui())
+                                .subscribe(() -> view.transactionSaved())
+                );
+        } else {
+            view.showError("Коллекция должна быть сохранена!");
+        }
+    }
+
+    @Override
+    public void commitOutlayStickers() {
+        if(collectionVO != null && collectionVO.isSaved()) {
+            List<StickerVO> stickersToSave = new ArrayList<>();
+            for (StickerVO outlaySticker : outlayStickersVO) {
+                StickerVO stickerVO = outlaySticker.getLinkedSticker();
+                if (stickerVO != null) {
+                    stickerVO.decQuantityVal(outlaySticker.getQuantity());
+                    stickersToSave.add(stickerVO);
+                }
+            }
+            if(!stickersToSave.isEmpty())
+                compositeDisposable.add(
+                        dataManager.commitDepositoryTransaction(collectionVO, stickersToSave, "Расход")
+                                .subscribeOn(schedulerProvider.io())
+                                .observeOn(schedulerProvider.ui())
+                                .subscribe(() -> view.transactionSaved())
+                );
+        } else {
+            view.showError("Коллекция должна быть сохранена!");
+        }
     }
 
     @Override
