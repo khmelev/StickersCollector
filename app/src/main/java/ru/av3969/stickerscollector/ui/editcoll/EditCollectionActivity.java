@@ -3,6 +3,7 @@ package ru.av3969.stickerscollector.ui.editcoll;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -213,6 +214,11 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         if (miSave != null) {
             miSave.setVisible(true);
         }
+    }
+
+    @Override
+    public String getStringFromRes(@StringRes int resId) {
+        return getResources().getString(resId);
     }
 
     @Override

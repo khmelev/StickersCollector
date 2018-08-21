@@ -42,7 +42,6 @@ public class StickerVO {
 
     //для того что бы слинковать стикеры прихода или расхода с основным списком
     public StickerVO(StickerVO stickerVO) {
-        this.id = stickerVO.getId();
         this.stickerId = stickerVO.getStickerId();
         this.number = stickerVO.getNumber();
         this.name = stickerVO.getName();
@@ -66,7 +65,7 @@ public class StickerVO {
         this.quantity++;
     }
 
-    public  void incQuantityVal(Short val) {
+    public void incQuantityVal(Short val) {
         this.quantity = (short)(this.quantity + val);
     }
 
@@ -74,7 +73,7 @@ public class StickerVO {
         this.quantity--;
     }
 
-    public  void decQuantityVal(Short val) {
+    public void decQuantityVal(Short val) {
         this.quantity = (short)(this.quantity - val);
     }
 

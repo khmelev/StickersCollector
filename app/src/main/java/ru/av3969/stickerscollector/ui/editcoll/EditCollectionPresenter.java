@@ -1,11 +1,11 @@
 package ru.av3969.stickerscollector.ui.editcoll;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
+import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.DataManager;
 import ru.av3969.stickerscollector.ui.base.BasePresenter;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
@@ -70,7 +70,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
         if (collectionVO != null && stickersVO != null) {
             view.showLoading();
             compositeDisposable.add(
-                    dataManager.saveCollection(collectionVO, stickersVO)
+                    dataManager.saveCollection(collectionVO, stickersVO, view.getStringFromRes(R.string.manual_correction))
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(() -> view.collectionSaved())
@@ -98,7 +98,8 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                     .observeOn(schedulerProvider.ui())
                     .subscribe(stickers -> {
                         this.incomeStickersVO = stickers;
-                        view.showIncomeStickers(stickers);
+                        if(!stickers.isEmpty())
+                            view.showIncomeStickers(stickers);
                     })
         );
     }
@@ -111,55 +112,42 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                         .observeOn(schedulerProvider.ui())
                         .subscribe(stickers -> {
                             this.outlayStickersVO = stickers;
-                            view.showOutlayStickers(stickers);
+                            if(!stickers.isEmpty())
+                                view.showOutlayStickers(stickers);
                         })
         );
     }
 
     @Override
     public void commitIncomeStickers() {
-        if(collectionVO != null && collectionVO.isSaved()) {
-            List<StickerVO> stickersToSave = new ArrayList<>();
-            for (StickerVO incomeSticker : incomeStickersVO) {
-                StickerVO stickerVO = incomeSticker.getLinkedSticker();
-                if (stickerVO != null) {
-                    stickerVO.incQuantityVal(incomeSticker.getQuantity());
-                    stickersToSave.add(stickerVO);
-                }
+        for (StickerVO incomeSticker : incomeStickersVO) {
+            StickerVO stickerVO = incomeSticker.getLinkedSticker();
+            if (stickerVO != null) {
+                stickerVO.incQuantityVal(incomeSticker.getQuantity());
             }
-            if(!stickersToSave.isEmpty())
-                compositeDisposable.add(
-                        dataManager.commitDepositoryTransaction(collectionVO, stickersToSave, "Приход")
-                                .subscribeOn(schedulerProvider.io())
-                                .observeOn(schedulerProvider.ui())
-                                .subscribe(() -> view.transactionSaved())
-                );
-        } else {
-            view.showError("Коллекция должна быть сохранена!");
         }
+        compositeDisposable.add(
+                dataManager.saveCollection(collectionVO, stickersVO, view.getStringFromRes(R.string.income))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(() -> view.transactionSaved())
+        );
     }
 
     @Override
     public void commitOutlayStickers() {
-        if(collectionVO != null && collectionVO.isSaved()) {
-            List<StickerVO> stickersToSave = new ArrayList<>();
-            for (StickerVO outlaySticker : outlayStickersVO) {
-                StickerVO stickerVO = outlaySticker.getLinkedSticker();
-                if (stickerVO != null) {
-                    stickerVO.decQuantityVal(outlaySticker.getQuantity());
-                    stickersToSave.add(stickerVO);
-                }
+        for (StickerVO outlaySticker : outlayStickersVO) {
+            StickerVO stickerVO = outlaySticker.getLinkedSticker();
+            if (stickerVO != null) {
+                stickerVO.decQuantityVal(outlaySticker.getQuantity());
             }
-            if(!stickersToSave.isEmpty())
-                compositeDisposable.add(
-                        dataManager.commitDepositoryTransaction(collectionVO, stickersToSave, "Расход")
-                                .subscribeOn(schedulerProvider.io())
-                                .observeOn(schedulerProvider.ui())
-                                .subscribe(() -> view.transactionSaved())
-                );
-        } else {
-            view.showError("Коллекция должна быть сохранена!");
         }
+        compositeDisposable.add(
+                dataManager.saveCollection(collectionVO, stickersVO, view.getStringFromRes(R.string.outlay))
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(() -> view.transactionSaved())
+        );
     }
 
     @Override

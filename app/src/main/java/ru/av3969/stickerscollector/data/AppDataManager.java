@@ -1,6 +1,7 @@
 package ru.av3969.stickerscollector.data;
 
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,69 +150,66 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO) {
+    public Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO, String title) {
         return Completable.fromCallable(() -> {
+            if(!collectionVO.isSaved()) {
+                //Записываем коллекцию
+                collectionVO.setId(dbHelper.insertDepositoryCollection(Maper.toDepositoryCollection(collectionVO)));
+            }
 
-            saveDepository(collectionVO, stickersVO, "Ручное изменение");
+            //Находим измененные стикеры, маркером того что стикер нужно записать является
+            //расхождение между quantity и startQuantity
+            Integer totalQuantity = 0;
+            Short uniqueQuantity = 0;
+            List<StickerVO> hasChangedStickersVO = new ArrayList<>();
+            List<DepositoryStickers> depStickers = new ArrayList<>();
+            for(StickerVO stickerVO : stickersVO) {
+                short deltaQuantity = (short)(stickerVO.getQuantity() - stickerVO.getStartQuantity());
+                if(deltaQuantity != 0) {
+                    hasChangedStickersVO.add(stickerVO);
+
+                    DepositoryStickers depSticker = stickerVO.getDepSticker();
+                    if(depSticker == null) {
+                        depSticker = Maper.toDepositoryStickers(stickerVO);
+                        depSticker.setOwnerId(collectionVO.getId());
+                        stickerVO.setDepSticker(depSticker);
+                    } else {
+                        depSticker.setQuantity(stickerVO.getQuantity());
+                    }
+                    depStickers.add(depSticker);
+                }
+                totalQuantity += stickerVO.getQuantity();
+                if(stickerVO.getQuantity() > 0) {
+                    uniqueQuantity++;
+                }
+            }
+            if(hasChangedStickersVO.isEmpty()) return true; //Если нет измененных стикеров то дальше код можно не выполнять
+
+            dbHelper.insertDepositoryStickersList(depStickers); //Записываем стикеры в депозиторий
+
+            //Обновляем количество в депозитории
+            DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(collectionVO.getId());
+            depCollection.setQuantity(totalQuantity);
+            depCollection.setUnique(uniqueQuantity);
+            dbHelper.insertDepositoryCollection(depCollection);
+
+            //Записываем транзакцию
+            Transaction transaction = saveTransaction(depCollection.getId(), hasChangedStickersVO, title);
+
+            //Обнуляем расхождение между quantity и startQuantity
+            syncQuantity(hasChangedStickersVO);
 
             return true;
         });
     }
 
-    private void saveDepository(CollectionVO collectionVO, List<StickerVO> stickersVO, String title) {
-        //Записываем коллекцию
-        Long depCollectionId = dbHelper.insertDepositoryCollection(Maper.toDepositoryCollection(collectionVO));
-        DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(depCollectionId);
-
-        //Записываем наклейки в депозиторий, маркером того что стикер нужно записать является
-        //расхождение между quantity и startQuantity
-        Integer totalQuantity = 0;
-        Short uniqueQuantity = 0;
-        List<StickerVO> hasChangedStickersVO = new ArrayList<>();
-        List<DepositoryStickers> depStickers = new ArrayList<>();
-        for(StickerVO stickerVO : stickersVO) {
-            short deltaQuantity = (short)(stickerVO.getQuantity() - stickerVO.getStartQuantity());
-            if(deltaQuantity != 0) {
-                hasChangedStickersVO.add(stickerVO);
-
-                DepositoryStickers depSticker = stickerVO.getDepSticker();
-                if(depSticker == null) {
-                    depSticker = Maper.toDepositoryStickers(stickerVO);
-                    depSticker.setOwnerId(depCollectionId);
-                    stickerVO.setDepSticker(depSticker);
-                } else {
-                    depSticker.setQuantity(stickerVO.getQuantity());
-                }
-                depStickers.add(depSticker);
-
-                totalQuantity += depSticker.getQuantity();
-                if(stickerVO.getQuantity() > 0) {
-                    uniqueQuantity++;
-                }
-            }
-        }
-        if(depStickers.isEmpty()) return;
-        dbHelper.insertDepositoryStickersList(depStickers);
-
-        //Обновляем количество в депозитории
-        depCollection.setQuantity(totalQuantity);
-        depCollection.setUnique(uniqueQuantity);
-        dbHelper.insertDepositoryCollection(depCollection);
-
-        //Записываем транзакцию
-        Transaction transaction = saveTransaction(depCollection.getId(), hasChangedStickersVO, title);
-
-        //Обнуляем расхождение между quantity и startQuantity
-        syncQuantity(hasChangedStickersVO);
-    }
-
-    private Transaction saveTransaction(Long depCollectionId, List<StickerVO> stickersVO, String title) {
+    private Transaction saveTransaction(Long depCollectionId, List<StickerVO> hasChangedStickersVO, String title) {
 
         List<TransactionRow> transactionRowList = new ArrayList<>();
         int transactionQuantity = 0;
-        for(StickerVO stickerVO : stickersVO) {
+        for(StickerVO stickerVO : hasChangedStickersVO) {
             short deltaQuantity = (short)(stickerVO.getQuantity() - stickerVO.getStartQuantity());
-            transactionRowList.add(new TransactionRow(null, null, stickerVO.getDepSticker().getId(), deltaQuantity));
+            transactionRowList.add(new TransactionRow(null, null, stickerVO.getId(), deltaQuantity));
             transactionQuantity += deltaQuantity;
         }
         Transaction transaction = new Transaction(null,
@@ -238,16 +236,6 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Completable commitDepositoryTransaction(CollectionVO collectionVO, List<StickerVO> stickersVO, String title) {
-        return Completable.fromCallable(() -> {
-
-            saveDepository(collectionVO, stickersVO, title);
-
-            return true;
-        });
-    }
-
-    @Override
     public Single<List<Transaction>> loadTransactionList(Long collectionId) {
         return Single.fromCallable(() -> {
             return dbHelper.selectTransactionList(collectionId);
@@ -258,6 +246,8 @@ public class AppDataManager implements DataManager {
     public Single<List<StickerVO>> parseStickers(CharSequence stickerString, List<StickerVO> availableList) {
         return Single.fromCallable(() -> {
             List<StickerVO> parsedStickersList = new ArrayList<>();
+            if(TextUtils.isEmpty(stickerString)) return parsedStickersList;
+
             Map<String, StickerVO> parsedStickersMap = new HashMap<>();
 
             Pattern splitPattern = Pattern.compile("[,./;:\\s_\n]+");

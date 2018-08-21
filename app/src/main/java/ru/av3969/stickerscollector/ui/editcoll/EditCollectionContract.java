@@ -1,5 +1,9 @@
 package ru.av3969.stickerscollector.ui.editcoll;
 
+import android.content.Context;
+import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
+
 import java.util.List;
 
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
@@ -20,6 +24,7 @@ public interface EditCollectionContract {
         void showIncomeStickers(List<StickerVO> stickers);
         void showOutlayStickers(List<StickerVO> stickers);
         void showError(CharSequence msg);
+        String getStringFromRes(@StringRes int resId);
     }
 
     interface Presenter {

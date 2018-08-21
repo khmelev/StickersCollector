@@ -27,11 +27,10 @@ public interface DataManager {
 
     Single<DepositoryCollection> loadDepositoryCollection(Long id);
 
-    Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO);
+    Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO, String title);
 
     Single<List<Transaction>> loadTransactionList(Long collectionId);
 
     Single<List<StickerVO>> parseStickers(CharSequence stickerString, List<StickerVO> availableList);
 
-    Completable commitDepositoryTransaction(CollectionVO collectionVO, List<StickerVO> stickersVO, String title);
 }

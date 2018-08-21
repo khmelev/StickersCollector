@@ -22,4 +22,5 @@
     <string name="dismiss">Отменить</string>
     <string name="back">Назад</string>
     <string name="saved">Сохранено</string>
+    <string name="manual_correction">Ручная корректировка</string>
 </resources>

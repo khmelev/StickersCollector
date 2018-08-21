@@ -44,6 +44,10 @@ public class CollectionVO {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getCollectionId() {
         return collectionId;
     }
