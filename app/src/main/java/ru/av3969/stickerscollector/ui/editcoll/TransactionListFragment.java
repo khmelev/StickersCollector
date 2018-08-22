@@ -48,10 +48,13 @@ public class TransactionListFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         setupRecyclerView();
+
+        activityCallback.loadTransactionList();
     }
 
     public void updateTransactionList(List<Transaction> transactionList) {
-        adapter.replaceDataSet(transactionList);
+        if (adapter != null)
+            adapter.replaceDataSet(transactionList);
     }
 
     private void setupRecyclerView() {

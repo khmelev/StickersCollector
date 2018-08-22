@@ -52,6 +52,10 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
 
     @Override
     public void loadStickersList(Long parentCollection, Long collectionId) {
+        if (stickersVO != null) {
+            view.updateStickersList(stickersVO);
+            return;
+        }
         view.showLoading();
         compositeDisposable.add(
                 dataManager.loadStickerVOList(parentCollection, collectionId)

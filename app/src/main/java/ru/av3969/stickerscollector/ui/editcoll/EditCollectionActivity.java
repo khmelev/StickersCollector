@@ -13,10 +13,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -112,7 +112,6 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         miSave = menu.findItem(R.id.miSave);
 
         presenter.loadCollectionHead(parentCollection, collectionId);
-        presenter.loadStickersList(parentCollection, collectionId);
 
         return true;
     }
@@ -140,34 +139,14 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         super.onDestroy();
     }
 
-    private void setupViewPager(ViewPager viewPager) {
+    @Override
+    public void loadStickersList() {
+        presenter.loadStickersList(parentCollection, collectionId);
+    }
 
-        pagerAdapter = new Adapter(getSupportFragmentManager());
-        pagerAdapter.addFragment(new StickersListFragment(), getResources().getString(R.string.list));
-        pagerAdapter.addFragment(IncomeOutlayFragment.newIncomeFragment(), getResources().getString(R.string.income));
-        pagerAdapter.addFragment(IncomeOutlayFragment.newOutlayFragment(), getResources().getString(R.string.outlay));
-        pagerAdapter.addFragment(new TransactionListFragment(), getResources().getString(R.string.transactions));
-        viewPager.setAdapter(pagerAdapter);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Fragment currentPage = pagerAdapter.getItem(position);
-                if (currentPage instanceof StickersListFragment) {
-                    //loadStickersList();
-                } else if (currentPage instanceof TransactionListFragment) {
-                    presenter.loadTransactionList(collectionId);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
+    @Override
+    public void loadTransactionList() {
+        presenter.loadTransactionList(collectionId);
     }
 
     @Override
@@ -178,22 +157,6 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
                 ? R.string.quantity_of_stickers : R.string.quantity_of_cards);
         textNumberOfStickers.setText(String.valueOf(collectionVO.getSize()));
         collDescription.setText(collectionVO.getDesc());
-    }
-
-    @Override
-    public void updateStickersList(List<StickerVO> stickers) {
-        Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
-        if(currentPage instanceof StickersListFragment) {
-            ((StickersListFragment)currentPage).updateStickersList(stickers);
-        }
-    }
-
-    @Override
-    public void updateTransactionList(List<Transaction> transactionList) {
-        Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
-        if(currentPage instanceof TransactionListFragment) {
-            ((TransactionListFragment)currentPage).updateTransactionList(transactionList);
-        }
     }
 
     @Override
@@ -255,6 +218,22 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
+    public void updateStickersList(List<StickerVO> stickers) {
+        Fragment fragment = pagerAdapter.getItem(StickersListFragment.class);
+        if (fragment != null) {
+            ((StickersListFragment)fragment).updateStickersList(stickers);
+        }
+    }
+
+    @Override
+    public void updateTransactionList(List<Transaction> transactionList) {
+        Fragment fragment = pagerAdapter.getItem(TransactionListFragment.class);
+        if (fragment != null) {
+            ((TransactionListFragment)fragment).updateTransactionList(transactionList);
+        }
+    }
+
+    @Override
     public void showIncomeStickers(List<StickerVO> stickers) {
         Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
         if(currentPage instanceof IncomeOutlayFragment && ((IncomeOutlayFragment) currentPage).incomeMode()) {
@@ -275,32 +254,75 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    static class Adapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragments = new ArrayList<>();
-        private final List<String> mFragmentTitles = new ArrayList<>();
+    private void setupViewPager(ViewPager viewPager) {
 
-        public Adapter(FragmentManager fm) {
+        String[] mFragmentTitles = {
+                getResources().getString(R.string.list),
+                getResources().getString(R.string.income),
+                getResources().getString(R.string.outlay),
+                getResources().getString(R.string.transactions)
+        };
+        pagerAdapter = new Adapter(getSupportFragmentManager(), mFragmentTitles);
+        viewPager.setAdapter(pagerAdapter);
+
+    }
+
+    static class Adapter extends FragmentPagerAdapter {
+        private Fragment[] mFragments = new Fragment[4];
+        private String[] mFragmentTitles;
+
+        public Adapter(FragmentManager fm, String[] mFragmentTitles) {
             super(fm);
+            this.mFragmentTitles = mFragmentTitles;
         }
 
-        public void addFragment(Fragment fragment, String title) {
-            mFragments.add(fragment);
-            mFragmentTitles.add(title);
+        public Fragment getItem(Class klass) {
+            for (Fragment mFragment : mFragments) {
+                if (mFragment != null && mFragment.getClass() == klass)
+                    return mFragment;
+            }
+            return null;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return mFragments.get(position);
+            Fragment frag = mFragments[position];
+            if (frag == null)
+            {
+                switch (position) {
+                    case 0:
+                        frag = new StickersListFragment();
+                        break;
+                    case 1:
+                        frag = IncomeOutlayFragment.newIncomeFragment();
+                        break;
+                    case 2:
+                        frag = IncomeOutlayFragment.newOutlayFragment();
+                        break;
+                    case 3:
+                        frag = new TransactionListFragment();
+                        break;
+                }
+                mFragments[position] = frag;
+            }
+            return frag;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Object ret = super.instantiateItem(container, position);
+            mFragments[position] = (Fragment) ret;
+            return ret;
         }
 
         @Override
         public int getCount() {
-            return mFragments.size();
+            return mFragments.length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitles.get(position);
+            return mFragmentTitles[position];
         }
     }
 }

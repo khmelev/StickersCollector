@@ -80,5 +80,5 @@ public class CollectionVO {
         return quantity;
     }
 
-    public Boolean isSaved() { return id != null && id > 0L; }
+    public Boolean isNew() { return id == null; }
 }

@@ -122,7 +122,7 @@ public class AppDataManager implements DataManager {
 
             //Загрузка списка стикеров из депозитория и помещение в HashMap для быстрого поиска по ключу
             List<DepositoryStickers> depositoryStickers = dbHelper.selectDepositoryStickersList(depCollectionId);
-            if(!depositoryStickers.isEmpty()) {
+             if(!depositoryStickers.isEmpty()) {
                 for (DepositoryStickers depSticker : depositoryStickers) {
                     depositoryStickersMap.put(depSticker.getStickerId(), depSticker);
                 }
@@ -152,7 +152,7 @@ public class AppDataManager implements DataManager {
     @Override
     public Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO, String title) {
         return Completable.fromCallable(() -> {
-            if(!collectionVO.isSaved()) {
+            if(collectionVO.isNew()) {
                 //Записываем коллекцию
                 collectionVO.setId(dbHelper.insertDepositoryCollection(Maper.toDepositoryCollection(collectionVO)));
             }
@@ -163,6 +163,7 @@ public class AppDataManager implements DataManager {
             Short uniqueQuantity = 0;
             List<StickerVO> hasChangedStickersVO = new ArrayList<>();
             List<DepositoryStickers> depStickers = new ArrayList<>();
+            List<StickerVO> newStickersVO = new ArrayList<>();
             for(StickerVO stickerVO : stickersVO) {
                 short deltaQuantity = (short)(stickerVO.getQuantity() - stickerVO.getStartQuantity());
                 if(deltaQuantity != 0) {
@@ -173,6 +174,7 @@ public class AppDataManager implements DataManager {
                         depSticker = Maper.toDepositoryStickers(stickerVO);
                         depSticker.setOwnerId(collectionVO.getId());
                         stickerVO.setDepSticker(depSticker);
+                        newStickersVO.add(stickerVO);
                     } else {
                         depSticker.setQuantity(stickerVO.getQuantity());
                     }
@@ -186,6 +188,11 @@ public class AppDataManager implements DataManager {
             if(hasChangedStickersVO.isEmpty()) return true; //Если нет измененных стикеров то дальше код можно не выполнять
 
             dbHelper.insertDepositoryStickersList(depStickers); //Записываем стикеры в депозиторий
+
+            //Обновим id у VO стикеров
+            for (StickerVO stickerVO : newStickersVO) {
+                stickerVO.setId(stickerVO.getDepSticker().getId());
+            }
 
             //Обновляем количество в депозитории
             DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(collectionVO.getId());

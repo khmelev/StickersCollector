@@ -5,4 +5,6 @@ public interface EditCollectionActivityCallback {
     void parseOutlayStickers(CharSequence stickerString);
     void commitIncomeStickers();
     void commitOutlayStickers();
+    void loadStickersList();
+    void loadTransactionList();
 }

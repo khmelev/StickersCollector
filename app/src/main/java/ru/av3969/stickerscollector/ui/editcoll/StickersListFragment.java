@@ -23,8 +23,6 @@ public class StickersListFragment extends BaseFragment {
 
     private StickersListAdapter adapter;
 
-    private List<StickerVO> stickers;
-
     private EditCollectionActivityCallback activityCallback;
 
     @BindView(R.id.recycler_view)
@@ -50,6 +48,8 @@ public class StickersListFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         setupRecyclerView();
+
+        activityCallback.loadStickersList();
     }
 
     @Override
@@ -58,13 +58,13 @@ public class StickersListFragment extends BaseFragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new StickersListAdapter(stickers==null ? new ArrayList<>() : stickers);
+        adapter = new StickersListAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     public void updateStickersList(List<StickerVO> stickers) {
-        this.stickers = stickers;
-        adapter.replaceDataSet(stickers);
+        if (adapter != null)
+            adapter.replaceDataSet(stickers);
     }
 }
