@@ -52,11 +52,17 @@ public interface DbHelper {
 
     // Transaction
 
+    Transaction selectTransaction(Long id);
+
     List<Transaction> selectTransactionList(Long collectionId);
 
     void insertTransaction(Transaction transaction);
 
+    void updateTransaction(Transaction transaction);
+
     // Transaction Row
+
+    List<TransactionRow> selectTransactionRowList(Long owner);
 
     void insertTransactionRowList(List<TransactionRow> transactionRowList);
 }

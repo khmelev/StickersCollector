@@ -19,6 +19,7 @@ import ru.av3969.stickerscollector.data.db.entity.DepositoryStickersDao;
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
 import ru.av3969.stickerscollector.data.db.entity.TransactionDao;
 import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
+import ru.av3969.stickerscollector.data.db.entity.TransactionRowDao;
 
 public class AppDbHelper implements DbHelper {
 
@@ -133,6 +134,12 @@ public class AppDbHelper implements DbHelper {
 
     // Transaction
 
+
+    @Override
+    public Transaction selectTransaction(Long id) {
+        return mDaoSession.getTransactionDao().load(id);
+    }
+
     @Override
     public List<Transaction> selectTransactionList(Long collectionId) {
         return mDaoSession.getTransactionDao().queryBuilder()
@@ -145,7 +152,19 @@ public class AppDbHelper implements DbHelper {
         mDaoSession.getTransactionDao().insert(transaction);
     }
 
+    @Override
+    public void updateTransaction(Transaction transaction) {
+        mDaoSession.getTransactionDao().update(transaction);
+    }
+
     // Transaction Row
+
+    @Override
+    public List<TransactionRow> selectTransactionRowList(Long owner) {
+        return mDaoSession.getTransactionRowDao().queryBuilder()
+                .where(TransactionRowDao.Properties.OwnerId.eq(owner))
+                .list();
+    }
 
     @Override
     public void insertTransactionRowList(List<TransactionRow> transactionRowList) {

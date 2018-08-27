@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import io.reactivex.disposables.CompositeDisposable;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.DataManager;
+import ru.av3969.stickerscollector.data.db.entity.Transaction;
 import ru.av3969.stickerscollector.ui.base.BasePresenter;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
@@ -74,7 +75,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
         if (collectionVO != null && stickersVO != null) {
             view.showLoading();
             compositeDisposable.add(
-                    dataManager.saveCollection(collectionVO, stickersVO, view.getStringFromRes(R.string.manual_correction))
+                    dataManager.saveCollection(collectionVO, stickersVO, new Transaction(view.getStringFromRes(R.string.manual_correction)))
                             .subscribeOn(schedulerProvider.io())
                             .observeOn(schedulerProvider.ui())
                             .subscribe(() -> view.collectionSaved())
@@ -131,7 +132,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
             }
         }
         compositeDisposable.add(
-                dataManager.saveCollection(collectionVO, stickersVO, view.getStringFromRes(R.string.income))
+                dataManager.saveCollection(collectionVO, stickersVO, new Transaction(view.getStringFromRes(R.string.income)))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(() -> view.transactionSaved())
@@ -147,10 +148,25 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
             }
         }
         compositeDisposable.add(
-                dataManager.saveCollection(collectionVO, stickersVO, view.getStringFromRes(R.string.outlay))
+                dataManager.saveCollection(collectionVO, stickersVO, new Transaction(view.getStringFromRes(R.string.outlay)))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(() -> view.transactionSaved())
+        );
+    }
+
+    @Override
+    public void deactivateTransaction(Transaction transaction) {
+        compositeDisposable.add(
+                dataManager.deactivateTransaction(collectionVO, stickersVO, transaction)
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe((t) -> {
+                        view.showMsg(t.getActive()
+                                ? view.getStringFromRes(R.string.transaction_activated)
+                                : view.getStringFromRes(R.string.transaction_deactivated)
+                        );
+                    })
         );
     }
 
@@ -160,5 +176,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
         view = null;
         collectionVO = null;
         stickersVO = null;
+        incomeStickersVO = null;
+        outlayStickersVO = null;
     }
 }

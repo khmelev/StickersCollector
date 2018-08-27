@@ -23,4 +23,8 @@
     <string name="back">Назад</string>
     <string name="saved">Сохранено</string>
     <string name="manual_correction">Ручная корректировка</string>
+    <string name="title">Заголовок</string>
+    <string name="date">Дата</string>
+    <string name="transaction_activated">Операция активирована</string>
+    <string name="transaction_deactivated">Операция отменена</string>
 </resources>

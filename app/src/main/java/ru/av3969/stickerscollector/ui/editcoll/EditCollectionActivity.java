@@ -150,6 +150,13 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
+    public void deactivateTransaction(Transaction transaction) {
+        if (transaction != null) {
+            presenter.deactivateTransaction(transaction);
+        }
+    }
+
+    @Override
     public void updateCollectionHead(CollectionVO collectionVO) {
         collTitle.setText(collectionVO.getTitle());
         releaseYear.setText(String.valueOf(collectionVO.getYear()));
@@ -250,7 +257,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
-    public void showError(CharSequence msg) {
+    public void showMsg(CharSequence msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 

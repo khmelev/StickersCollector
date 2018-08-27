@@ -23,7 +23,7 @@ public interface EditCollectionContract {
         void transactionSaved();
         void showIncomeStickers(List<StickerVO> stickers);
         void showOutlayStickers(List<StickerVO> stickers);
-        void showError(CharSequence msg);
+        void showMsg(CharSequence msg);
         String getStringFromRes(@StringRes int resId);
     }
 
@@ -37,6 +37,7 @@ public interface EditCollectionContract {
         void parseOutlayStickers(CharSequence stickerString);
         void commitIncomeStickers();
         void commitOutlayStickers();
+        void deactivateTransaction(Transaction transaction);
         void onDestroy();
     }
 }

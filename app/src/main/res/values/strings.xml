@@ -22,4 +22,8 @@
     <string name="back">Back</string>
     <string name="saved">Saved</string>
     <string name="manual_correction">Manual correction</string>
+    <string name="title">Title</string>
+    <string name="date">Date</string>
+    <string name="transaction_activated">Transaction activated</string>
+    <string name="transaction_deactivated">Transaction deactivated</string>
 </resources>

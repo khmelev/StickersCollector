@@ -60,6 +60,14 @@ public class Transaction {
     public Transaction() {
     }
 
+    public Transaction(String title) {
+        this.title = title;
+    }
+
+    public Boolean isNew() {
+        return id == null || id == 0L;
+    }
+
     public Long getId() {
         return this.id;
     }

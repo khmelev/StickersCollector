@@ -58,7 +58,7 @@ public class TransactionListFragment extends BaseFragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new TransactionListAdapter(new ArrayList<>());
+        adapter = new TransactionListAdapter(new ArrayList<>(), (t) -> {activityCallback.deactivateTransaction(t);});
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }

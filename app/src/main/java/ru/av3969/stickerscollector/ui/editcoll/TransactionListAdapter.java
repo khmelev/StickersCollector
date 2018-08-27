@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -19,9 +21,11 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
 
     List<Transaction> transactions;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyy HH:mm:ss");
+    OnTranSwitchChangeListener switchListener;
 
-    public TransactionListAdapter(List<Transaction> transactions) {
+    public TransactionListAdapter(List<Transaction> transactions, OnTranSwitchChangeListener switchListener) {
         this.transactions = transactions;
+        this.switchListener = switchListener;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -30,10 +34,22 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         TextView title;
         @BindView(R.id.date)
         TextView date;
+        @BindView(R.id.tranActiveSwitch)
+        Switch tranActiveSwitch;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            tranActiveSwitch.setOnCheckedChangeListener((view, isChecked) -> {
+                if (switchListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Transaction transaction = transactions.get(position);
+                        if(transaction.getActive() != isChecked)
+                            switchListener.deactivateTransaction(transaction);
+                    }
+                }
+            });
         }
     }
 
@@ -49,6 +65,7 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         Transaction transaction = transactions.get(position);
         holder.title.setText(transaction.getTitle());
         holder.date.setText(simpleDateFormat.format(transaction.getDate()));
+        holder.tranActiveSwitch.setChecked(transaction.getActive());
     }
 
     @Override
@@ -60,4 +77,9 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         this.transactions = transactions;
         notifyDataSetChanged();
     }
+
+    public interface OnTranSwitchChangeListener {
+        void deactivateTransaction(Transaction transaction);
+    }
+
 }

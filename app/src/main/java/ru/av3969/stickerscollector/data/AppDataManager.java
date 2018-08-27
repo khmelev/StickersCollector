@@ -1,6 +1,7 @@
 package ru.av3969.stickerscollector.data;
 
 import android.annotation.SuppressLint;
+import android.support.v4.util.LongSparseArray;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -108,8 +109,7 @@ public class AppDataManager implements DataManager {
     public Single<List<StickerVO>> loadStickerVOList(Long parentCollection, Long depCollectionId) {
         return Single.fromCallable(() -> {
             List<StickerVO> stickers = new ArrayList<>();
-            @SuppressLint("UseSparseArrays")
-            Map<Long,DepositoryStickers> depositoryStickersMap = new HashMap<>();
+            LongSparseArray<DepositoryStickers> depositoryStickersMap = new LongSparseArray<>();
 
             //Загрузка списка стикеров из каталога
             List<CatalogStickers> catalogStickers = dbHelper.selectCatalogStickersList(parentCollection);
@@ -120,7 +120,7 @@ public class AppDataManager implements DataManager {
                 catalogStickers = dbHelper.selectCatalogStickersList(parentCollection);
             }
 
-            //Загрузка списка стикеров из депозитория и помещение в HashMap для быстрого поиска по ключу
+            //Загрузка списка стикеров из депозитория и помещение в LongSparseArray для быстрого поиска по ключу
             List<DepositoryStickers> depositoryStickers = dbHelper.selectDepositoryStickersList(depCollectionId);
              if(!depositoryStickers.isEmpty()) {
                 for (DepositoryStickers depSticker : depositoryStickers) {
@@ -129,7 +129,7 @@ public class AppDataManager implements DataManager {
             }
 
             for (CatalogStickers catSticker : catalogStickers) {
-                if (!depositoryStickersMap.isEmpty()) {
+                if (depositoryStickersMap.size() > 0) {
                     DepositoryStickers depSticker = depositoryStickersMap.get(catSticker.getId());
                     if (depSticker != null)
                         stickers.add(new StickerVO(catSticker, depSticker));
@@ -150,90 +150,91 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO, String title) {
+    public Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO, Transaction transaction) {
         return Completable.fromCallable(() -> {
-            if(collectionVO.isNew()) {
-                //Записываем коллекцию
-                collectionVO.setId(dbHelper.insertDepositoryCollection(Maper.toDepositoryCollection(collectionVO)));
-            }
-
-            //Находим измененные стикеры, маркером того что стикер нужно записать является
-            //расхождение между quantity и startQuantity
-            Integer totalQuantity = 0;
-            Short uniqueQuantity = 0;
-            List<StickerVO> hasChangedStickersVO = new ArrayList<>();
-            List<DepositoryStickers> depStickers = new ArrayList<>();
-            List<StickerVO> newStickersVO = new ArrayList<>();
-            for(StickerVO stickerVO : stickersVO) {
-                short deltaQuantity = (short)(stickerVO.getQuantity() - stickerVO.getStartQuantity());
-                if(deltaQuantity != 0) {
-                    hasChangedStickersVO.add(stickerVO);
-
-                    DepositoryStickers depSticker = stickerVO.getDepSticker();
-                    if(depSticker == null) {
-                        depSticker = Maper.toDepositoryStickers(stickerVO);
-                        depSticker.setOwnerId(collectionVO.getId());
-                        stickerVO.setDepSticker(depSticker);
-                        newStickersVO.add(stickerVO);
-                    } else {
-                        depSticker.setQuantity(stickerVO.getQuantity());
-                    }
-                    depStickers.add(depSticker);
-                }
-                totalQuantity += stickerVO.getQuantity();
-                if(stickerVO.getQuantity() > 0) {
-                    uniqueQuantity++;
-                }
-            }
-            if(hasChangedStickersVO.isEmpty()) return true; //Если нет измененных стикеров то дальше код можно не выполнять
-
-            dbHelper.insertDepositoryStickersList(depStickers); //Записываем стикеры в депозиторий
-
-            //Обновим id у VO стикеров
-            for (StickerVO stickerVO : newStickersVO) {
-                stickerVO.setId(stickerVO.getDepSticker().getId());
-            }
-
-            //Обновляем количество в депозитории
-            DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(collectionVO.getId());
-            depCollection.setQuantity(totalQuantity);
-            depCollection.setUnique(uniqueQuantity);
-            dbHelper.insertDepositoryCollection(depCollection);
-
-            //Записываем транзакцию
-            Transaction transaction = saveTransaction(depCollection.getId(), hasChangedStickersVO, title);
-
-            //Обнуляем расхождение между quantity и startQuantity
-            syncQuantity(hasChangedStickersVO);
-
+            saveCollectionNow(collectionVO, stickersVO, transaction);
             return true;
         });
     }
 
-    private Transaction saveTransaction(Long depCollectionId, List<StickerVO> hasChangedStickersVO, String title) {
+    private void saveCollectionNow(CollectionVO collectionVO, List<StickerVO> stickersVO, Transaction transaction) {
+        if(collectionVO.isNew()) {
+            //Записываем коллекцию
+            collectionVO.setId(dbHelper.insertDepositoryCollection(Maper.toDepositoryCollection(collectionVO)));
+        }
 
-        List<TransactionRow> transactionRowList = new ArrayList<>();
-        int transactionQuantity = 0;
-        for(StickerVO stickerVO : hasChangedStickersVO) {
+        //Находим измененные стикеры, маркером того что стикер нужно записать является
+        //расхождение между quantity и startQuantity
+        Integer totalQuantity = 0;
+        Short uniqueQuantity = 0;
+        List<StickerVO> hasChangedStickersVO = new ArrayList<>();
+        List<DepositoryStickers> depStickers = new ArrayList<>();
+        List<StickerVO> newStickersVO = new ArrayList<>();
+        for(StickerVO stickerVO : stickersVO) {
             short deltaQuantity = (short)(stickerVO.getQuantity() - stickerVO.getStartQuantity());
-            transactionRowList.add(new TransactionRow(null, null, stickerVO.getId(), deltaQuantity));
-            transactionQuantity += deltaQuantity;
-        }
-        Transaction transaction = new Transaction(null,
-                new Date(),
-                Transaction.addType,
-                depCollectionId,
-                title,
-                transactionQuantity,
-                true);
-        dbHelper.insertTransaction(transaction);
+            if(deltaQuantity != 0) {
+                hasChangedStickersVO.add(stickerVO);
 
-        for(TransactionRow transactionRow : transactionRowList) {
-            transactionRow.setOwnerId(transaction.getId());
+                DepositoryStickers depSticker = stickerVO.getDepSticker();
+                if(depSticker == null) {
+                    depSticker = Maper.toDepositoryStickers(stickerVO);
+                    depSticker.setOwnerId(collectionVO.getId());
+                    stickerVO.setDepSticker(depSticker);
+                    newStickersVO.add(stickerVO);
+                } else {
+                    depSticker.setQuantity(stickerVO.getQuantity());
+                }
+                depStickers.add(depSticker);
+            }
+            totalQuantity += stickerVO.getQuantity();
+            if(stickerVO.getQuantity() > 0) {
+                uniqueQuantity++;
+            }
         }
-        dbHelper.insertTransactionRowList(transactionRowList);
+        if(hasChangedStickersVO.isEmpty()) return; //Если нет измененных стикеров то дальше код можно не выполнять
 
-        return transaction;
+        dbHelper.insertDepositoryStickersList(depStickers); //Записываем стикеры в депозиторий
+
+        //Обновим id у VO стикеров
+        for (StickerVO stickerVO : newStickersVO) {
+            stickerVO.setId(stickerVO.getDepSticker().getId());
+        }
+
+        //Обновляем количество в депозитории
+        DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(collectionVO.getId());
+        depCollection.setQuantity(totalQuantity);
+        depCollection.setUnique(uniqueQuantity);
+        dbHelper.insertDepositoryCollection(depCollection);
+
+        //Записываем транзакцию
+        saveTransaction(depCollection.getId(), hasChangedStickersVO, transaction);
+
+        //Обнуляем расхождение между quantity и startQuantity
+        syncQuantity(hasChangedStickersVO);
+    }
+
+    private void saveTransaction(Long depCollectionId, List<StickerVO> hasChangedStickersVO, Transaction transaction) {
+
+        if(transaction.isNew()) {
+            List<TransactionRow> transactionRowList = new ArrayList<>();
+            int transactionQuantity = 0;
+            for (StickerVO stickerVO : hasChangedStickersVO) {
+                short deltaQuantity = (short) (stickerVO.getQuantity() - stickerVO.getStartQuantity());
+                transactionRowList.add(new TransactionRow(null, null, stickerVO.getId(), deltaQuantity));
+                transactionQuantity += deltaQuantity;
+            }
+            transaction.setDate(new Date());
+            transaction.setType(Transaction.addType);
+            transaction.setCollectionId(depCollectionId);
+            transaction.setQuantity(transactionQuantity);
+            transaction.setActive(true);
+            dbHelper.insertTransaction(transaction);
+
+            for (TransactionRow transactionRow : transactionRowList) {
+                transactionRow.setOwnerId(transaction.getId());
+            }
+            dbHelper.insertTransactionRowList(transactionRowList);
+        }
     }
 
     private void syncQuantity(List<StickerVO> stickersVO) {
@@ -295,6 +296,37 @@ public class AppDataManager implements DataManager {
             Collections.sort(parsedStickersList, (a,b) -> (int)(a.getStickerId() - b.getStickerId()));
 
             return parsedStickersList;
+        });
+    }
+
+    @Override
+    public Single<Transaction> deactivateTransaction(CollectionVO collectionVO, List<StickerVO> stickersVO, Transaction transaction) {
+        return Single.fromCallable(() -> {
+            Boolean deactivating = transaction.getActive();
+
+            LongSparseArray<StickerVO> savedStickers = new LongSparseArray<>();
+            for (StickerVO stickerVO : stickersVO) {
+                if(stickerVO.getDepSticker() != null)
+                    savedStickers.put(stickerVO.getId(), stickerVO);
+            }
+
+            List<TransactionRow> transactionRowList = dbHelper.selectTransactionRowList(transaction.getId());
+            for (TransactionRow transactionRow : transactionRowList) {
+                StickerVO stickerVO = savedStickers.get(transactionRow.getStickerId());
+                if (stickerVO != null) {
+                    if (deactivating)
+                        stickerVO.decQuantityVal(transactionRow.getQuantity());
+                    else
+                        stickerVO.incQuantityVal(transactionRow.getQuantity());
+                }
+            }
+
+            saveCollectionNow(collectionVO, stickersVO, transaction);
+
+            transaction.setActive(!deactivating);
+            dbHelper.updateTransaction(transaction);
+
+            return transaction;
         });
     }
 }
