@@ -160,16 +160,20 @@ public class AppDbHelper implements DbHelper {
     // Transaction Row
 
     @Override
-    public List<TransactionRow> selectTransactionRowList(Long owner) {
-        return mDaoSession.getTransactionRowDao().queryBuilder()
-                .where(TransactionRowDao.Properties.OwnerId.eq(owner))
+    public List<TransactionRow> selectTransactionRowList(Long ownerId) {
+        List<TransactionRow> transactionRowList = mDaoSession.getTransactionRowDao().queryBuilder()
+                .where(TransactionRowDao.Properties.OwnerId.eq(ownerId))
                 .list();
+        for (TransactionRow transactionRow : transactionRowList) {
+            transactionRow.getSticker().getSticker(); //Что бы загрузились связанные объекты
+        }
+        return transactionRowList;
     }
 
     @Override
     public void insertTransactionRowList(List<TransactionRow> transactionRowList) {
         for(TransactionRow transactionRow : transactionRowList) {
-            mDaoSession.getTransactionRowDao().insert(transactionRow);
+            mDaoSession.getTransactionRowDao().insertOrReplace(transactionRow);
         }
     }
 }

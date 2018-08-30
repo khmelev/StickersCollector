@@ -26,4 +26,6 @@
     <string name="date">Date</string>
     <string name="transaction_activated">Transaction activated</string>
     <string name="transaction_deactivated">Transaction deactivated</string>
+    <string name="enter_transaction_title">Transaction title</string>
+    <string name="commit">Commit</string>
 </resources>

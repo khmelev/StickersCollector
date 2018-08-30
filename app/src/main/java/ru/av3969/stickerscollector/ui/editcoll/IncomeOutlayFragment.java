@@ -35,6 +35,9 @@ public class IncomeOutlayFragment extends BaseFragment {
     @BindView(R.id.viewFlipper)
     ViewFlipper viewFlipper;
 
+    @BindView(R.id.inputTransTitle)
+    TextView inputTransTitle;
+
     @BindView(R.id.inputStickerList)
     TextView inputStickerList;
 
@@ -115,9 +118,9 @@ public class IncomeOutlayFragment extends BaseFragment {
 
         buttonAccept.setOnClickListener(v -> {
             if(incomeMode())
-                activityCallback.commitIncomeStickers();
+                activityCallback.commitIncomeStickers(inputTransTitle.getText());
             else
-                activityCallback.commitOutlayStickers();
+                activityCallback.commitOutlayStickers(inputTransTitle.getText());
         });
 
         buttonDismiss.setOnClickListener(v -> viewFlipper.showPrevious());

@@ -8,6 +8,7 @@ import java.util.List;
 
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
+import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
@@ -24,6 +25,7 @@ public interface EditCollectionContract {
         void showIncomeStickers(List<StickerVO> stickers);
         void showOutlayStickers(List<StickerVO> stickers);
         void showMsg(CharSequence msg);
+        void showTransactionRow(List<StickerVO> stickers);
         String getStringFromRes(@StringRes int resId);
     }
 
@@ -32,11 +34,13 @@ public interface EditCollectionContract {
         void loadCollectionHead(Long parentCollection, Long collectionId);
         void loadStickersList(Long parentCollection, Long collectionId);
         void loadTransactionList(Long collectionId);
+        void loadTransactionRowList(Transaction transaction);
+        void commitTransactionRow(List<StickerVO> stickersVO);
         void saveCollection();
         void parseIncomeStickers(CharSequence stickerString);
         void parseOutlayStickers(CharSequence stickerString);
-        void commitIncomeStickers();
-        void commitOutlayStickers();
+        void commitIncomeStickers(CharSequence transTitle);
+        void commitOutlayStickers(CharSequence transTitle);
         void deactivateTransaction(Transaction transaction);
         void onDestroy();
     }

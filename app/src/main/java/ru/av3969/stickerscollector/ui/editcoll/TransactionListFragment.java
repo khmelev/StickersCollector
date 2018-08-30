@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +19,32 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
+import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 import ru.av3969.stickerscollector.ui.base.BaseFragment;
+import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
 public class TransactionListFragment extends BaseFragment {
 
-    private TransactionListAdapter adapter;
+    private TransactionListAdapter transactionListAdapter;
+
+    private StickersListAdapter stickersListAdapter;
 
     private EditCollectionActivityCallback activityCallback;
 
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    @BindView(R.id.viewFlipper)
+    ViewFlipper viewFlipper;
+
+    @BindView(R.id.trans_recycler_view)
+    RecyclerView transRecyclerView;
+
+    @BindView(R.id.trans_row_recycler_view)
+    RecyclerView transRowRecyclerView;
+
+    @BindView(R.id.buttonAccept)
+    Button buttonAccept;
+
+    @BindView(R.id.buttonDismiss)
+    Button buttonDismiss;
 
     @Override
     public void onAttach(Context context) {
@@ -50,16 +68,34 @@ public class TransactionListFragment extends BaseFragment {
         setupRecyclerView();
 
         activityCallback.loadTransactionList();
+
+        buttonDismiss.setOnClickListener(v -> viewFlipper.showPrevious());
+
+        buttonAccept.setOnClickListener(v -> {
+            activityCallback.commitTransactionRow(stickersListAdapter.getDataSet());
+            viewFlipper.showPrevious();
+        });
     }
 
     public void updateTransactionList(List<Transaction> transactionList) {
-        if (adapter != null)
-            adapter.replaceDataSet(transactionList);
+        if (transactionListAdapter != null)
+            transactionListAdapter.replaceDataSet(transactionList);
+    }
+
+    public void showTransactionRow(List<StickerVO> stickers) {
+        stickersListAdapter.replaceDataSet(stickers);
+        viewFlipper.showNext();
     }
 
     private void setupRecyclerView() {
-        adapter = new TransactionListAdapter(new ArrayList<>(), (t) -> {activityCallback.deactivateTransaction(t);});
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        transactionListAdapter = new TransactionListAdapter(new ArrayList<>(),
+                (t) -> activityCallback.deactivateTransaction(t),
+                (t) -> activityCallback.loadTransactionRow(t));
+        transRecyclerView.setAdapter(transactionListAdapter);
+        transRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        stickersListAdapter = new StickersListAdapter(new ArrayList<>());
+        transRowRecyclerView.setAdapter(stickersListAdapter);
+        transRowRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 }

@@ -8,6 +8,7 @@ import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryCollection;
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
+import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
@@ -30,6 +31,10 @@ public interface DataManager {
     Completable saveCollection(CollectionVO collectionVO, List<StickerVO> stickersVO, Transaction transaction);
 
     Single<List<Transaction>> loadTransactionList(Long collectionId);
+
+    Single<List<StickerVO>> loadTransactionRowList(Transaction transaction);
+
+    Completable commitTransactionRowList(List<StickerVO> stickersVO);
 
     Single<List<StickerVO>> parseStickers(CharSequence stickerString, List<StickerVO> availableList);
 

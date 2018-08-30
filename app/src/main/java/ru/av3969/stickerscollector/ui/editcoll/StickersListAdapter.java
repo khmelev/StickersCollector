@@ -106,4 +106,8 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
         this.stickers = stickers;
         notifyDataSetChanged();
     }
+
+    public List<StickerVO> getDataSet() {
+        return stickers;
+    }
 }

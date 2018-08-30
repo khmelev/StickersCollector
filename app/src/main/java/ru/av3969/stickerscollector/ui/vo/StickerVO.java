@@ -2,6 +2,7 @@ package ru.av3969.stickerscollector.ui.vo;
 
 import ru.av3969.stickerscollector.data.db.entity.CatalogStickers;
 import ru.av3969.stickerscollector.data.db.entity.DepositoryStickers;
+import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 
 public class StickerVO {
 
@@ -16,6 +17,7 @@ public class StickerVO {
     private Short startQuantity;
     private StickerVO linkedSticker;
     private DepositoryStickers depSticker;
+    private TransactionRow transactionRow;
 
     public StickerVO(CatalogStickers catSticker, DepositoryStickers depSticker) {
         this.id = depSticker.getId();
@@ -28,6 +30,19 @@ public class StickerVO {
         this.quantity = depSticker.getQuantity();
         this.startQuantity = this.quantity;
         this.depSticker = depSticker;
+    }
+
+    public StickerVO(CatalogStickers catSticker, TransactionRow transactionRow) {
+        this.id = transactionRow.getId();
+        this.ownerId = transactionRow.getOwnerId();
+        this.stickerId = transactionRow.getStickerId();
+        this.number = catSticker.getNumber();
+        this.name = catSticker.getName();
+        this.section = catSticker.getSection();
+        this.type = catSticker.getType();
+        this.quantity = transactionRow.getQuantity();
+        this.startQuantity = this.quantity;
+        this.transactionRow = transactionRow;
     }
 
     public StickerVO(CatalogStickers catSticker) {
@@ -131,5 +146,9 @@ public class StickerVO {
 
     public void setDepSticker(DepositoryStickers depSticker) {
         this.depSticker = depSticker;
+    }
+
+    public TransactionRow getTransactionRow() {
+        return transactionRow;
     }
 }

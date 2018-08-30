@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
+import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
 import ru.av3969.stickerscollector.ui.main.MainActivity;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
@@ -157,6 +159,18 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
+    public void loadTransactionRow(Transaction transaction) {
+        if (transaction != null) {
+            presenter.loadTransactionRowList(transaction);
+        }
+    }
+
+    @Override
+    public void commitTransactionRow(List<StickerVO> stickersVO) {
+        presenter.commitTransactionRow(stickersVO);
+    }
+
+    @Override
     public void updateCollectionHead(CollectionVO collectionVO) {
         collTitle.setText(collectionVO.getTitle());
         releaseYear.setText(String.valueOf(collectionVO.getYear()));
@@ -215,13 +229,13 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
-    public void commitIncomeStickers() {
-        presenter.commitIncomeStickers();
+    public void commitIncomeStickers(CharSequence transTitle) {
+        presenter.commitIncomeStickers(transTitle);
     }
 
     @Override
-    public void commitOutlayStickers() {
-        presenter.commitOutlayStickers();
+    public void commitOutlayStickers(CharSequence transTitle) {
+        presenter.commitOutlayStickers(transTitle);
     }
 
     @Override
@@ -253,6 +267,14 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
         if(currentPage instanceof IncomeOutlayFragment && ((IncomeOutlayFragment) currentPage).outlayMode()) {
             ((IncomeOutlayFragment) currentPage).showParsedStickes(stickers);
+        }
+    }
+
+    @Override
+    public void showTransactionRow(List<StickerVO> stickers) {
+        Fragment fragment = pagerAdapter.getItem(TransactionListFragment.class);
+        if (fragment != null) {
+            ((TransactionListFragment)fragment).showTransactionRow(stickers);
         }
     }
 

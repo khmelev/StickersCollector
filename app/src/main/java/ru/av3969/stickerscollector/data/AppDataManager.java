@@ -251,6 +251,32 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
+    public Single<List<StickerVO>> loadTransactionRowList(Transaction transaction) {
+        return Single.fromCallable(() -> {
+            List<StickerVO> stickersVO = new ArrayList<>();
+            List<TransactionRow> transRowList = dbHelper.selectTransactionRowList(transaction.getId());
+            for (TransactionRow transactionRow : transRowList) {
+                stickersVO.add(new StickerVO(transactionRow.getSticker().getSticker(), transactionRow));
+            }
+            return stickersVO;
+        });
+    }
+
+    @Override
+    public Completable commitTransactionRowList(List<StickerVO> stickersVO) {
+        return Completable.fromCallable(() -> {
+            List<TransactionRow> transactionRowList = new ArrayList<>();
+            for (StickerVO stickerVO : stickersVO) {
+                TransactionRow transactionRow = stickerVO.getTransactionRow();
+                transactionRow.setQuantity(stickerVO.getQuantity());
+                transactionRowList.add(transactionRow);
+            }
+            dbHelper.insertTransactionRowList(transactionRowList);
+            return true;
+        });
+    }
+
+    @Override
     public Single<List<StickerVO>> parseStickers(CharSequence stickerString, List<StickerVO> availableList) {
         return Single.fromCallable(() -> {
             List<StickerVO> parsedStickersList = new ArrayList<>();

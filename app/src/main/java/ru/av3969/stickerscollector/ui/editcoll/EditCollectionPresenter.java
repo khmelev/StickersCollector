@@ -1,5 +1,7 @@
 package ru.av3969.stickerscollector.ui.editcoll;
 
+import android.text.TextUtils;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -96,6 +98,26 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
+    public void loadTransactionRowList(Transaction transaction) {
+        compositeDisposable.add(
+                dataManager.loadTransactionRowList(transaction)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(stickers -> view.showTransactionRow(stickers))
+        );
+    }
+
+    @Override
+    public void commitTransactionRow(List<StickerVO> stickers) {
+        compositeDisposable.add(
+                dataManager.commitTransactionRowList(stickers)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe(() -> view.showMsg(view.getStringFromRes(R.string.saved)))
+        );
+    }
+
+    @Override
     public void parseIncomeStickers(CharSequence stickerString) {
         compositeDisposable.add(
                 dataManager.parseStickers(stickerString, stickersVO)
@@ -124,7 +146,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
-    public void commitIncomeStickers() {
+    public void commitIncomeStickers(CharSequence transTitle) {
         for (StickerVO incomeSticker : incomeStickersVO) {
             StickerVO stickerVO = incomeSticker.getLinkedSticker();
             if (stickerVO != null) {
@@ -132,7 +154,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
             }
         }
         compositeDisposable.add(
-                dataManager.saveCollection(collectionVO, stickersVO, new Transaction(view.getStringFromRes(R.string.income)))
+                dataManager.saveCollection(collectionVO, stickersVO, new Transaction(TextUtils.isEmpty(transTitle) ? view.getStringFromRes(R.string.income) : transTitle.toString()))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(() -> view.transactionSaved())
@@ -140,7 +162,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
-    public void commitOutlayStickers() {
+    public void commitOutlayStickers(CharSequence transTitle) {
         for (StickerVO outlaySticker : outlayStickersVO) {
             StickerVO stickerVO = outlaySticker.getLinkedSticker();
             if (stickerVO != null) {
@@ -148,7 +170,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
             }
         }
         compositeDisposable.add(
-                dataManager.saveCollection(collectionVO, stickersVO, new Transaction(view.getStringFromRes(R.string.outlay)))
+                dataManager.saveCollection(collectionVO, stickersVO, new Transaction(TextUtils.isEmpty(transTitle) ? view.getStringFromRes(R.string.outlay) : transTitle.toString()))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(() -> view.transactionSaved())

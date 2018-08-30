@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -22,10 +23,14 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
     List<Transaction> transactions;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyy HH:mm:ss");
     OnTranSwitchChangeListener switchListener;
+    OnTranClickListener clickListener;
 
-    public TransactionListAdapter(List<Transaction> transactions, OnTranSwitchChangeListener switchListener) {
+    public TransactionListAdapter(List<Transaction> transactions,
+                                  OnTranSwitchChangeListener switchListener,
+                                  OnTranClickListener clickListener) {
         this.transactions = transactions;
         this.switchListener = switchListener;
+        this.clickListener = clickListener;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -36,10 +41,20 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         TextView date;
         @BindView(R.id.tranActiveSwitch)
         Switch tranActiveSwitch;
+        @BindView(R.id.transDescription)
+        LinearLayout transDescription;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            transDescription.setOnClickListener(v -> {
+                if (clickListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        clickListener.loadTransactionRow(transactions.get(position));
+                    }
+                }
+            });
             tranActiveSwitch.setOnCheckedChangeListener((view, isChecked) -> {
                 if (switchListener != null) {
                     int position = getAdapterPosition();
@@ -82,4 +97,7 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         void deactivateTransaction(Transaction transaction);
     }
 
+    public interface OnTranClickListener {
+        void loadTransactionRow(Transaction transaction);
+    }
 }

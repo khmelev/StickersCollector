@@ -27,4 +27,6 @@
     <string name="date">Дата</string>
     <string name="transaction_activated">Операция активирована</string>
     <string name="transaction_deactivated">Операция отменена</string>
+    <string name="enter_transaction_title">Имя операции</string>
+    <string name="commit">Применить</string>
 </resources>
