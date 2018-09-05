@@ -1,9 +1,14 @@
 package ru.av3969.stickerscollector.ui.editcoll;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,25 +18,26 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.internal.operators.flowable.FlowableAllSingle;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
-import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
 import ru.av3969.stickerscollector.ui.main.MainActivity;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
+import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 
 public class EditCollectionActivity extends BaseActivity implements EditCollectionContract.View, EditCollectionActivityCallback {
 
@@ -70,6 +76,9 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     @BindView(R.id.tabs)
     TabLayout tabLayout;
 
+    @BindView(R.id.floatingActionButton)
+    FloatingActionButton floatingActionButton;
+
     MenuItem miActionProgressItem;
     MenuItem miSave;
 
@@ -103,6 +112,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
+
+        setupFAB();
     }
 
     @Override
@@ -152,22 +163,22 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
-    public void deactivateTransaction(Transaction transaction) {
+    public void deactivateTransaction(TransactionVO transaction) {
         if (transaction != null) {
             presenter.deactivateTransaction(transaction);
         }
     }
 
     @Override
-    public void loadTransactionRow(Transaction transaction) {
+    public void loadTransactionRow(TransactionVO transaction) {
         if (transaction != null) {
             presenter.loadTransactionRowList(transaction);
         }
     }
 
     @Override
-    public void commitTransactionRow(List<StickerVO> stickersVO) {
-        presenter.commitTransactionRow(stickersVO);
+    public void saveTransactionRows() {
+        presenter.saveTransactionRows();
     }
 
     @Override
@@ -247,7 +258,20 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
-    public void updateTransactionList(List<Transaction> transactionList) {
+    public void assembleStickersAsText() {
+        presenter.assembleStickersAsText();
+    }
+
+    @Override
+    public void showAvailableStickersAsText(CharSequence text) {
+        Fragment fragment = pagerAdapter.getItem(StickersListFragment.class);
+        if (fragment != null) {
+            ((StickersListFragment)fragment).showAvailableStickersAsText(text);
+        }
+    }
+
+    @Override
+    public void updateTransactionList(List<TransactionVO> transactionList) {
         Fragment fragment = pagerAdapter.getItem(TransactionListFragment.class);
         if (fragment != null) {
             ((TransactionListFragment)fragment).updateTransactionList(transactionList);
@@ -258,15 +282,15 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     public void showIncomeStickers(List<StickerVO> stickers) {
         Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
         if(currentPage instanceof IncomeOutlayFragment && ((IncomeOutlayFragment) currentPage).incomeMode()) {
-            ((IncomeOutlayFragment) currentPage).showParsedStickes(stickers);
+            ((IncomeOutlayFragment) currentPage).showParsedStickers(stickers);
         }
     }
 
     @Override
-    public void showOutlayStickers(List<StickerVO> stickers) {
+    public void showOutlayStickers(List<StickerVO> stickers, String comment) {
         Fragment currentPage = pagerAdapter.getItem(viewPager.getCurrentItem());
         if(currentPage instanceof IncomeOutlayFragment && ((IncomeOutlayFragment) currentPage).outlayMode()) {
-            ((IncomeOutlayFragment) currentPage).showParsedStickes(stickers);
+            ((IncomeOutlayFragment) currentPage).showParsedStickers(stickers, comment);
         }
     }
 
@@ -283,6 +307,15 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void copyTextToClipboard(CharSequence text) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(ClipData.newPlainText("simple text", text));
+            showMsg(getStringFromRes(R.string.copied_to_clipboard));
+        }
+    }
+
     private void setupViewPager(ViewPager viewPager) {
 
         String[] mFragmentTitles = {
@@ -294,6 +327,42 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         pagerAdapter = new Adapter(getSupportFragmentManager(), mFragmentTitles);
         viewPager.setAdapter(pagerAdapter);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                switch (position) {
+                    case 0:
+                        floatingActionButton.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        floatingActionButton.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+    }
+
+    private void setupFAB() {
+        floatingActionButton.setOnClickListener(l -> {
+            switch (viewPager.getCurrentItem()) {
+                case 0:
+                    Fragment fragment = pagerAdapter.getItem(StickersListFragment.class);
+                    if (fragment != null) {
+                        ((StickersListFragment) fragment).toogleView();
+                    }
+                    break;
+            }
+        });
     }
 
     static class Adapter extends FragmentPagerAdapter {
@@ -337,6 +406,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
             return frag;
         }
 
+        @NonNull
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             Object ret = super.instantiateItem(container, position);

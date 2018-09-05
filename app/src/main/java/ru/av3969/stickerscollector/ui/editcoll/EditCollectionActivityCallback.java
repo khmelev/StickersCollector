@@ -4,6 +4,7 @@ import java.util.List;
 
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
+import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 
 public interface EditCollectionActivityCallback {
     void parseIncomeStickers(CharSequence stickerString);
@@ -12,7 +13,9 @@ public interface EditCollectionActivityCallback {
     void commitOutlayStickers(CharSequence transTitle);
     void loadStickersList();
     void loadTransactionList();
-    void deactivateTransaction(Transaction transaction);
-    void loadTransactionRow(Transaction transaction);
-    void commitTransactionRow(List<StickerVO> stickersVO);
+    void deactivateTransaction(TransactionVO transaction);
+    void loadTransactionRow(TransactionVO transaction);
+    void saveTransactionRows();
+    void assembleStickersAsText();
+    void copyTextToClipboard(CharSequence text);
 }

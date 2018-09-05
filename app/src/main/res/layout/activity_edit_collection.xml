@@ -5,7 +5,6 @@
     android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
@@ -24,11 +23,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingBottom="@dimen/padding_small"
             android:paddingEnd="@dimen/padding_small"
             android:paddingLeft="@dimen/padding_small"
             android:paddingRight="@dimen/padding_small"
             android:paddingStart="@dimen/padding_small"
-            android:paddingBottom="@dimen/padding_small"
             app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
 
             <TextView
@@ -46,15 +45,15 @@
                     android:id="@+id/textReleaseYear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Small"
-                    android:text="@string/year_of_release" />
+                    android:text="@string/year_of_release"
+                    android:textAppearance="@style/Small" />
 
                 <TextView
                     android:id="@+id/releaseYear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Small"
-                    android:paddingLeft="@dimen/padding_tiny" />
+                    android:paddingLeft="@dimen/padding_tiny"
+                    android:textAppearance="@style/Small" />
             </LinearLayout>
 
             <LinearLayout
@@ -66,15 +65,15 @@
                     android:id="@+id/textStickersOrCards"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Small"
-                    android:text="@string/year_of_release" />
+                    android:text="@string/year_of_release"
+                    android:textAppearance="@style/Small" />
 
                 <TextView
                     android:id="@+id/textNumberOfStickers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/Small"
-                    android:paddingLeft="@dimen/padding_tiny" />
+                    android:paddingLeft="@dimen/padding_tiny"
+                    android:textAppearance="@style/Small" />
             </LinearLayout>
 
             <TextView
@@ -89,14 +88,25 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppThemeDark"/>
+            android:theme="@style/AppThemeDark" />
 
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_anchor="@id/viewpager"
+        app:layout_anchorGravity="bottom|right|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_stickers_as_text" />
+
 
 </android.support.design.widget.CoordinatorLayout>

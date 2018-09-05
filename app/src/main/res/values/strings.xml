@@ -28,4 +28,7 @@
     <string name="transaction_deactivated">Transaction deactivated</string>
     <string name="enter_transaction_title">Transaction title</string>
     <string name="commit">Commit</string>
+    <string name="sticker_list_example">1, 3, 5(2), 9, 13, 26(4)</string>
+    <string name="not_enough">Not enough:</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 </resources>

@@ -18,10 +18,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
-import ru.av3969.stickerscollector.data.db.entity.Transaction;
-import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 import ru.av3969.stickerscollector.ui.base.BaseFragment;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
+import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 
 public class TransactionListFragment extends BaseFragment {
 
@@ -72,12 +71,12 @@ public class TransactionListFragment extends BaseFragment {
         buttonDismiss.setOnClickListener(v -> viewFlipper.showPrevious());
 
         buttonAccept.setOnClickListener(v -> {
-            activityCallback.commitTransactionRow(stickersListAdapter.getDataSet());
+            activityCallback.saveTransactionRows();
             viewFlipper.showPrevious();
         });
     }
 
-    public void updateTransactionList(List<Transaction> transactionList) {
+    public void updateTransactionList(List<TransactionVO> transactionList) {
         if (transactionListAdapter != null)
             transactionListAdapter.replaceDataSet(transactionList);
     }
@@ -90,11 +89,12 @@ public class TransactionListFragment extends BaseFragment {
     private void setupRecyclerView() {
         transactionListAdapter = new TransactionListAdapter(new ArrayList<>(),
                 (t) -> activityCallback.deactivateTransaction(t),
-                (t) -> activityCallback.loadTransactionRow(t));
+                (t) -> activityCallback.loadTransactionRow(t),
+                (t) -> activityCallback.copyTextToClipboard(t));
         transRecyclerView.setAdapter(transactionListAdapter);
         transRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        stickersListAdapter = new StickersListAdapter(new ArrayList<>());
+        stickersListAdapter = new StickersListAdapter(new ArrayList<>(), StickersListAdapter.EDIT_TRANS_MODE);
         transRowRecyclerView.setAdapter(stickersListAdapter);
         transRowRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }

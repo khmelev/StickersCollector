@@ -64,5 +64,5 @@ public interface DbHelper {
 
     List<TransactionRow> selectTransactionRowList(Long owner);
 
-    void insertTransactionRowList(List<TransactionRow> transactionRowList);
+    void updateTransactionRowList(List<TransactionRow> transactionRowList);
 }

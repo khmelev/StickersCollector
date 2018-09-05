@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -16,21 +15,24 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.av3969.stickerscollector.R;
-import ru.av3969.stickerscollector.data.db.entity.Transaction;
+import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 
 public class TransactionListAdapter extends RecyclerView.Adapter<TransactionListAdapter.ViewHolder> {
 
-    List<Transaction> transactions;
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyy HH:mm:ss");
-    OnTranSwitchChangeListener switchListener;
-    OnTranClickListener clickListener;
+    private List<TransactionVO> transactions;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyy HH:mm:ss");
+    private OnTranSwitchChangeListener switchListener;
+    private OnTranClickListener clickTitleListener;
+    private OnTranStickerClickListener clickStickerListener;
 
-    public TransactionListAdapter(List<Transaction> transactions,
+    public TransactionListAdapter(List<TransactionVO> transactions,
                                   OnTranSwitchChangeListener switchListener,
-                                  OnTranClickListener clickListener) {
+                                  OnTranClickListener clickTitleListener,
+                                  OnTranStickerClickListener clickStickerListener) {
         this.transactions = transactions;
         this.switchListener = switchListener;
-        this.clickListener = clickListener;
+        this.clickTitleListener = clickTitleListener;
+        this.clickStickerListener = clickStickerListener;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -43,23 +45,31 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         Switch tranActiveSwitch;
         @BindView(R.id.transDescription)
         LinearLayout transDescription;
+        @BindView(R.id.tranStickerList)
+        TextView tranStickerList;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             transDescription.setOnClickListener(v -> {
-                if (clickListener != null) {
+                if (clickTitleListener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        clickListener.loadTransactionRow(transactions.get(position));
+                        clickTitleListener.loadTransactionRow(transactions.get(position));
                     }
                 }
+            });
+            tranStickerList.setOnLongClickListener(v -> {
+                if (clickStickerListener != null) {
+                    clickStickerListener.copyToClipboard(tranStickerList.getText());
+                }
+                return true;
             });
             tranActiveSwitch.setOnCheckedChangeListener((view, isChecked) -> {
                 if (switchListener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        Transaction transaction = transactions.get(position);
+                        TransactionVO transaction = transactions.get(position);
                         if(transaction.getActive() != isChecked)
                             switchListener.deactivateTransaction(transaction);
                     }
@@ -77,10 +87,11 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Transaction transaction = transactions.get(position);
+        TransactionVO transaction = transactions.get(position);
         holder.title.setText(transaction.getTitle());
         holder.date.setText(simpleDateFormat.format(transaction.getDate()));
         holder.tranActiveSwitch.setChecked(transaction.getActive());
+        holder.tranStickerList.setText(transaction.getTransStickersText());
     }
 
     @Override
@@ -88,16 +99,20 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         return transactions.size();
     }
 
-    public void replaceDataSet(List<Transaction> transactions) {
+    public void replaceDataSet(List<TransactionVO> transactions) {
         this.transactions = transactions;
         notifyDataSetChanged();
     }
 
     public interface OnTranSwitchChangeListener {
-        void deactivateTransaction(Transaction transaction);
+        void deactivateTransaction(TransactionVO transaction);
     }
 
     public interface OnTranClickListener {
-        void loadTransactionRow(Transaction transaction);
+        void loadTransactionRow(TransactionVO transaction);
+    }
+
+    public interface OnTranStickerClickListener {
+        void copyToClipboard(CharSequence text);
     }
 }

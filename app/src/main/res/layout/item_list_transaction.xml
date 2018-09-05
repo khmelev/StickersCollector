@@ -7,37 +7,52 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="10">
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/transDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="8"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="10">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/title" />
+            <LinearLayout
+                android:id="@+id/transDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/date"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/date" />
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    style="@style/TextAppearance.AppCompat.Body2"
+                    android:text="@string/title" />
 
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/date" />
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/tranActiveSwitch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2" />
         </LinearLayout>
 
-        <Switch
-            android:id="@+id/tranActiveSwitch"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tranStickerList"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2" />
+            android:layout_marginTop="@dimen/margin_tiny"
+            android:text="@string/sticker_list_example" />
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

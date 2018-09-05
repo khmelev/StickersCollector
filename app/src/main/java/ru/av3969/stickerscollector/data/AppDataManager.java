@@ -1,6 +1,5 @@
 package ru.av3969.stickerscollector.data;
 
-import android.annotation.SuppressLint;
 import android.support.v4.util.LongSparseArray;
 import android.text.TextUtils;
 
@@ -28,6 +27,7 @@ import ru.av3969.stickerscollector.data.pref.PreferencesHelper;
 import ru.av3969.stickerscollector.data.remote.LaststickerHelper;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
+import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 import ru.av3969.stickerscollector.utils.Maper;
 
 public class AppDataManager implements DataManager {
@@ -233,7 +233,7 @@ public class AppDataManager implements DataManager {
             for (TransactionRow transactionRow : transactionRowList) {
                 transactionRow.setOwnerId(transaction.getId());
             }
-            dbHelper.insertTransactionRowList(transactionRowList);
+            dbHelper.updateTransactionRowList(transactionRowList);
         }
     }
 
@@ -244,17 +244,33 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Single<List<Transaction>> loadTransactionList(Long collectionId) {
+    public Single<List<TransactionVO>> loadTransactionList(Long collectionId) {
         return Single.fromCallable(() -> {
-            return dbHelper.selectTransactionList(collectionId);
+            List<TransactionVO> transactionsVO = new ArrayList<>();
+            for(Transaction trans : dbHelper.selectTransactionList(collectionId)) {
+                List<TransactionRow> transactionRows = dbHelper.selectTransactionRowList(trans.getId());
+                StringBuilder transStickersText = new StringBuilder();
+                for (TransactionRow transactionRow : transactionRows) {
+                    if(transactionRow.getQuantity() != 0) {
+                        if(transStickersText.length() > 0) transStickersText.append(", ");
+                        transStickersText.append(transactionRow.getSticker().getSticker().getNumber());
+                        if(transactionRow.getQuantity() > 1) transStickersText.append("("+transactionRow.getQuantity()+")");
+                        if(transactionRow.getQuantity() < -1) transStickersText.append("("+-transactionRow.getQuantity()+")");
+                    }
+                }
+                TransactionVO transactionVO = new TransactionVO(trans.getId(), trans.getDate(), trans.getTitle(), trans.getActive(), trans);
+                transactionVO.setTransStickersText(transStickersText.toString());
+                transactionsVO.add(transactionVO);
+            }
+            return transactionsVO;
         });
     }
 
     @Override
-    public Single<List<StickerVO>> loadTransactionRowList(Transaction transaction) {
+    public Single<List<StickerVO>> loadTransactionRowList(TransactionVO transaction) {
         return Single.fromCallable(() -> {
             List<StickerVO> stickersVO = new ArrayList<>();
-            List<TransactionRow> transRowList = dbHelper.selectTransactionRowList(transaction.getId());
+            List<TransactionRow> transRowList = dbHelper.selectTransactionRowList(transaction.getTransaction().getId());
             for (TransactionRow transactionRow : transRowList) {
                 stickersVO.add(new StickerVO(transactionRow.getSticker().getSticker(), transactionRow));
             }
@@ -263,15 +279,43 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Completable commitTransactionRowList(List<StickerVO> stickersVO) {
+    public Completable saveTransactionRowList(CollectionVO collectionVO, List<StickerVO> stickersVO,
+                                              TransactionVO transactionVO, List<StickerVO> tranStickersVO) {
         return Completable.fromCallable(() -> {
+
             List<TransactionRow> transactionRowList = new ArrayList<>();
-            for (StickerVO stickerVO : stickersVO) {
-                TransactionRow transactionRow = stickerVO.getTransactionRow();
-                transactionRow.setQuantity(stickerVO.getQuantity());
-                transactionRowList.add(transactionRow);
+
+            for (StickerVO tranStickerVO : tranStickersVO) {
+                short deltaQuantity = (short)(tranStickerVO.getQuantity() - tranStickerVO.getStartQuantity());
+                if(deltaQuantity != 0) {
+                    TransactionRow transactionRow = tranStickerVO.getTransactionRow();
+                    transactionRow.setQuantity(tranStickerVO.getQuantity());
+                    transactionRowList.add(transactionRow);
+                }
             }
-            dbHelper.insertTransactionRowList(transactionRowList);
+
+            if(transactionVO.getActive()) {
+                //Для активной транзакции нужно еще обновить стикеры в коллекции
+                LongSparseArray<StickerVO> savedStickers = new LongSparseArray<>();
+                for (StickerVO stickerVO : stickersVO) {
+                    if (stickerVO.getDepSticker() != null)
+                        savedStickers.put(stickerVO.getId(), stickerVO);
+                }
+                for (StickerVO tranStickerVO : tranStickersVO) {
+                    short deltaQuantity = (short)(tranStickerVO.getQuantity() - tranStickerVO.getStartQuantity());
+                    if(deltaQuantity != 0) {
+                        StickerVO savedSticker = savedStickers.get(tranStickerVO.getTransactionRow().getStickerId());
+                        if (savedSticker != null) {
+                            savedSticker.incQuantityVal(deltaQuantity);
+                        }
+                    }
+                }
+                saveCollectionNow(collectionVO, stickersVO, transactionVO.getTransaction());
+            }
+
+            dbHelper.updateTransactionRowList(transactionRowList);
+            syncQuantity(tranStickersVO);
+
             return true;
         });
     }
@@ -284,29 +328,44 @@ public class AppDataManager implements DataManager {
 
             Map<String, StickerVO> parsedStickersMap = new HashMap<>();
 
-            Pattern splitPattern = Pattern.compile("[,./;:\\s_\n]+");
-            String[] stickerAr = splitPattern.split(stickerString);
+            Pattern splitStickersPattern = Pattern.compile("[,./;:\\s_\n]+");
+            Pattern splitQuantityPattern = Pattern.compile("[()]");
 
-            if(stickerAr.length == 0) return parsedStickersList;
+            String[] stickersWithQuantity = splitStickersPattern.split(stickerString);
+
+            if(stickersWithQuantity.length == 0) return parsedStickersList;
 
             Map<String, StickerVO> availableMap = new HashMap<>();
             for(StickerVO stickerVO : availableList) {
                 availableMap.put(stickerVO.getNumber(), stickerVO);
             }
 
-            for(String sticker : stickerAr) {
-                StickerVO stickerVO = availableMap.get(sticker);
+            for(String stickerWithQuantity : stickersWithQuantity) {
+                String stickerNumber, quantity;
+
+                String[] splitStickerQuantity = splitQuantityPattern.split(stickerWithQuantity);
+                if(splitStickerQuantity.length == 1 || TextUtils.isEmpty(splitStickerQuantity[0])) {
+                    //Количества в скобках нет
+                    stickerNumber = stickerWithQuantity;
+                    quantity = "1";
+                } else {
+                    //Есть количество в скобках
+                    stickerNumber = splitStickerQuantity[0];
+                    quantity = splitStickerQuantity[1];
+                }
+
+                StickerVO stickerVO = availableMap.get(stickerNumber);
                 if(stickerVO == null) {
                     //Не найден стикер в каталоге, наверно введен кривой номер
-                    StickerVO parsedSticker = new StickerVO(sticker, "???");
-                    parsedStickersMap.put(sticker, parsedSticker);
+                    StickerVO parsedSticker = new StickerVO(stickerNumber, "???");
+                    parsedStickersMap.put(stickerNumber, parsedSticker);
                 } else {
                     //Найден стикер в каталоге
                     StickerVO parsedSticker = parsedStickersMap.get(stickerVO.getNumber());
                     if(parsedSticker == null) {
                         //Еще не добавляли
                         parsedSticker = new StickerVO(stickerVO);
-                        parsedSticker.incQuantity();
+                        parsedSticker.incQuantityVal(Short.valueOf(quantity));
                         parsedStickersMap.put(parsedSticker.getNumber(), parsedSticker);
                     } else {
                         //Уже добавляли, просто увеличим количество
@@ -326,8 +385,10 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Single<Transaction> deactivateTransaction(CollectionVO collectionVO, List<StickerVO> stickersVO, Transaction transaction) {
+    public Single<TransactionVO> deactivateTransaction(CollectionVO collectionVO, List<StickerVO> stickersVO, TransactionVO transactionVO) {
         return Single.fromCallable(() -> {
+
+            Transaction transaction = transactionVO.getTransaction();
             Boolean deactivating = transaction.getActive();
 
             LongSparseArray<StickerVO> savedStickers = new LongSparseArray<>();
@@ -352,7 +413,8 @@ public class AppDataManager implements DataManager {
             transaction.setActive(!deactivating);
             dbHelper.updateTransaction(transaction);
 
-            return transaction;
+            transactionVO.setActive(transaction.getActive()); //Синхронизация VO с DB
+            return transactionVO;
         });
     }
 }

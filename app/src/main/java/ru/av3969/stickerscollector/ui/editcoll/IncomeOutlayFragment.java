@@ -6,10 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -36,10 +38,10 @@ public class IncomeOutlayFragment extends BaseFragment {
     ViewFlipper viewFlipper;
 
     @BindView(R.id.inputTransTitle)
-    TextView inputTransTitle;
+    EditText inputTransTitle;
 
     @BindView(R.id.inputStickerList)
-    TextView inputStickerList;
+    EditText inputStickerList;
 
     @BindView(R.id.buttonCheck)
     Button buttonCheck;
@@ -52,6 +54,9 @@ public class IncomeOutlayFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+
+    @BindView(R.id.comment)
+    TextView commentView;
 
     private StickersListAdapter adapter;
 
@@ -127,13 +132,29 @@ public class IncomeOutlayFragment extends BaseFragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new StickersListAdapter(new ArrayList<>(), mode == OUTLAY_MODE);
+        adapter = new StickersListAdapter(new ArrayList<>(), mode == OUTLAY_MODE
+                                                            ? StickersListAdapter.CHECK_REMAINS_MODE
+                                                            : StickersListAdapter.ONLY_POSITIVE_MODE);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
-    public void showParsedStickes(List<StickerVO> stickers) {
+    public void showParsedStickers(List<StickerVO> stickers) {
         adapter.replaceDataSet(stickers);
         viewFlipper.showNext();
+    }
+
+    public void showParsedStickers(List<StickerVO> stickers, String comment) {
+        if(TextUtils.isEmpty(comment))
+            commentView.setVisibility(View.GONE);
+        else {
+            commentView.setText(comment);
+            commentView.setVisibility(View.VISIBLE);
+            commentView.setOnLongClickListener(v -> {
+                activityCallback.copyTextToClipboard(comment);
+                return true;
+            });
+        }
+        showParsedStickers(stickers);
     }
 }

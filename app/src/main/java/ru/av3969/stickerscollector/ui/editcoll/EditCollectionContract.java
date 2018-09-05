@@ -11,21 +11,23 @@ import ru.av3969.stickerscollector.data.db.entity.Transaction;
 import ru.av3969.stickerscollector.data.db.entity.TransactionRow;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
+import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 
 public interface EditCollectionContract {
 
     interface View {
         void updateCollectionHead(CollectionVO collectionVO);
         void updateStickersList(List<StickerVO> stickers);
-        void updateTransactionList(List<Transaction> transactionList);
+        void updateTransactionList(List<TransactionVO> transactionList);
         void showLoading();
         void hideLoading();
         void collectionSaved();
         void transactionSaved();
         void showIncomeStickers(List<StickerVO> stickers);
-        void showOutlayStickers(List<StickerVO> stickers);
+        void showOutlayStickers(List<StickerVO> stickers, String comment);
         void showMsg(CharSequence msg);
         void showTransactionRow(List<StickerVO> stickers);
+        void showAvailableStickersAsText(CharSequence text);
         String getStringFromRes(@StringRes int resId);
     }
 
@@ -34,14 +36,15 @@ public interface EditCollectionContract {
         void loadCollectionHead(Long parentCollection, Long collectionId);
         void loadStickersList(Long parentCollection, Long collectionId);
         void loadTransactionList(Long collectionId);
-        void loadTransactionRowList(Transaction transaction);
-        void commitTransactionRow(List<StickerVO> stickersVO);
+        void loadTransactionRowList(TransactionVO transaction);
+        void saveTransactionRows();
         void saveCollection();
         void parseIncomeStickers(CharSequence stickerString);
         void parseOutlayStickers(CharSequence stickerString);
         void commitIncomeStickers(CharSequence transTitle);
         void commitOutlayStickers(CharSequence transTitle);
-        void deactivateTransaction(Transaction transaction);
+        void deactivateTransaction(TransactionVO transaction);
+        void assembleStickersAsText();
         void onDestroy();
     }
 }

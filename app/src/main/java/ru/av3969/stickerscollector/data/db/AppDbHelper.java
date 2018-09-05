@@ -171,7 +171,7 @@ public class AppDbHelper implements DbHelper {
     }
 
     @Override
-    public void insertTransactionRowList(List<TransactionRow> transactionRowList) {
+    public void updateTransactionRowList(List<TransactionRow> transactionRowList) {
         for(TransactionRow transactionRow : transactionRowList) {
             mDaoSession.getTransactionRowDao().insertOrReplace(transactionRow);
         }

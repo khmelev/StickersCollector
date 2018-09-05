@@ -17,17 +17,22 @@ import ru.av3969.stickerscollector.ui.vo.StickerVO;
 
 public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapter.ViewHolder> {
 
+    public static int ONLY_POSITIVE_MODE = 1;
+    public static int CHECK_REMAINS_MODE = 2;
+    public static int EDIT_TRANS_MODE = 3;
+
     private List<StickerVO> stickers;
 
-    private Boolean checkRemains = false;
+    private int mode;
 
     StickersListAdapter(List<StickerVO> stickers) {
         this.stickers = stickers;
+        this.mode = ONLY_POSITIVE_MODE;
     }
 
-    StickersListAdapter(List<StickerVO> stickers, Boolean checkRemains) {
+    StickersListAdapter(List<StickerVO> stickers, int mode) {
         this(stickers);
-        this.checkRemains = checkRemains;
+        this.mode = mode;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -49,23 +54,24 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
             super(itemView);
             ButterKnife.bind(this, itemView);
             btPlus.setOnClickListener(l -> {
-                StickerVO stiker = stickers.get(getAdapterPosition());
-                StickerVO linkedSticker = stiker.getLinkedSticker();
-                if(checkRemains) {
-                    if(linkedSticker != null && linkedSticker.getQuantity() > stiker.getQuantity())
-                        stiker.incQuantity();
+                StickerVO sticker = stickers.get(getAdapterPosition());
+                if(mode == CHECK_REMAINS_MODE) {
+                    StickerVO linkedSticker = sticker.getLinkedSticker();
+                    if(linkedSticker != null && linkedSticker.getQuantity() > sticker.getQuantity())
+                        sticker.incQuantity();
                 } else {
-                    stiker.incQuantity();
+                    sticker.incQuantity();
                 }
-
-                quantity.setText(String.valueOf(stiker.getQuantity()));
+                quantity.setText(String.valueOf(sticker.getQuantity()));
             });
             btMinus.setOnClickListener(l -> {
                 StickerVO stiker = stickers.get(getAdapterPosition());
-                if(stiker.getQuantity() > 0) {
+                if(mode == EDIT_TRANS_MODE) {
                     stiker.decQuantity();
-                    quantity.setText(String.valueOf(stiker.getQuantity()));
+                } else if(stiker.getQuantity() > 0) {
+                    stiker.decQuantity();
                 }
+                quantity.setText(String.valueOf(stiker.getQuantity()));
             });
         }
     }
@@ -107,7 +113,4 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
         notifyDataSetChanged();
     }
 
-    public List<StickerVO> getDataSet() {
-        return stickers;
-    }
 }

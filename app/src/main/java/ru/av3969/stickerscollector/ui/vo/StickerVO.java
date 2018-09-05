@@ -128,8 +128,16 @@ public class StickerVO {
         return quantity;
     }
 
+    public void setQuantity(Short quantity) {
+        this.quantity = quantity;
+    }
+
     public Short getStartQuantity() {
         return startQuantity;
+    }
+
+    public void setStartQuantity(Short startQuantity) {
+        this.startQuantity = startQuantity;
     }
 
     public void flushStartQuantity() {
