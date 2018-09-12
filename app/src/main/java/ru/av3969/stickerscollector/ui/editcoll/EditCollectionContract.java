@@ -26,16 +26,18 @@ public interface EditCollectionContract {
         void showIncomeStickers(List<StickerVO> stickers);
         void showOutlayStickers(List<StickerVO> stickers, String comment);
         void showMsg(CharSequence msg);
-        void showTransactionRow(List<StickerVO> stickers);
+        void showTransactionRow(List<StickerVO> stickers, TransactionVO transaction);
         void showAvailableStickersAsText(CharSequence text);
         String getStringFromRes(@StringRes int resId);
     }
 
     interface Presenter {
+        Long getCollectionId();
+        Long getParentCollection();
         void setView(View view);
         void loadCollectionHead(Long parentCollection, Long collectionId);
-        void loadStickersList(Long parentCollection, Long collectionId);
-        void loadTransactionList(Long collectionId);
+        void loadStickersList();
+        void loadTransactionList(Boolean forceLoad);
         void loadTransactionRowList(TransactionVO transaction);
         void saveTransactionRows();
         void saveCollection();

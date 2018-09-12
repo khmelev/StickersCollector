@@ -6,6 +6,8 @@ import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
+import ru.av3969.stickerscollector.ui.vo.CollectionVO;
+
 @Entity
 public class DepositoryCollection {
 
@@ -46,6 +48,15 @@ public class DepositoryCollection {
 
     @Generated(hash = 1179574680)
     public DepositoryCollection() {
+    }
+
+    public DepositoryCollection(CollectionVO collectionVO) {
+        this(collectionVO.getId(),
+                collectionVO.getCollectionId(),
+                collectionVO.getTitle(),
+                0L,
+                collectionVO.getUnique(),
+                collectionVO.getQuantity());
     }
 
     public Long getId() {

@@ -28,7 +28,6 @@ import ru.av3969.stickerscollector.data.remote.LaststickerHelper;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 import ru.av3969.stickerscollector.ui.vo.TransactionVO;
-import ru.av3969.stickerscollector.utils.Maper;
 
 public class AppDataManager implements DataManager {
 
@@ -121,10 +120,12 @@ public class AppDataManager implements DataManager {
             }
 
             //Загрузка списка стикеров из депозитория и помещение в LongSparseArray для быстрого поиска по ключу
-            List<DepositoryStickers> depositoryStickers = dbHelper.selectDepositoryStickersList(depCollectionId);
-             if(!depositoryStickers.isEmpty()) {
-                for (DepositoryStickers depSticker : depositoryStickers) {
-                    depositoryStickersMap.put(depSticker.getStickerId(), depSticker);
+            if (depCollectionId != null) {
+                List<DepositoryStickers> depositoryStickers = dbHelper.selectDepositoryStickersList(depCollectionId);
+                if(!depositoryStickers.isEmpty()) {
+                    for (DepositoryStickers depSticker : depositoryStickers) {
+                        depositoryStickersMap.put(depSticker.getStickerId(), depSticker);
+                    }
                 }
             }
 
@@ -160,7 +161,7 @@ public class AppDataManager implements DataManager {
     private void saveCollectionNow(CollectionVO collectionVO, List<StickerVO> stickersVO, Transaction transaction) {
         if(collectionVO.isNew()) {
             //Записываем коллекцию
-            collectionVO.setId(dbHelper.insertDepositoryCollection(Maper.toDepositoryCollection(collectionVO)));
+            collectionVO.setId(dbHelper.insertDepositoryCollection(new DepositoryCollection(collectionVO)));
         }
 
         //Находим измененные стикеры, маркером того что стикер нужно записать является
@@ -177,7 +178,7 @@ public class AppDataManager implements DataManager {
 
                 DepositoryStickers depSticker = stickerVO.getDepSticker();
                 if(depSticker == null) {
-                    depSticker = Maper.toDepositoryStickers(stickerVO);
+                    depSticker = new DepositoryStickers(stickerVO);
                     depSticker.setOwnerId(collectionVO.getId());
                     stickerVO.setDepSticker(depSticker);
                     newStickersVO.add(stickerVO);

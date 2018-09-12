@@ -144,6 +144,7 @@ public class AppDbHelper implements DbHelper {
     public List<Transaction> selectTransactionList(Long collectionId) {
         return mDaoSession.getTransactionDao().queryBuilder()
                 .where(TransactionDao.Properties.CollectionId.eq(collectionId))
+                .orderDesc(TransactionDao.Properties.Id)
                 .list();
     }
 

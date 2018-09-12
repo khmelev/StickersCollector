@@ -24,6 +24,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     private List<StickerVO> stickersVO;
     private List<StickerVO> incomeStickersVO;
     private List<StickerVO> outlayStickersVO;
+    private List<TransactionVO> transactionsVO;
     private TransactionVO currTransaction;
     private List<StickerVO> currTransactionStickers;
 
@@ -40,12 +41,25 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
+    public Long getCollectionId() {
+        return collectionVO.getId();
+    }
+
+    @Override
+    public Long getParentCollection() {
+        return collectionVO.getCollectionId();
+    }
+
+    @Override
     public void setView(EditCollectionContract.View view) {
         this.view = view;
     }
 
     @Override
     public void loadCollectionHead(Long parentCollection, Long collectionId) {
+        //Создадим простой объект, что бы параллельно загружались стикеры, позже он обновится
+        collectionVO = new CollectionVO(collectionId, parentCollection);
+
         compositeDisposable.add(
                 dataManager.loadCollectionVO(parentCollection, collectionId)
                 .subscribeOn(schedulerProvider.io())
@@ -57,14 +71,14 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
-    public void loadStickersList(Long parentCollection, Long collectionId) {
-        if (stickersVO != null) {
+    public void loadStickersList() {
+        if (stickersVO != null && !stickersVO.isEmpty()) {
             view.updateStickersList(stickersVO);
             return;
         }
         view.showLoading();
         compositeDisposable.add(
-                dataManager.loadStickerVOList(parentCollection, collectionId)
+                dataManager.loadStickerVOList(getParentCollection(), getCollectionId())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(stickers -> {
@@ -89,13 +103,20 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
-    public void loadTransactionList(Long collectionId) {
+    public void loadTransactionList(Boolean forceLoad) {
+        if (!forceLoad && transactionsVO != null && !transactionsVO.isEmpty()) {
+            view.updateTransactionList(transactionsVO);
+            return;
+        }
+        view.showLoading();
         compositeDisposable.add(
-                dataManager.loadTransactionList(collectionId)
+                dataManager.loadTransactionList(getCollectionId())
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(transactions -> {
+                            this.transactionsVO = transactions;
                             view.updateTransactionList(transactions);
+                            view.hideLoading();
                         })
         );
     }
@@ -109,7 +130,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                         .observeOn(schedulerProvider.ui())
                         .subscribe(stickers -> {
                             this.currTransactionStickers = stickers;
-                            view.showTransactionRow(stickers);
+                            view.showTransactionRow(stickers, transaction);
                         })
         );
     }

@@ -102,11 +102,11 @@
         android:id="@+id/floatingActionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        app:layout_anchor="@id/viewpager"
-        app:layout_anchorGravity="bottom|right|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_stickers_as_text" />
+        android:clickable="true"
+        android:src="@drawable/ic_stickers_as_text"
+        app:layout_anchor="@id/viewpager"
+        app:layout_anchorGravity="bottom|center_horizontal" />
 
 
 </android.support.design.widget.CoordinatorLayout>

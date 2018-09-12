@@ -29,10 +29,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.internal.operators.flowable.FlowableAllSingle;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
-import ru.av3969.stickerscollector.data.db.entity.Transaction;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
 import ru.av3969.stickerscollector.ui.main.MainActivity;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
@@ -41,13 +39,18 @@ import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 
 public class EditCollectionActivity extends BaseActivity implements EditCollectionContract.View, EditCollectionActivityCallback {
 
-    public static final String PARENT_COLLECTION = "parentCollection";
-    public static final String COLLECTION_ID = "collectionId";
+    public static final String PARENT_COLLECTION    = "parentCollection";
+    public static final String COLLECTION_ID        = "collectionId";
 
-    private Long parentCollection;
-    private Long collectionId;
+    public static final int STICKERS_PAGE       = 0;
+    public static final int INCOME_PAGE         = 1;
+    public static final int OUTLAY_PAGE         = 2;
+    public static final int TRANSACTIONS_PAGE   = 3;
 
-    private Adapter pagerAdapter;
+    public static final int FIRST_SCREEN        = 1;
+    public static final int SECOND_SCREEN       = 2;
+
+    private PagerAdapter pagerAdapter;
 
     @Inject
     EditCollectionContract.Presenter presenter;
@@ -86,34 +89,33 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_collection);
+        ButterKnife.bind(this);
 
         getActivityComponent().inject(this);
 
         presenter.setView(this);
 
         if (savedInstanceState != null) {
-            parentCollection = savedInstanceState.getLong(PARENT_COLLECTION, 0L);
-            collectionId = savedInstanceState.getLong(COLLECTION_ID, 0L);
+            presenter.loadCollectionHead(savedInstanceState.getLong(PARENT_COLLECTION, 0L),
+                                            savedInstanceState.getLong(COLLECTION_ID, 0L));
         } else {
             Intent intent = getIntent();
-            parentCollection = intent.getLongExtra(PARENT_COLLECTION, 0L);
-            collectionId = intent.getLongExtra(COLLECTION_ID, 0L);
+            presenter.loadCollectionHead(intent.getLongExtra(PARENT_COLLECTION, 0L),
+                                            intent.getLongExtra(COLLECTION_ID, 0L));
         }
-
-        ButterKnife.bind(this);
 
         // Set up the toolbar.
         setSupportActionBar(mToolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
-            ab.setTitle(R.string.collection);
+            ab.setDisplayShowTitleEnabled(false);
         }
 
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
 
-        setupFAB();
+        setupFabClickListener();
     }
 
     @Override
@@ -123,8 +125,6 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
         miSave = menu.findItem(R.id.miSave);
-
-        presenter.loadCollectionHead(parentCollection, collectionId);
 
         return true;
     }
@@ -141,8 +141,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putLong(PARENT_COLLECTION, parentCollection);
-        outState.putLong(COLLECTION_ID, collectionId);
+        outState.putLong(PARENT_COLLECTION, presenter.getParentCollection());
+        outState.putLong(COLLECTION_ID, presenter.getCollectionId());
         super.onSaveInstanceState(outState);
     }
 
@@ -154,12 +154,16 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @Override
     public void loadStickersList() {
-        presenter.loadStickersList(parentCollection, collectionId);
+        presenter.loadStickersList();
     }
 
     @Override
     public void loadTransactionList() {
-        presenter.loadTransactionList(collectionId);
+        presenter.loadTransactionList(false);
+    }
+
+    public void loadTransactionList(Boolean forceLoad) {
+        presenter.loadTransactionList(forceLoad);
     }
 
     @Override
@@ -227,6 +231,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     public void transactionSaved() {
         Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
         viewPager.setCurrentItem(pagerAdapter.getCount() - 1, true);
+        loadTransactionList(true);
     }
 
     @Override
@@ -295,10 +300,10 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
-    public void showTransactionRow(List<StickerVO> stickers) {
+    public void showTransactionRow(List<StickerVO> stickers, TransactionVO transaction) {
         Fragment fragment = pagerAdapter.getItem(TransactionListFragment.class);
         if (fragment != null) {
-            ((TransactionListFragment)fragment).showTransactionRow(stickers);
+            ((TransactionListFragment)fragment).showTransactionRow(stickers, transaction);
         }
     }
 
@@ -316,27 +321,106 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         }
     }
 
+    private void setupFabClickListener() {
+        floatingActionButton.setOnClickListener(l -> {
+            int position = viewPager.getCurrentItem();
+            Fragment fragment = pagerAdapter.getPageFragment(position);
+            if(fragment == null) return;
+
+            switch (position) {
+                case STICKERS_PAGE:
+                    ((StickersListFragment) fragment).switchScreen();
+                    break;
+                case INCOME_PAGE:
+                case OUTLAY_PAGE:
+                    switch (getFragmentScreenNumber(position)) {
+                        case FIRST_SCREEN:
+                            ((IncomeOutlayFragment)fragment).checkIncomeOutlayStickers();
+                            break;
+                        case SECOND_SCREEN:
+                            ((IncomeOutlayFragment)fragment).acceptIncomeOutlayStickers();
+                            break;
+                    }
+                    break;
+                case TRANSACTIONS_PAGE:
+                    ((TransactionListFragment) fragment).saveTransactionRows();
+                    break;
+            }
+            setupFabVisibility(position);
+        });
+    }
+
+    private void setupFabVisibility(int position) {
+        switch (position) {
+            case STICKERS_PAGE:
+                floatingActionButton.setVisibility(View.VISIBLE);
+                switch (getFragmentScreenNumber(position)) {
+                    case FIRST_SCREEN:
+                        floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_stickers_as_text));
+                        break;
+                    case SECOND_SCREEN:
+                        floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_stickers_as_list));
+                        break;
+                }
+                break;
+            case INCOME_PAGE:
+            case OUTLAY_PAGE:
+                floatingActionButton.setVisibility(View.VISIBLE);
+                switch (getFragmentScreenNumber(position)) {
+                    case FIRST_SCREEN:
+                        floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_stickers_as_list));
+                        break;
+                    case SECOND_SCREEN:
+                        floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
+                        break;
+                }
+                break;
+            case TRANSACTIONS_PAGE:
+                switch (getFragmentScreenNumber(position)) {
+                    case FIRST_SCREEN:
+                        floatingActionButton.setVisibility(View.INVISIBLE);
+                        break;
+                    case SECOND_SCREEN:
+                        floatingActionButton.setVisibility(View.VISIBLE);
+                        floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_check));
+                        break;
+                }
+                break;
+            default:
+                floatingActionButton.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void updateFabVisibility() {
+        setupFabVisibility(viewPager.getCurrentItem());
+    }
+
+    private int getFragmentScreenNumber(int position) {
+        Fragment fragment = pagerAdapter.getPageFragment(position);
+        if(fragment == null) return 0;
+        switch (position) {
+            case STICKERS_PAGE:
+                return ((StickersListFragment) fragment).getCurrentScreenNumber();
+            case INCOME_PAGE:
+            case OUTLAY_PAGE:
+                return ((IncomeOutlayFragment) fragment).getCurrentScreenNumber();
+            case TRANSACTIONS_PAGE:
+                return ((TransactionListFragment) fragment).getCurrentScreenNumber();
+        }
+        return 0;
+    }
+
     private void setupViewPager(ViewPager viewPager) {
 
-        String[] mFragmentTitles = {
-                getResources().getString(R.string.list),
-                getResources().getString(R.string.income),
-                getResources().getString(R.string.outlay),
-                getResources().getString(R.string.transactions)
-        };
-        pagerAdapter = new Adapter(getSupportFragmentManager(), mFragmentTitles);
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                switch (position) {
-                    case 0:
-                        floatingActionButton.setVisibility(View.VISIBLE);
-                        break;
-                    default:
-                        floatingActionButton.setVisibility(View.INVISIBLE);
-                }
+                setupFabVisibility(position);
             }
 
             @Override
@@ -352,26 +436,18 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     }
 
-    private void setupFAB() {
-        floatingActionButton.setOnClickListener(l -> {
-            switch (viewPager.getCurrentItem()) {
-                case 0:
-                    Fragment fragment = pagerAdapter.getItem(StickersListFragment.class);
-                    if (fragment != null) {
-                        ((StickersListFragment) fragment).toogleView();
-                    }
-                    break;
-            }
-        });
-    }
+    class PagerAdapter extends FragmentPagerAdapter {
 
-    static class Adapter extends FragmentPagerAdapter {
         private Fragment[] mFragments = new Fragment[4];
-        private String[] mFragmentTitles;
+        private String[] mFragmentTitles= {
+                getStringFromRes(R.string.list),
+                getStringFromRes(R.string.income),
+                getStringFromRes(R.string.outlay),
+                getStringFromRes(R.string.transactions)
+        };
 
-        public Adapter(FragmentManager fm, String[] mFragmentTitles) {
+        public PagerAdapter(FragmentManager fm) {
             super(fm);
-            this.mFragmentTitles = mFragmentTitles;
         }
 
         public Fragment getItem(Class klass) {
@@ -382,22 +458,26 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
             return null;
         }
 
+        public Fragment getPageFragment(int position) {
+            return mFragments[position];
+        }
+
         @Override
         public Fragment getItem(int position) {
             Fragment frag = mFragments[position];
             if (frag == null)
             {
                 switch (position) {
-                    case 0:
+                    case STICKERS_PAGE:
                         frag = new StickersListFragment();
                         break;
-                    case 1:
+                    case INCOME_PAGE:
                         frag = IncomeOutlayFragment.newIncomeFragment();
                         break;
-                    case 2:
+                    case OUTLAY_PAGE:
                         frag = IncomeOutlayFragment.newOutlayFragment();
                         break;
-                    case 3:
+                    case TRANSACTIONS_PAGE:
                         frag = new TransactionListFragment();
                         break;
                 }

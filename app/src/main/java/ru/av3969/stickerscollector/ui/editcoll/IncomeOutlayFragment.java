@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -43,14 +44,11 @@ public class IncomeOutlayFragment extends BaseFragment {
     @BindView(R.id.inputStickerList)
     EditText inputStickerList;
 
-    @BindView(R.id.buttonCheck)
-    Button buttonCheck;
+    @BindView(R.id.backButton)
+    ImageButton backButton;
 
-    @BindView(R.id.buttonAccept)
-    Button buttonAccept;
-
-    @BindView(R.id.buttonDismiss)
-    Button buttonDismiss;
+    @BindView(R.id.transTitleText)
+    TextView transTitleText;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -108,27 +106,12 @@ public class IncomeOutlayFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
 
-        if(mode == OUTLAY_MODE) buttonAccept.setText(R.string.outlay);
-
         setupRecyclerView();
 
-        buttonCheck.setOnClickListener(v -> {
-            if (getContext() != null && getView() != null)
-                SoftKeyboard.hide(getContext(), getView());
-            if (incomeMode())
-                activityCallback.parseIncomeStickers(inputStickerList.getText());
-            else
-                activityCallback.parseOutlayStickers(inputStickerList.getText());
+        backButton.setOnClickListener(v -> {
+            viewFlipper.showPrevious();
+            activityCallback.updateFabVisibility();
         });
-
-        buttonAccept.setOnClickListener(v -> {
-            if(incomeMode())
-                activityCallback.commitIncomeStickers(inputTransTitle.getText());
-            else
-                activityCallback.commitOutlayStickers(inputTransTitle.getText());
-        });
-
-        buttonDismiss.setOnClickListener(v -> viewFlipper.showPrevious());
     }
 
     private void setupRecyclerView() {
@@ -142,6 +125,7 @@ public class IncomeOutlayFragment extends BaseFragment {
     public void showParsedStickers(List<StickerVO> stickers) {
         adapter.replaceDataSet(stickers);
         viewFlipper.showNext();
+        activityCallback.updateFabVisibility();
     }
 
     public void showParsedStickers(List<StickerVO> stickers, String comment) {
@@ -156,5 +140,27 @@ public class IncomeOutlayFragment extends BaseFragment {
             });
         }
         showParsedStickers(stickers);
+    }
+
+    public void checkIncomeOutlayStickers() {
+        transTitleText.setText(inputTransTitle.getText());
+        if (getContext() != null && getView() != null)
+            SoftKeyboard.hide(getContext(), getView());
+        if (incomeMode())
+            activityCallback.parseIncomeStickers(inputStickerList.getText());
+        else
+            activityCallback.parseOutlayStickers(inputStickerList.getText());
+    }
+
+    public void acceptIncomeOutlayStickers() {
+        if(incomeMode())
+            activityCallback.commitIncomeStickers(inputTransTitle.getText());
+        else
+            activityCallback.commitOutlayStickers(inputTransTitle.getText());
+    }
+
+    public int getCurrentScreenNumber() {
+        return viewFlipper.getCurrentView().getId() == R.id.screen1
+                ? 1 : 2;
     }
 }

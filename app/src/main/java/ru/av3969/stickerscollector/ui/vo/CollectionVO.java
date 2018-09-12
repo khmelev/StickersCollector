@@ -17,6 +17,18 @@ public class CollectionVO {
     private Short unique;
     private Integer quantity;
 
+    public CollectionVO(Long id, Long collectionId) {
+        this.id = id;
+        this.collectionId = collectionId;
+        this.title = "";
+        this.year = 0;
+        this.stype = 0;
+        this.size = 0;
+        this.desc = "";
+        this.unique = 0;
+        this.quantity = 0;
+    }
+
     public CollectionVO(CatalogCollection catCollection, DepositoryCollection depCollection) {
         this.id = depCollection.getId();
         this.collectionId = catCollection.getId();

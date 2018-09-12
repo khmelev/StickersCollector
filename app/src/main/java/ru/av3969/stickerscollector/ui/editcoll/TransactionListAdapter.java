@@ -48,17 +48,26 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         @BindView(R.id.tranStickerList)
         TextView tranStickerList;
 
+        View.OnClickListener editTransClickListener;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            transDescription.setOnClickListener(v -> {
-                if (clickTitleListener != null) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        clickTitleListener.loadTransactionRow(transactions.get(position));
+
+            editTransClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (clickTitleListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            clickTitleListener.loadTransactionRow(transactions.get(position));
+                        }
                     }
                 }
-            });
+            };
+            transDescription.setOnClickListener(editTransClickListener);
+            tranStickerList.setOnClickListener(editTransClickListener);
+
             tranStickerList.setOnLongClickListener(v -> {
                 if (clickStickerListener != null) {
                     clickStickerListener.copyToClipboard(tranStickerList.getText());

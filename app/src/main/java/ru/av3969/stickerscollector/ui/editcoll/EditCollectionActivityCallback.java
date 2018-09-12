@@ -18,4 +18,5 @@ public interface EditCollectionActivityCallback {
     void saveTransactionRows();
     void assembleStickersAsText();
     void copyTextToClipboard(CharSequence text);
+    void updateFabVisibility();
 }

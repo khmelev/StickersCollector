@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
@@ -39,11 +41,11 @@ public class TransactionListFragment extends BaseFragment {
     @BindView(R.id.trans_row_recycler_view)
     RecyclerView transRowRecyclerView;
 
-    @BindView(R.id.buttonAccept)
-    Button buttonAccept;
+    @BindView(R.id.backButton)
+    ImageButton backButton;
 
-    @BindView(R.id.buttonDismiss)
-    Button buttonDismiss;
+    @BindView(R.id.transTitleText)
+    TextView transTitleText;
 
     @Override
     public void onAttach(Context context) {
@@ -66,14 +68,13 @@ public class TransactionListFragment extends BaseFragment {
 
         setupRecyclerView();
 
+        backButton.setOnClickListener(v -> {
+            viewFlipper.showPrevious();
+            activityCallback.updateFabVisibility();
+        });
+
         activityCallback.loadTransactionList();
 
-        buttonDismiss.setOnClickListener(v -> viewFlipper.showPrevious());
-
-        buttonAccept.setOnClickListener(v -> {
-            activityCallback.saveTransactionRows();
-            viewFlipper.showPrevious();
-        });
     }
 
     public void updateTransactionList(List<TransactionVO> transactionList) {
@@ -81,9 +82,17 @@ public class TransactionListFragment extends BaseFragment {
             transactionListAdapter.replaceDataSet(transactionList);
     }
 
-    public void showTransactionRow(List<StickerVO> stickers) {
+    public void showTransactionRow(List<StickerVO> stickers, TransactionVO transaction) {
         stickersListAdapter.replaceDataSet(stickers);
         viewFlipper.showNext();
+        transTitleText.setText(transaction.getTitle());
+        activityCallback.updateFabVisibility();
+    }
+
+    public void saveTransactionRows() {
+        activityCallback.saveTransactionRows();
+        viewFlipper.showPrevious();
+        activityCallback.updateFabVisibility();
     }
 
     private void setupRecyclerView() {
@@ -97,5 +106,10 @@ public class TransactionListFragment extends BaseFragment {
         stickersListAdapter = new StickersListAdapter(new ArrayList<>(), StickersListAdapter.EDIT_TRANS_MODE);
         transRowRecyclerView.setAdapter(stickersListAdapter);
         transRowRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    public int getCurrentScreenNumber() {
+        return viewFlipper.getCurrentView().getId() == R.id.trans_recycler_view
+                ? 1 : 2;
     }
 }

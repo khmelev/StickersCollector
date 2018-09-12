@@ -59,6 +59,11 @@ public class StickersListFragment extends BaseFragment {
         setupRecyclerView();
 
         activityCallback.loadStickersList();
+
+        stickersAsText.setOnLongClickListener(v -> {
+            activityCallback.copyTextToClipboard(stickersAsText.getText());
+            return true;
+        });
     }
 
     @Override
@@ -77,11 +82,16 @@ public class StickersListFragment extends BaseFragment {
             adapter.replaceDataSet(stickers);
     }
 
-    public void toogleView() {
-        if(viewFlipper.getCurrentView().getId() == R.id.recycler_view) {
+    public void switchScreen() {
+        if(getCurrentScreenNumber() == 1) {
             activityCallback.assembleStickersAsText();
         }
         viewFlipper.showNext();
+    }
+
+    public int getCurrentScreenNumber() {
+        return viewFlipper.getCurrentView().getId() == R.id.recycler_view
+                ? 1 : 2;
     }
 
     public void showAvailableStickersAsText(CharSequence text) {

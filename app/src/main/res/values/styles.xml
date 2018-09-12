@@ -26,16 +26,16 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="Subhead" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="Small" parent="TextAppearance.AppCompat.Small">
         <item name="android:textColor">@color/almostWhite1</item>
     </style>
 
     <style name="Body1" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textColor">@color/almostWhite1</item>
-    </style>
-
-    <style name="Body1Red" parent="TextAppearance.AppCompat.Body1">
-        <item name="android:textColor">@color/red</item>
     </style>
 
     <style name="FAB" parent="Widget.Design.FloatingActionButton">
