@@ -25,8 +25,8 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     private List<StickerVO> incomeStickersVO;
     private List<StickerVO> outlayStickersVO;
     private List<TransactionVO> transactionsVO;
-    private TransactionVO currTransaction;
-    private List<StickerVO> currTransactionStickers;
+    private TransactionVO currTransactionVO;
+    private List<StickerVO> currTransactionStickersVO;
 
     private DataManager dataManager;
     private SchedulerProvider schedulerProvider;
@@ -76,7 +76,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
             view.updateStickersList(stickersVO);
             return;
         }
-        view.showLoading();
+        view.showLoading(0);
         compositeDisposable.add(
                 dataManager.loadStickerVOList(getParentCollection(), getCollectionId())
                 .subscribeOn(schedulerProvider.io())
@@ -92,7 +92,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     @Override
     public void saveCollection() {
         if (collectionVO != null && stickersVO != null) {
-            view.showLoading();
+            view.showLoading(0);
             compositeDisposable.add(
                     dataManager.saveCollection(collectionVO, stickersVO, new Transaction(view.getStringFromRes(R.string.manual_correction)))
                             .subscribeOn(schedulerProvider.io())
@@ -108,7 +108,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
             view.updateTransactionList(transactionsVO);
             return;
         }
-        view.showLoading();
+        view.showLoading(3);
         compositeDisposable.add(
                 dataManager.loadTransactionList(getCollectionId())
                         .subscribeOn(schedulerProvider.io())
@@ -123,13 +123,13 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
 
     @Override
     public void loadTransactionRowList(TransactionVO transaction) {
-        this.currTransaction = transaction;
+        this.currTransactionVO = transaction;
         compositeDisposable.add(
                 dataManager.loadTransactionRowList(transaction)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(stickers -> {
-                            this.currTransactionStickers = stickers;
+                            this.currTransactionStickersVO = stickers;
                             view.showTransactionRow(stickers, transaction);
                         })
         );
@@ -138,10 +138,13 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     @Override
     public void saveTransactionRows() {
         compositeDisposable.add(
-                dataManager.saveTransactionRowList(collectionVO, stickersVO, currTransaction, currTransactionStickers)
+                dataManager.saveTransactionRowList(collectionVO, stickersVO, currTransactionVO, currTransactionStickersVO)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(() -> view.showMsg(view.getStringFromRes(R.string.saved)))
+                        .subscribe(() -> {
+                            view.showMsg(view.getStringFromRes(R.string.saved));
+                            loadTransactionList(true);
+                        })
         );
     }
 
@@ -195,6 +198,8 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
 
     @Override
     public void commitIncomeStickers(CharSequence transTitle) {
+        view.showLoading(1);
+
         for (StickerVO incomeSticker : incomeStickersVO) {
             StickerVO stickerVO = incomeSticker.getLinkedSticker();
             if (stickerVO != null) {
@@ -205,12 +210,17 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                 dataManager.saveCollection(collectionVO, stickersVO, new Transaction(TextUtils.isEmpty(transTitle) ? view.getStringFromRes(R.string.income) : transTitle.toString()))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(() -> view.transactionSaved())
+                        .subscribe(() -> {
+                            view.transactionSaved();
+                            view.hideLoading();
+                        })
         );
     }
 
     @Override
     public void commitOutlayStickers(CharSequence transTitle) {
+        view.showLoading(2);
+
         for (StickerVO outlaySticker : outlayStickersVO) {
             StickerVO stickerVO = outlaySticker.getLinkedSticker();
             if (stickerVO != null) {
@@ -221,7 +231,10 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                 dataManager.saveCollection(collectionVO, stickersVO, new Transaction(TextUtils.isEmpty(transTitle) ? view.getStringFromRes(R.string.outlay) : transTitle.toString()))
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(() -> view.transactionSaved())
+                        .subscribe(() -> {
+                            view.transactionSaved();
+                            view.hideLoading();
+                        })
         );
     }
 
@@ -259,9 +272,5 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     public void onDestroy() {
         compositeDisposable.clear();
         view = null;
-        collectionVO = null;
-        stickersVO = null;
-        incomeStickersVO = null;
-        outlayStickersVO = null;
     }
 }

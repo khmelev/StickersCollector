@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -25,13 +26,13 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
 
     private int mode;
 
-    StickersListAdapter(List<StickerVO> stickers) {
-        this.stickers = stickers;
-        this.mode = ONLY_POSITIVE_MODE;
+    StickersListAdapter() {
+        stickers = new ArrayList<>();
+        mode = ONLY_POSITIVE_MODE;
     }
 
-    StickersListAdapter(List<StickerVO> stickers, int mode) {
-        this(stickers);
+    StickersListAdapter(int mode) {
+        this();
         this.mode = mode;
     }
 

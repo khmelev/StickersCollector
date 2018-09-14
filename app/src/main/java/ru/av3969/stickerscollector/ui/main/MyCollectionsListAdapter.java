@@ -5,8 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,8 +25,10 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
 
     private OnItemClickListener listener;
 
-    MyCollectionsListAdapter(List<CollectionVO> collections) {
-        this.collections = collections;
+    private boolean editMode = false;
+
+    MyCollectionsListAdapter() {
+        collections = new ArrayList<>();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -37,9 +42,13 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
         @BindView(R.id.quantity)
         TextView quantity;
 
+        @BindView(R.id.imageMenu)
+        ImageView imageMenu;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
             itemView.setOnClickListener(l -> {
                 if (listener != null) {
                     int position = getAdapterPosition();
@@ -66,6 +75,8 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
         holder.textStickersOrCards.setText(collection.getStype().equals(CatalogCollection.stickerType)
                 ? R.string.quantity_of_stickers : R.string.quantity_of_cards);
         holder.quantity.setText(String.format(Locale.getDefault(),"%d (%d)", collection.getUnique(), collection.getQuantity()));
+
+        holder.imageMenu.setVisibility(editMode ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -78,6 +89,21 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
         notifyDataSetChanged();
     }
 
+    public void swapItem(int from, int to) {
+        Collections.swap(collections, from, to);
+        notifyItemMoved(from, to);
+    }
+
+    public void removeItem(int pos) {
+        collections.remove(pos);
+        notifyItemRemoved(pos);
+    }
+
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+        notifyDataSetChanged();
+    }
+
     public interface OnItemClickListener {
         void onItemClick(Long parentCollectionId, Long collectionId);
     }
@@ -85,4 +111,5 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
+
 }

@@ -1,5 +1,6 @@
 package ru.av3969.stickerscollector.data.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -142,7 +143,7 @@ public class AppDbHelper implements DbHelper {
 
     @Override
     public List<Transaction> selectTransactionList(Long collectionId) {
-        return mDaoSession.getTransactionDao().queryBuilder()
+        return collectionId==null ? new ArrayList<>() : mDaoSession.getTransactionDao().queryBuilder()
                 .where(TransactionDao.Properties.CollectionId.eq(collectionId))
                 .orderDesc(TransactionDao.Properties.Id)
                 .list();

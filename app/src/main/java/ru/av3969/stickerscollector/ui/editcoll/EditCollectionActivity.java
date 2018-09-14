@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.internal.Utils;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
@@ -36,6 +38,7 @@ import ru.av3969.stickerscollector.ui.main.MainActivity;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 import ru.av3969.stickerscollector.ui.vo.TransactionVO;
+import ru.av3969.stickerscollector.utils.SoftKeyboard;
 
 public class EditCollectionActivity extends BaseActivity implements EditCollectionContract.View, EditCollectionActivityCallback {
 
@@ -81,6 +84,9 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @BindView(R.id.floatingActionButton)
     FloatingActionButton floatingActionButton;
+
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
 
     MenuItem miActionProgressItem;
     MenuItem miSave;
@@ -196,23 +202,28 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
-    public void showLoading() {
-        if (miActionProgressItem != null) {
-            miActionProgressItem.setVisible(true);
+    public void showLoading(int page) {
+        if(page != viewPager.getCurrentItem())
+            return;
+
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
         }
-        if (miSave != null) {
-            miSave.setVisible(false);
-        }
+        updateFabVisibility();
+//        if (miSave != null) {
+//            miSave.setVisible(false);
+//        }
     }
 
     @Override
     public void hideLoading() {
-        if (miActionProgressItem != null) {
-            miActionProgressItem.setVisible(false);
+        if (progressBar != null) {
+            progressBar.setVisibility(View.INVISIBLE);
         }
-        if (miSave != null) {
-            miSave.setVisible(true);
-        }
+        updateFabVisibility();
+//        if (miSave != null) {
+//            miSave.setVisible(true);
+//        }
     }
 
     @Override
@@ -351,6 +362,10 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     private void setupFabVisibility(int position) {
+        if(progressBar.getVisibility() == View.VISIBLE) {
+            floatingActionButton.setVisibility(View.INVISIBLE);
+            return;
+        }
         switch (position) {
             case STICKERS_PAGE:
                 floatingActionButton.setVisibility(View.VISIBLE);
@@ -411,6 +426,14 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         return 0;
     }
 
+    private void closeSoftKeyboard(int position) {
+        switch (position) {
+            case STICKERS_PAGE:
+            case TRANSACTIONS_PAGE:
+                SoftKeyboard.hide(this);
+        }
+    }
+
     private void setupViewPager(ViewPager viewPager) {
 
         pagerAdapter = new PagerAdapter(getSupportFragmentManager());
@@ -420,17 +443,16 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                setupFabVisibility(position);
             }
 
             @Override
             public void onPageSelected(int position) {
-
+                setupFabVisibility(position);
+                closeSoftKeyboard(position);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
 

@@ -12,7 +12,7 @@ public interface MyCollectionsListContract {
 
     interface Presenter {
         void setView(View view);
-        void loadCollectionsList();
+        void loadCollectionsList(boolean forceLoad);
         void onDestroy();
     }
 

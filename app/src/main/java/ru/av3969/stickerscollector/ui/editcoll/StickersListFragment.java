@@ -72,7 +72,7 @@ public class StickersListFragment extends BaseFragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new StickersListAdapter(new ArrayList<>());
+        adapter = new StickersListAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }

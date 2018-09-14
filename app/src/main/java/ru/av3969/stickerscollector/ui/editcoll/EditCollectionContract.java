@@ -19,7 +19,7 @@ public interface EditCollectionContract {
         void updateCollectionHead(CollectionVO collectionVO);
         void updateStickersList(List<StickerVO> stickers);
         void updateTransactionList(List<TransactionVO> transactionList);
-        void showLoading();
+        void showLoading(int page);
         void hideLoading();
         void collectionSaved();
         void transactionSaved();

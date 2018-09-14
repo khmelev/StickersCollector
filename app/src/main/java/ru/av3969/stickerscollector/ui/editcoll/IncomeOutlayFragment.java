@@ -115,9 +115,9 @@ public class IncomeOutlayFragment extends BaseFragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new StickersListAdapter(new ArrayList<>(), mode == OUTLAY_MODE
-                                                            ? StickersListAdapter.CHECK_REMAINS_MODE
-                                                            : StickersListAdapter.ONLY_POSITIVE_MODE);
+        adapter = new StickersListAdapter(mode == OUTLAY_MODE
+                                            ? StickersListAdapter.CHECK_REMAINS_MODE
+                                            : StickersListAdapter.ONLY_POSITIVE_MODE);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }

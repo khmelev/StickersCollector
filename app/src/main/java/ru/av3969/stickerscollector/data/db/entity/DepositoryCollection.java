@@ -51,7 +51,7 @@ public class DepositoryCollection {
     }
 
     public DepositoryCollection(CollectionVO collectionVO) {
-        this(collectionVO.getId(),
+        this(collectionVO.getId() == 0L ? null : collectionVO.getId(),
                 collectionVO.getCollectionId(),
                 collectionVO.getTitle(),
                 0L,

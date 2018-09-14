@@ -42,6 +42,7 @@ public class CollectionVO {
     }
 
     public CollectionVO(CatalogCollection catCollection) {
+        this.id = 0L;
         this.collectionId = catCollection.getId();
         this.title = catCollection.getTitle();
         this.year = catCollection.getYear();
@@ -92,5 +93,5 @@ public class CollectionVO {
         return quantity;
     }
 
-    public Boolean isNew() { return id == null; }
+    public Boolean isNew() { return id == null || id == 0L; }
 }

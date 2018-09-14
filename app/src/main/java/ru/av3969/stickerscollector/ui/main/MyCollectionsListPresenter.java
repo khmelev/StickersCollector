@@ -1,10 +1,13 @@
 package ru.av3969.stickerscollector.ui.main;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
 import ru.av3969.stickerscollector.data.DataManager;
 import ru.av3969.stickerscollector.ui.base.BasePresenter;
+import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.utils.SchedulerProvider;
 
 public class MyCollectionsListPresenter extends BasePresenter
@@ -15,6 +18,8 @@ public class MyCollectionsListPresenter extends BasePresenter
     private DataManager dataManager;
     private SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;
+
+    List<CollectionVO> collectionsVO;
 
     @Inject
     MyCollectionsListPresenter(DataManager dataManager, SchedulerProvider schedulerProvider,
@@ -31,16 +36,24 @@ public class MyCollectionsListPresenter extends BasePresenter
 
     @Override
     public void onDestroy() {
-        this.view = null;
+        compositeDisposable.clear();
+        view = null;
     }
 
     @Override
-    public void loadCollectionsList() {
+    public void loadCollectionsList(boolean forceLoad) {
+        if(!forceLoad && collectionsVO != null && !collectionsVO.isEmpty()) {
+            view.updateCollectionsList(collectionsVO);
+            return;
+        }
         compositeDisposable.add(
                 dataManager.loadCollectionsVO()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe(collectionsVO -> view.updateCollectionsList(collectionsVO))
+                        .subscribe(collectionsVO -> {
+                            this.collectionsVO = collectionsVO;
+                            view.updateCollectionsList(collectionsVO);
+                        })
         );
     }
 }

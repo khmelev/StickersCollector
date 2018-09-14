@@ -103,7 +103,7 @@ public class TransactionListFragment extends BaseFragment {
         transRecyclerView.setAdapter(transactionListAdapter);
         transRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        stickersListAdapter = new StickersListAdapter(new ArrayList<>(), StickersListAdapter.EDIT_TRANS_MODE);
+        stickersListAdapter = new StickersListAdapter(StickersListAdapter.EDIT_TRANS_MODE);
         transRowRecyclerView.setAdapter(stickersListAdapter);
         transRowRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
