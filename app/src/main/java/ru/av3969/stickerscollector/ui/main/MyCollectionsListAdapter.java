@@ -22,6 +22,7 @@ import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollectionsListAdapter.ViewHolder> {
 
     private List<CollectionVO> collections;
+    private List<CollectionVO> removedCollections;
 
     private OnItemClickListener listener;
 
@@ -61,7 +62,6 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
         }
     }
 
-    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_my_collection, parent, false);
@@ -90,11 +90,19 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
     }
 
     public void swapItem(int from, int to) {
+        //Обмен порядком сортировки
+        CollectionVO a = collections.get(from);
+        CollectionVO b = collections.get(to);
+        Long aOrder = a.getOrder();
+        a.setOrder(b.getOrder());
+        b.setOrder(aOrder);
+
         Collections.swap(collections, from, to);
         notifyItemMoved(from, to);
     }
 
     public void removeItem(int pos) {
+        if(removedCollections != null) removedCollections.add(collections.get(pos));
         collections.remove(pos);
         notifyItemRemoved(pos);
     }
@@ -102,6 +110,11 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
         notifyDataSetChanged();
+        if(editMode) removedCollections = new ArrayList<>();
+    }
+
+    public List<CollectionVO> getRemovedCollections() {
+        return removedCollections;
     }
 
     public interface OnItemClickListener {

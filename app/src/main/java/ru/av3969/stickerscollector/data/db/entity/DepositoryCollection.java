@@ -1,10 +1,10 @@
 package ru.av3969.stickerscollector.data.db.entity;
 
+import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToOne;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
 
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 
@@ -27,6 +27,8 @@ public class DepositoryCollection {
 
     private Integer quantity;
 
+    private Long order;
+
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -35,15 +37,16 @@ public class DepositoryCollection {
     @Generated(hash = 459890095)
     private transient DepositoryCollectionDao myDao;
 
-    @Generated(hash = 706290693)
-    public DepositoryCollection(Long id, Long collectionId, String title,
-            Long holder, Short unique, Integer quantity) {
+    @Generated(hash = 1460699417)
+    public DepositoryCollection(Long id, Long collectionId, String title, Long holder,
+            Short unique, Integer quantity, Long order) {
         this.id = id;
         this.collectionId = collectionId;
         this.title = title;
         this.holder = holder;
         this.unique = unique;
         this.quantity = quantity;
+        this.order = order;
     }
 
     @Generated(hash = 1179574680)
@@ -56,7 +59,8 @@ public class DepositoryCollection {
                 collectionVO.getTitle(),
                 0L,
                 collectionVO.getUnique(),
-                collectionVO.getQuantity());
+                collectionVO.getQuantity(),
+                collectionVO.getOrder());
     }
 
     public Long getId() {
@@ -174,6 +178,14 @@ public class DepositoryCollection {
             throw new DaoException("Entity is detached from DAO context");
         }
         myDao.update(this);
+    }
+
+    public Long getOrder() {
+        return this.order;
+    }
+
+    public void setOrder(Long order) {
+        this.order = order;
     }
 
     /** called by internal mechanisms, do not call yourself. */

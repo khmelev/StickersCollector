@@ -42,6 +42,8 @@ public interface DbHelper {
 
     List<DepositoryCollection> selectDepositoryCollectionList();
 
+    void dropDepositoryCollection(Long id);
+
     long insertDepositoryCollection(DepositoryCollection collection);
 
     // DepositoryStickers
@@ -49,6 +51,8 @@ public interface DbHelper {
     List<DepositoryStickers> selectDepositoryStickersList(Long ownerId);
 
     void insertDepositoryStickersList(List<DepositoryStickers> stickersList);
+
+    void dropDepositoryStickersList(List<Long> idList);
 
     // Transaction
 

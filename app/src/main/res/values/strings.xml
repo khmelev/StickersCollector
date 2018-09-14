@@ -21,6 +21,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="back">Back</string>
     <string name="saved">Saved</string>
+    <string name="deleted">Deleted</string>
     <string name="manual_correction">Manual correction</string>
     <string name="title">Title</string>
     <string name="date">Date</string>

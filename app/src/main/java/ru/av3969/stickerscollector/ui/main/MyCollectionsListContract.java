@@ -13,6 +13,8 @@ public interface MyCollectionsListContract {
     interface Presenter {
         void setView(View view);
         void loadCollectionsList(boolean forceLoad);
+        void commitCollectionsOrder();
+        void destroyCollections(List<CollectionVO> collectionsForDestroy);
         void onDestroy();
     }
 

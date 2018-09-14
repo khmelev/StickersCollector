@@ -16,6 +16,8 @@ public class CollectionVO {
     private String desc;
     private Short unique;
     private Integer quantity;
+    private Long order;
+    private Long startOrder;
 
     public CollectionVO(Long id, Long collectionId) {
         this.id = id;
@@ -39,6 +41,8 @@ public class CollectionVO {
         this.desc = catCollection.getDesc();
         this.unique = depCollection.getUnique();
         this.quantity = depCollection.getQuantity();
+        this.order = depCollection.getOrder();
+        this.startOrder = this.order;
     }
 
     public CollectionVO(CatalogCollection catCollection) {
@@ -51,6 +55,8 @@ public class CollectionVO {
         this.desc = catCollection.getDesc();
         this.unique = 0;
         this.quantity = 0;
+        this.order = this.id;
+        this.startOrder = this.order;
     }
 
     public Long getId() {
@@ -91,6 +97,22 @@ public class CollectionVO {
 
     public Integer getQuantity() {
         return quantity;
+    }
+
+    public void setOrder(Long order) {
+        this.order = order;
+    }
+
+    public void setStartOrder(Long startOrder) {
+        this.startOrder = startOrder;
+    }
+
+    public Long getOrder() {
+        return order;
+    }
+
+    public Long getStartOrder() {
+        return startOrder;
     }
 
     public Boolean isNew() { return id == null || id == 0L; }

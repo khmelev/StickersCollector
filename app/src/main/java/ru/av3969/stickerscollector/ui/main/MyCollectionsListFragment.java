@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -12,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -91,28 +88,36 @@ public class MyCollectionsListFragment extends BaseFragment implements MyCollect
     }
 
     public void setupItemTouchHelper() {
-        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
+
+        ItemTouchHelper.Callback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
+
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 //Get the from and to position
-                int from = viewHolder.getAdapterPosition();
-                int to = target.getAdapterPosition();
+                int fromPosition = viewHolder.getAdapterPosition();
+                int toPosition = target.getAdapterPosition();
 
                 //Swap the items and notify the adapter
-                adapter.swapItem(from, to);
+                adapter.swapItem(fromPosition, toPosition);
                 return true;
             }
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 adapter.removeItem(viewHolder.getAdapterPosition());
+                activityCallback.updateAbTitle(
+                        activityCallback.getStringFromRes(R.string.deleted)+" "+adapter.getRemovedCollections().size()
+                );
             }
 
             @Override
             public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
             }
-        });
+        };
+
+        itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
     }
 
     @Override
@@ -131,6 +136,7 @@ public class MyCollectionsListFragment extends BaseFragment implements MyCollect
     }
 
     public void commitChanges() {
-
+        presenter.commitCollectionsOrder();
+        presenter.destroyCollections(adapter.getRemovedCollections());
     }
 }

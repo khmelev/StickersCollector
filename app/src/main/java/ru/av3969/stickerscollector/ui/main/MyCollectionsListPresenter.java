@@ -56,4 +56,26 @@ public class MyCollectionsListPresenter extends BasePresenter
                         })
         );
     }
+
+    @Override
+    public void commitCollectionsOrder() {
+        if(collectionsVO == null || collectionsVO.isEmpty()) return;
+        compositeDisposable.add(
+                dataManager.commitCollectionsOrder(collectionsVO)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe()
+        );
+    }
+
+    @Override
+    public void destroyCollections(List<CollectionVO> collectionsForDestroy) {
+        if (collectionsForDestroy == null) return;
+        compositeDisposable.add(
+                dataManager.destroyCollections(collectionsForDestroy)
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe()
+        );
+    }
 }

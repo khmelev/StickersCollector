@@ -14,7 +14,9 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
 import ru.av3969.stickerscollector.data.db.DbHelper;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
@@ -161,7 +163,12 @@ public class AppDataManager implements DataManager {
     private void saveCollectionNow(CollectionVO collectionVO, List<StickerVO> stickersVO, Transaction transaction) {
         if(collectionVO.isNew()) {
             //Записываем коллекцию
-            collectionVO.setId(dbHelper.insertDepositoryCollection(new DepositoryCollection(collectionVO)));
+            DepositoryCollection depositoryCollection = new DepositoryCollection(collectionVO);
+            collectionVO.setId(dbHelper.insertDepositoryCollection(depositoryCollection));
+            //Установим порядок сортировки == id
+            depositoryCollection.setOrder(depositoryCollection.getId());
+            dbHelper.insertDepositoryCollection(depositoryCollection);
+            collectionVO.setOrder(depositoryCollection.getOrder());
         }
 
         //Находим измененные стикеры, маркером того что стикер нужно записать является
@@ -416,6 +423,34 @@ public class AppDataManager implements DataManager {
 
             transactionVO.setActive(transaction.getActive()); //Синхронизация VO с DB
             return transactionVO;
+        });
+    }
+
+    @Override
+    public Completable commitCollectionsOrder(List<CollectionVO> collectionsVO) {
+        return Completable.fromCallable(() -> {
+            for (CollectionVO collectionVO : collectionsVO) {
+                if(!collectionVO.getOrder().equals(collectionVO.getStartOrder())) {
+                    DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(collectionVO.getId());
+                    depCollection.setOrder(collectionVO.getOrder());
+                    dbHelper.insertDepositoryCollection(depCollection);
+                    collectionVO.setStartOrder(collectionVO.getOrder());
+                }
+            }
+            return true;
+        });
+    }
+
+    @Override
+    public Completable destroyCollections(List<CollectionVO> collectionsForDestroy) {
+        return Completable.fromCallable(() -> {
+            for (CollectionVO collectionVO : collectionsForDestroy) {
+                dbHelper.dropDepositoryCollection(collectionVO.getId());
+                List<DepositoryStickers> depStickers = dbHelper.selectDepositoryStickersList(collectionVO.getId());
+                Disposable disposable =  Observable.fromIterable(depStickers).map(DepositoryStickers::getId).toList()
+                        .subscribe(v -> dbHelper.dropDepositoryStickersList(v));
+            }
+            return true;
         });
     }
 }

@@ -67,6 +67,17 @@ public class MainActivity extends BaseActivity implements MainActivityCallback {
     }
 
     @Override
+    public String getStringFromRes(int resId) {
+        return getResources().getString(resId);
+    }
+
+    @Override
+    public void updateAbTitle(CharSequence title) {
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(title);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.my_collections, menu);
@@ -122,6 +133,7 @@ public class MainActivity extends BaseActivity implements MainActivityCallback {
         miCommit.setVisible(true);
         fab.setVisibility(View.GONE);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
+        actionBar.setDisplayShowTitleEnabled(false);
         collectionsListFragment.setEditMode(true);
     }
 
@@ -131,6 +143,8 @@ public class MainActivity extends BaseActivity implements MainActivityCallback {
         miCommit.setVisible(false);
         fab.setVisibility(View.VISIBLE);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle("");
         collectionsListFragment.setEditMode(false);
         if(commitChanges) {
             collectionsListFragment.commitChanges();

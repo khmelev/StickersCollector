@@ -22,6 +22,7 @@
     <string name="dismiss">Отменить</string>
     <string name="back">Назад</string>
     <string name="saved">Сохранено</string>
+    <string name="deleted">Удалено</string>
     <string name="manual_correction">Ручная корректировка</string>
     <string name="title">Заголовок</string>
     <string name="date">Дата</string>

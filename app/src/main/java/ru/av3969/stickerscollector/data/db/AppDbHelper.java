@@ -108,13 +108,18 @@ public class AppDbHelper implements DbHelper {
     @Override
     public List<DepositoryCollection> selectDepositoryCollectionList() {
         return mDaoSession.getDepositoryCollectionDao().queryBuilder()
-                .orderDesc(DepositoryCollectionDao.Properties.Id)
+                .orderDesc(DepositoryCollectionDao.Properties.Order)
                 .list();
     }
 
     @Override
     public long insertDepositoryCollection(DepositoryCollection collection) {
         return mDaoSession.getDepositoryCollectionDao().insertOrReplace(collection);
+    }
+
+    @Override
+    public void dropDepositoryCollection(Long id) {
+        mDaoSession.getDepositoryCollectionDao().deleteByKey(id);
     }
 
     // DepositoryStickers
@@ -127,6 +132,11 @@ public class AppDbHelper implements DbHelper {
     }
 
     @Override
+    public void dropDepositoryStickersList(List<Long> idList) {
+        mDaoSession.getDepositoryStickersDao().deleteByKeyInTx(idList.toArray(new Long[idList.size()]));
+    }
+
+    @Override
     public void insertDepositoryStickersList(List<DepositoryStickers> stickersList) {
         for(DepositoryStickers sticker : stickersList) {
             mDaoSession.getDepositoryStickersDao().insertOrReplace(sticker);
@@ -134,7 +144,6 @@ public class AppDbHelper implements DbHelper {
     }
 
     // Transaction
-
 
     @Override
     public Transaction selectTransaction(Long id) {

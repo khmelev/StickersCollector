@@ -40,4 +40,8 @@ public interface DataManager {
 
     Single<TransactionVO> deactivateTransaction(CollectionVO collectionVO, List<StickerVO> stickersVO, TransactionVO transaction);
 
+    Completable commitCollectionsOrder(List<CollectionVO> collectionsVO);
+
+    Completable destroyCollections(List<CollectionVO> collectionsForDestroy);
+
 }
