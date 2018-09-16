@@ -38,4 +38,7 @@
     <string name="ex_collection_title">PANINI Чемпионат мира 2018</string>
     <string name="ex_quantity" translatable="false">25 (31)</string>
     <string name="ex_remains_to_collect" translatable="false">43</string>
+    <string name="ex_sticker_name" translatable="false">Igor Akinfeev</string>
+    <string name="ex_sticker_type" translatable="false">metal</string>
+    <string name="ex_number" translatable="false">8</string>
 </resources>
