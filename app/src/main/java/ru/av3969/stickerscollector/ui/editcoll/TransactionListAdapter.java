@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,15 +21,15 @@ import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 public class TransactionListAdapter extends RecyclerView.Adapter<TransactionListAdapter.ViewHolder> {
 
     private List<TransactionVO> transactions;
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyy HH:mm:ss");
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.US);
     private OnTranSwitchChangeListener switchListener;
     private OnTranClickListener clickTitleListener;
     private OnTranStickerClickListener clickStickerListener;
 
-    public TransactionListAdapter(List<TransactionVO> transactions,
-                                  OnTranSwitchChangeListener switchListener,
-                                  OnTranClickListener clickTitleListener,
-                                  OnTranStickerClickListener clickStickerListener) {
+    TransactionListAdapter(List<TransactionVO> transactions,
+                           OnTranSwitchChangeListener switchListener,
+                           OnTranClickListener clickTitleListener,
+                           OnTranStickerClickListener clickStickerListener) {
         this.transactions = transactions;
         this.switchListener = switchListener;
         this.clickTitleListener = clickTitleListener;
@@ -54,14 +55,11 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
             super(itemView);
             ButterKnife.bind(this, itemView);
 
-            editTransClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (clickTitleListener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            clickTitleListener.loadTransactionRow(transactions.get(position));
-                        }
+            editTransClickListener = v -> {
+                if (clickTitleListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        clickTitleListener.loadTransactionRow(transactions.get(position));
                     }
                 }
             };
@@ -98,7 +96,9 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         TransactionVO transaction = transactions.get(position);
         holder.title.setText(transaction.getTitle());
-        holder.date.setText(simpleDateFormat.format(transaction.getDate()));
+        holder.date.setText(String.format(Locale.US,"%s (%d)",
+                simpleDateFormat.format(transaction.getDate()),
+                transaction.getQuantity() < 0 ? -transaction.getQuantity() : transaction.getQuantity()));
         holder.tranActiveSwitch.setChecked(transaction.getActive());
         holder.tranStickerList.setText(transaction.getTransStickersText());
     }

@@ -8,6 +8,8 @@
     <string name="loading">Загрузка&#8230;</string>
     <string name="quantity_of_stickers">Количество наклеек:</string>
     <string name="quantity_of_cards">Количество карточек:</string>
+    <string name="i_have">Уже есть:</string>
+    <string name="remains_to_collect">Осталось собрать:</string>
     <string name="new_collection">Новая коллекция</string>
     <string name="year_of_release">Год выпуска:</string>
     <string name="collection">Коллекция</string>

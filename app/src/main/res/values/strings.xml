@@ -7,6 +7,8 @@
     <string name="loading">Loading&#8230;</string>
     <string name="quantity_of_stickers">Quantity of stickers:</string>
     <string name="quantity_of_cards">Quantity of cards:</string>
+    <string name="i_have">I have:</string>
+    <string name="remains_to_collect">Remains to collect:</string>
     <string name="new_collection">New collection</string>
     <string name="year_of_release">Year of release:</string>
     <string name="collection">Collection</string>
@@ -35,4 +37,5 @@
     <string name="edit">Edit</string>
     <string name="ex_collection_title">PANINI Чемпионат мира 2018</string>
     <string name="ex_quantity" translatable="false">25 (31)</string>
+    <string name="ex_remains_to_collect" translatable="false">43</string>
 </resources>

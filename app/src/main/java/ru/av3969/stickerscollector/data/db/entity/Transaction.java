@@ -12,18 +12,10 @@ import org.greenrobot.greendao.annotation.Transient;
 @Entity
 public class Transaction {
 
-    @Transient
-    public static Byte addType = 1;
-
-    @Transient
-    public static Byte subType = 2;
-
     @Id(autoincrement = true)
     private Long id;
 
     private Date date;
-
-    private Byte type;
 
     private Long collectionId;
 
@@ -44,12 +36,11 @@ public class Transaction {
     @Generated(hash = 947191939)
     private transient TransactionDao myDao;
 
-    @Generated(hash = 1647658622)
-    public Transaction(Long id, Date date, Byte type, Long collectionId, String title,
-            Integer quantity, Boolean active) {
+    @Generated(hash = 2044882668)
+    public Transaction(Long id, Date date, Long collectionId, String title, Integer quantity,
+            Boolean active) {
         this.id = id;
         this.date = date;
-        this.type = type;
         this.collectionId = collectionId;
         this.title = title;
         this.quantity = quantity;
@@ -82,14 +73,6 @@ public class Transaction {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public Byte getType() {
-        return this.type;
-    }
-
-    public void setType(Byte type) {
-        this.type = type;
     }
 
     public Long getCollectionId() {

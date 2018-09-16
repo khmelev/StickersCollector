@@ -37,8 +37,8 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
         @BindView(R.id.textTitle)
         TextView title;
 
-        @BindView(R.id.textStickersOrCards)
-        TextView textStickersOrCards;
+        @BindView(R.id.remains_to_collect)
+        TextView remains_to_collect;
 
         @BindView(R.id.quantity)
         TextView quantity;
@@ -62,6 +62,7 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
         }
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_my_collection, parent, false);
@@ -72,10 +73,8 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CollectionVO collection = collections.get(position);
         holder.title.setText(collection.getTitle());
-        holder.textStickersOrCards.setText(collection.getStype().equals(CatalogCollection.stickerType)
-                ? R.string.quantity_of_stickers : R.string.quantity_of_cards);
-        holder.quantity.setText(String.format(Locale.getDefault(),"%d (%d)", collection.getUnique(), collection.getQuantity()));
-
+        holder.quantity.setText(String.format(Locale.US,"%d (%d)", collection.getUnique(), collection.getQuantity()));
+        holder.remains_to_collect.setText(String.valueOf(collection.getSize() - collection.getUnique()));
         holder.imageMenu.setVisibility(editMode ? View.VISIBLE : View.INVISIBLE);
     }
 

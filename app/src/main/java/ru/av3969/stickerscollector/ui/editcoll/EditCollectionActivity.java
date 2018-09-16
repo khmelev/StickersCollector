@@ -87,7 +87,6 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    MenuItem miActionProgressItem;
     MenuItem miSave;
 
     @Override
@@ -128,7 +127,6 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.edit_collection, menu);
 
-        miActionProgressItem = menu.findItem(R.id.miActionProgress);
         miSave = menu.findItem(R.id.miSave);
 
         return true;
@@ -467,11 +465,11 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
                 getStringFromRes(R.string.transactions)
         };
 
-        public PagerAdapter(FragmentManager fm) {
+        PagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
-        public Fragment getItem(Class klass) {
+        Fragment getItem(Class klass) {
             for (Fragment mFragment : mFragments) {
                 if (mFragment != null && mFragment.getClass() == klass)
                     return mFragment;
@@ -479,7 +477,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
             return null;
         }
 
-        public Fragment getPageFragment(int position) {
+        Fragment getPageFragment(int position) {
             return mFragments[position];
         }
 

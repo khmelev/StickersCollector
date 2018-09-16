@@ -144,7 +144,7 @@ public class MainActivity extends BaseActivity implements MainActivityCallback {
         fab.setVisibility(View.VISIBLE);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle("");
+        actionBar.setTitle(R.string.app_name);
         collectionsListFragment.setEditMode(false);
         if(commitChanges) {
             collectionsListFragment.commitChanges();

@@ -12,16 +12,19 @@ public class TransactionVO {
 
     private String title;
 
+    private Integer quantity;
+
     private Boolean active;
 
     private Transaction transaction;
 
     private String transStickersText;
 
-    public TransactionVO(Long id, Date date, String title, Boolean active, Transaction transaction) {
+    public TransactionVO(Long id, Date date, String title, Integer quantity, Boolean active, Transaction transaction) {
         this.id = id;
         this.date = date;
         this.title = title;
+        this.quantity = quantity;
         this.active = active;
         this.transaction = transaction;
         this.transStickersText = "";
@@ -37,6 +40,10 @@ public class TransactionVO {
 
     public String getTitle() {
         return title;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
     }
 
     public Boolean getActive() {

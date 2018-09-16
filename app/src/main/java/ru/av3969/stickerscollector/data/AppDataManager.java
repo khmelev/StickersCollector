@@ -232,7 +232,6 @@ public class AppDataManager implements DataManager {
                 transactionQuantity += deltaQuantity;
             }
             transaction.setDate(new Date());
-            transaction.setType(Transaction.addType);
             transaction.setCollectionId(depCollectionId);
             transaction.setQuantity(transactionQuantity);
             transaction.setActive(true);
@@ -262,11 +261,11 @@ public class AppDataManager implements DataManager {
                     if(transactionRow.getQuantity() != 0) {
                         if(transStickersText.length() > 0) transStickersText.append(", ");
                         transStickersText.append(transactionRow.getSticker().getSticker().getNumber());
-                        if(transactionRow.getQuantity() > 1) transStickersText.append("("+transactionRow.getQuantity()+")");
-                        if(transactionRow.getQuantity() < -1) transStickersText.append("("+-transactionRow.getQuantity()+")");
+                        if(transactionRow.getQuantity() > 1) transStickersText.append("(").append(transactionRow.getQuantity()).append(")");
+                        if(transactionRow.getQuantity() < -1) transStickersText.append("(").append(-transactionRow.getQuantity()).append(")");
                     }
                 }
-                TransactionVO transactionVO = new TransactionVO(trans.getId(), trans.getDate(), trans.getTitle(), trans.getActive(), trans);
+                TransactionVO transactionVO = new TransactionVO(trans.getId(), trans.getDate(), trans.getTitle(), trans.getQuantity(), trans.getActive(), trans);
                 transactionVO.setTransStickersText(transStickersText.toString());
                 transactionsVO.add(transactionVO);
             }
