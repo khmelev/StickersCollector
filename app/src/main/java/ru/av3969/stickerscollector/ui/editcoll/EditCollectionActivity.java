@@ -272,7 +272,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @Override
     public void assembleStickersAsText() {
-        presenter.assembleStickersAsText();
+        presenter.assembleStickersVOAsText();
     }
 
     @Override

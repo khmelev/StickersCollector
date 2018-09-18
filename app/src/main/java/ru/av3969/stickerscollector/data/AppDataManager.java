@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.disposables.Disposable;
 import ru.av3969.stickerscollector.data.db.DbHelper;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
@@ -446,8 +445,7 @@ public class AppDataManager implements DataManager {
             for (CollectionVO collectionVO : collectionsForDestroy) {
                 dbHelper.dropDepositoryCollection(collectionVO.getId());
                 List<DepositoryStickers> depStickers = dbHelper.selectDepositoryStickersList(collectionVO.getId());
-                Disposable disposable =  Observable.fromIterable(depStickers).map(DepositoryStickers::getId).toList()
-                        .subscribe(v -> dbHelper.dropDepositoryStickersList(v));
+                Observable.fromIterable(depStickers).map(DepositoryStickers::getId).toList().subscribe(v -> dbHelper.dropDepositoryStickersList(v));
             }
             return true;
         });

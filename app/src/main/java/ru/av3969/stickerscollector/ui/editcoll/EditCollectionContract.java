@@ -46,7 +46,7 @@ public interface EditCollectionContract {
         void commitIncomeStickers(CharSequence transTitle);
         void commitOutlayStickers(CharSequence transTitle);
         void deactivateTransaction(TransactionVO transaction);
-        void assembleStickersAsText();
+        void assembleStickersVOAsText();
         void onDestroy();
     }
 }

@@ -3,11 +3,11 @@ package ru.av3969.stickerscollector.ui.editcoll;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.DataManager;
@@ -194,6 +194,12 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                                 }
                             }
                             StringBuilder comment = new StringBuilder();
+                            comment.append(view.getStringFromRes(R.string.there_is)).append(": ");
+                            Observable.fromIterable(stickers).map(StickerVO::getQuantity).map(Short::intValue).reduce((a, b) -> a + b).subscribe(comment::append);
+                            comment.append("\n").append(assembleStickersAsText(stickers)).append("\n").append("\n");
+                            comment.append(view.getStringFromRes(R.string.there_is_not)).append(": ");
+                            Observable.fromIterable(notEnoughStickers).map(StickerVO::getQuantity).map(Short::intValue).reduce((a, b) -> a + b).subscribe(comment::append);
+                            comment.append("\n").append(assembleStickersAsText(notEnoughStickers)).append("\n").append("\n");
 
                             view.showOutlayStickers(stickers, comment.toString());
                         })
@@ -258,18 +264,23 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
-    public void assembleStickersAsText() {
+    public void assembleStickersVOAsText() {
+
+        view.showAvailableStickersAsText(assembleStickersAsText(stickersVO));
+    }
+
+    private String assembleStickersAsText(List<StickerVO> stickerList) {
         StringBuilder stickersAsText = new StringBuilder();
-        for (StickerVO stickerVO : stickersVO) {
+        for (StickerVO stickerVO : stickerList) {
             if(stickerVO.getQuantity() > 0) {
                 if(stickersAsText.length() > 0)
                     stickersAsText.append(", ");
                 stickersAsText.append(stickerVO.getNumber());
                 if(stickerVO.getQuantity() > 1)
-                    stickersAsText.append("("+stickerVO.getQuantity()+")");
+                    stickersAsText.append("(").append(stickerVO.getQuantity()).append(")");
             }
         }
-        view.showAvailableStickersAsText(stickersAsText.toString());
+        return stickersAsText.toString();
     }
 
     @Override
