@@ -2,6 +2,8 @@ package ru.av3969.stickerscollector.ui.editcoll;
 
 import android.text.TextUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -173,25 +175,27 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
 
                             this.outlayStickersVO = stickers;
 
-                            StringBuilder notEnoughStickers = new StringBuilder();
+                            //Перебираем разобранный список стикеров, находим тех что не хватает
+                            //StringBuilder notEnoughStickers = new StringBuilder();
+                            List<StickerVO> notEnoughStickers = new ArrayList<>();
                             for (StickerVO sticker : stickers) {
                                 StickerVO linkedSticker = sticker.getLinkedSticker();
                                 if(linkedSticker != null && linkedSticker.getQuantity() < sticker.getQuantity()) {
                                     //Если у нас в наличии меньше чем в расходе
-                                    if(notEnoughStickers.length()>0) notEnoughStickers.append(", ");
-                                    notEnoughStickers.append(sticker.getNumber());
                                     short delta = (short) (sticker.getQuantity() - linkedSticker.getQuantity());
-                                    if(delta > 1) notEnoughStickers.append("("+delta+")");
+                                    StickerVO notEnoughSticker = new StickerVO(sticker);
+                                    notEnoughSticker.setQuantity(delta);
+                                    notEnoughSticker.setStartQuantity(delta);
+                                    notEnoughStickers.add(notEnoughSticker);
 
                                     //Установим максимально доступное количество
                                     sticker.setQuantity(linkedSticker.getQuantity());
                                     sticker.setStartQuantity(linkedSticker.getQuantity());
                                 }
                             }
+                            StringBuilder comment = new StringBuilder();
 
-                            view.showOutlayStickers(stickers, notEnoughStickers.length() > 0
-                                                                ? view.getStringFromRes(R.string.not_enough) + " " + notEnoughStickers.toString()
-                                                                : "");
+                            view.showOutlayStickers(stickers, comment.toString());
                         })
         );
     }
