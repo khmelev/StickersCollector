@@ -237,9 +237,16 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @Override
     public void transactionSaved() {
+        int currentPageId = viewPager.getCurrentItem();
+
         Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
         viewPager.setCurrentItem(pagerAdapter.getCount() - 1, true);
         loadTransactionList(true);
+
+        IncomeOutlayFragment pageFragment = (IncomeOutlayFragment)pagerAdapter.getPageFragment(currentPageId);
+        if(pageFragment != null) {
+            pageFragment.showFirstScreen();
+        }
     }
 
     @Override

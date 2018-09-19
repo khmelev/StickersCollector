@@ -197,10 +197,11 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                             comment.append(view.getStringFromRes(R.string.there_is)).append(": ");
                             Observable.fromIterable(stickers).map(StickerVO::getQuantity).map(Short::intValue).reduce((a, b) -> a + b).subscribe(comment::append);
                             comment.append("\n").append(assembleStickersAsText(stickers)).append("\n").append("\n");
-                            comment.append(view.getStringFromRes(R.string.there_is_not)).append(": ");
-                            Observable.fromIterable(notEnoughStickers).map(StickerVO::getQuantity).map(Short::intValue).reduce((a, b) -> a + b).subscribe(comment::append);
-                            comment.append("\n").append(assembleStickersAsText(notEnoughStickers)).append("\n").append("\n");
-
+                            if(notEnoughStickers.size() > 0) {
+                                comment.append(view.getStringFromRes(R.string.there_is_not)).append(": ");
+                                Observable.fromIterable(notEnoughStickers).map(StickerVO::getQuantity).map(Short::intValue).reduce((a, b) -> a + b).subscribe(comment::append);
+                                comment.append("\n").append(assembleStickersAsText(notEnoughStickers)).append("\n").append("\n");
+                            }
                             view.showOutlayStickers(stickers, comment.toString());
                         })
         );

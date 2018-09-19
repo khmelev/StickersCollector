@@ -107,9 +107,13 @@ public class IncomeOutlayFragment extends BaseFragment {
         setupRecyclerView();
 
         backButton.setOnClickListener(v -> {
-            viewFlipper.showPrevious();
+            showFirstScreen();
             activityCallback.updateFabVisibility();
         });
+    }
+
+    public void showFirstScreen() {
+        viewFlipper.showPrevious();
     }
 
     private void setupRecyclerView() {
