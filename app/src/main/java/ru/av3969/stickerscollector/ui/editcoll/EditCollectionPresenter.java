@@ -3,7 +3,9 @@ package ru.av3969.stickerscollector.ui.editcoll;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -174,33 +176,57 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                             if(stickers.isEmpty()) return;
 
                             this.outlayStickersVO = stickers;
+                            Map<String, Integer> quantityByTypeMap = new HashMap<>();
 
                             //Перебираем разобранный список стикеров, находим тех что не хватает
-                            //StringBuilder notEnoughStickers = new StringBuilder();
                             List<StickerVO> notEnoughStickers = new ArrayList<>();
                             for (StickerVO sticker : stickers) {
                                 StickerVO linkedSticker = sticker.getLinkedSticker();
-                                if(linkedSticker != null && linkedSticker.getQuantity() < sticker.getQuantity()) {
-                                    //Если у нас в наличии меньше чем в расходе
-                                    short delta = (short) (sticker.getQuantity() - linkedSticker.getQuantity());
+                                if(linkedSticker == null) {
+                                    //Не распознанные стикеры добавляем сразу
                                     StickerVO notEnoughSticker = new StickerVO(sticker);
-                                    notEnoughSticker.setQuantity(delta);
-                                    notEnoughSticker.setStartQuantity(delta);
+                                    notEnoughSticker.incQuantity();
                                     notEnoughStickers.add(notEnoughSticker);
+                                } else {
+                                    if (linkedSticker.getQuantity() < sticker.getQuantity()) {
+                                        //Если у нас в наличии меньше чем в расходе
+                                        short delta = (short) (sticker.getQuantity() - linkedSticker.getQuantity());
+                                        StickerVO notEnoughSticker = new StickerVO(sticker);
+                                        notEnoughSticker.setQuantity(delta);
+                                        notEnoughStickers.add(notEnoughSticker);
 
-                                    //Установим максимально доступное количество
-                                    sticker.setQuantity(linkedSticker.getQuantity());
-                                    sticker.setStartQuantity(linkedSticker.getQuantity());
+                                        //Установим максимально доступное количество
+                                        sticker.setQuantity(linkedSticker.getQuantity());
+                                        sticker.setStartQuantity(linkedSticker.getQuantity());
+                                    }
+                                    if(sticker.getQuantity() > 0) {
+                                        //Подсчет доступного количеста расхода по типам наклеек
+                                        Integer quantityByType = quantityByTypeMap.get(linkedSticker.getType());
+                                        if(quantityByType == null) {
+                                            quantityByTypeMap.put(linkedSticker.getType(), sticker.getQuantity().intValue());
+                                        } else {
+                                            quantityByTypeMap.put(linkedSticker.getType(), quantityByType + sticker.getQuantity().intValue());
+                                        }
+                                    }
                                 }
                             }
+                            //Вывод тех что есть
                             StringBuilder comment = new StringBuilder();
                             comment.append(view.getStringFromRes(R.string.there_is)).append(": ");
                             Observable.fromIterable(stickers).map(StickerVO::getQuantity).map(Short::intValue).reduce((a, b) -> a + b).subscribe(comment::append);
                             comment.append("\n").append(assembleStickersAsText(stickers)).append("\n").append("\n");
+
+                            //Расклад по типам
+                            if(quantityByTypeMap.size() > 0) {
+                                compositeDisposable.add(Observable.fromIterable(quantityByTypeMap.entrySet()).sorted((a,b) -> a.getKey().length() - b.getKey().length()).subscribe(set -> {comment.append(set.getKey()).append(": ").append(set.getValue()).append("\n");}));
+                                comment.append("\n");
+                            }
+
+                            //Вывод тех что нет
                             if(notEnoughStickers.size() > 0) {
                                 comment.append(view.getStringFromRes(R.string.there_is_not)).append(": ");
-                                Observable.fromIterable(notEnoughStickers).map(StickerVO::getQuantity).map(Short::intValue).reduce((a, b) -> a + b).subscribe(comment::append);
-                                comment.append("\n").append(assembleStickersAsText(notEnoughStickers)).append("\n").append("\n");
+                                compositeDisposable.add(Observable.fromIterable(notEnoughStickers).map(StickerVO::getQuantity).map(Short::intValue).reduce((a, b) -> a + b).subscribe(comment::append));
+                                comment.append("\n").append(assembleStickersAsText(notEnoughStickers));
                             }
                             view.showOutlayStickers(stickers, comment.toString());
                         })
