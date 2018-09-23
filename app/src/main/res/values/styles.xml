@@ -58,4 +58,10 @@
         <item name="cardBackgroundColor">@android:color/white</item>
     </style>
 
+    <style name="EditTitle" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/white</item>
+        <item name="colorControlHighlight">@color/colorPrimaryDark</item>
+    </style>
+
 </resources>

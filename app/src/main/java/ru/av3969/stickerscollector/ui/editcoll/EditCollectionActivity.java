@@ -184,8 +184,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
-    public void saveTransactionRows() {
-        presenter.saveTransactionRows();
+    public void saveTransactionRows(CharSequence transTitle) {
+        presenter.saveTransactionRows(transTitle);
     }
 
     @Override

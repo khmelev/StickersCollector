@@ -20,12 +20,12 @@ public class TransactionVO {
 
     private String transStickersText;
 
-    public TransactionVO(Long id, Date date, String title, Integer quantity, Boolean active, Transaction transaction) {
-        this.id = id;
-        this.date = date;
-        this.title = title;
-        this.quantity = quantity;
-        this.active = active;
+    public TransactionVO(Transaction transaction) {
+        this.id = transaction.getId();
+        this.date = transaction.getDate();
+        this.title = transaction.getTitle();
+        this.quantity = transaction.getQuantity();
+        this.active = transaction.getActive();
         this.transaction = transaction;
         this.transStickersText = "";
     }
@@ -56,6 +56,10 @@ public class TransactionVO {
 
     public String getTransStickersText() {
         return transStickersText;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setActive(Boolean active) {

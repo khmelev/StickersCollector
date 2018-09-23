@@ -38,4 +38,5 @@
     <string name="ex_collection_title">PANINI Чемпионат мира 2018</string>
     <string name="there_is">Есть</string>
     <string name="there_is_not">Нет</string>
+    <string name="ex_operation_title">Имя операции</string>
 </resources>

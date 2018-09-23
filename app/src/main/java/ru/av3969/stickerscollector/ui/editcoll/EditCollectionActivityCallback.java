@@ -15,7 +15,7 @@ public interface EditCollectionActivityCallback {
     void loadTransactionList();
     void deactivateTransaction(TransactionVO transaction);
     void loadTransactionRow(TransactionVO transaction);
-    void saveTransactionRows();
+    void saveTransactionRows(CharSequence transTitle);
     void assembleStickersAsText();
     void copyTextToClipboard(CharSequence text);
     void updateFabVisibility();

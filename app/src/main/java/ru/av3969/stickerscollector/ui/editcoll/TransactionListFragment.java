@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -45,7 +46,7 @@ public class TransactionListFragment extends BaseFragment {
     ImageButton backButton;
 
     @BindView(R.id.transTitleText)
-    TextView transTitleText;
+    EditText transTitleText;
 
     @Override
     public void onAttach(Context context) {
@@ -90,7 +91,7 @@ public class TransactionListFragment extends BaseFragment {
     }
 
     public void saveTransactionRows() {
-        activityCallback.saveTransactionRows();
+        activityCallback.saveTransactionRows(transTitleText.getText());
         viewFlipper.showPrevious();
         activityCallback.updateFabVisibility();
     }

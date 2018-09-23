@@ -140,7 +140,8 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
-    public void saveTransactionRows() {
+    public void saveTransactionRows(CharSequence transTitle) {
+        currTransactionVO.setTitle(transTitle.toString());
         compositeDisposable.add(
                 dataManager.saveTransactionRowList(collectionVO, stickersVO, currTransactionVO, currTransactionStickersVO)
                         .subscribeOn(schedulerProvider.io())

@@ -213,14 +213,14 @@ public class AppDataManager implements DataManager {
         depCollection.setUnique(uniqueQuantity);
         dbHelper.insertDepositoryCollection(depCollection);
 
-        //Записываем транзакцию
-        saveTransaction(depCollection.getId(), hasChangedStickersVO, transaction);
+        //Записываем только новую транзакцию
+        saveNewTransaction(depCollection.getId(), hasChangedStickersVO, transaction);
 
         //Обнуляем расхождение между quantity и startQuantity
         syncQuantity(hasChangedStickersVO);
     }
 
-    private void saveTransaction(Long depCollectionId, List<StickerVO> hasChangedStickersVO, Transaction transaction) {
+    private void saveNewTransaction(Long depCollectionId, List<StickerVO> hasChangedStickersVO, Transaction transaction) {
 
         if(transaction.isNew()) {
             List<TransactionRow> transactionRowList = new ArrayList<>();
@@ -264,7 +264,7 @@ public class AppDataManager implements DataManager {
                         if(transactionRow.getQuantity() < -1) transStickersText.append("(").append(-transactionRow.getQuantity()).append(")");
                     }
                 }
-                TransactionVO transactionVO = new TransactionVO(trans.getId(), trans.getDate(), trans.getTitle(), trans.getQuantity(), trans.getActive(), trans);
+                TransactionVO transactionVO = new TransactionVO(trans);
                 transactionVO.setTransStickersText(transStickersText.toString());
                 transactionsVO.add(transactionVO);
             }
@@ -290,6 +290,7 @@ public class AppDataManager implements DataManager {
         return Completable.fromCallable(() -> {
 
             List<TransactionRow> transactionRowList = new ArrayList<>();
+            Integer transQuantity = 0;
 
             for (StickerVO tranStickerVO : tranStickersVO) {
                 short deltaQuantity = (short)(tranStickerVO.getQuantity() - tranStickerVO.getStartQuantity());
@@ -298,6 +299,7 @@ public class AppDataManager implements DataManager {
                     transactionRow.setQuantity(tranStickerVO.getQuantity());
                     transactionRowList.add(transactionRow);
                 }
+                transQuantity += tranStickerVO.getQuantity().intValue();
             }
 
             if(transactionVO.getActive()) {
@@ -316,11 +318,17 @@ public class AppDataManager implements DataManager {
                         }
                     }
                 }
+                //Транзакция в этой процедуре сохраняется только новая
                 saveCollectionNow(collectionVO, stickersVO, transactionVO.getTransaction());
             }
 
             dbHelper.updateTransactionRowList(transactionRowList);
             syncQuantity(tranStickersVO);
+
+            Transaction transaction = transactionVO.getTransaction();
+            transaction.setTitle(transactionVO.getTitle());
+            transaction.setQuantity(transQuantity);
+            dbHelper.updateTransaction(transaction);
 
             return true;
         });

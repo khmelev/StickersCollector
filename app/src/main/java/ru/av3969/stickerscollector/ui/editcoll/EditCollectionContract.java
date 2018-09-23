@@ -39,7 +39,7 @@ public interface EditCollectionContract {
         void loadStickersList();
         void loadTransactionList(Boolean forceLoad);
         void loadTransactionRowList(TransactionVO transaction);
-        void saveTransactionRows();
+        void saveTransactionRows(CharSequence transTitle);
         void saveCollection();
         void parseIncomeStickers(CharSequence stickerString);
         void parseOutlayStickers(CharSequence stickerString);
