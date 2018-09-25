@@ -133,7 +133,7 @@ public class AppDbHelper implements DbHelper {
 
     @Override
     public void dropDepositoryStickersList(List<Long> idList) {
-        mDaoSession.getDepositoryStickersDao().deleteByKeyInTx(idList.toArray(new Long[idList.size()]));
+        mDaoSession.getDepositoryStickersDao().deleteByKeyInTx(idList);
     }
 
     @Override
@@ -168,6 +168,11 @@ public class AppDbHelper implements DbHelper {
         mDaoSession.getTransactionDao().update(transaction);
     }
 
+    @Override
+    public void dropTransaction(Long transId) {
+        mDaoSession.getTransactionDao().deleteByKey(transId);
+    }
+
     // Transaction Row
 
     @Override
@@ -186,5 +191,10 @@ public class AppDbHelper implements DbHelper {
         for(TransactionRow transactionRow : transactionRowList) {
             mDaoSession.getTransactionRowDao().insertOrReplace(transactionRow);
         }
+    }
+
+    @Override
+    public void dropTransactionRowList(List<Long> transactionIdList) {
+        mDaoSession.getTransactionRowDao().deleteByKeyInTx(transactionIdList);
     }
 }

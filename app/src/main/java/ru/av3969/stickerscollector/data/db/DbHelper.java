@@ -64,9 +64,13 @@ public interface DbHelper {
 
     void updateTransaction(Transaction transaction);
 
+    void dropTransaction(Long transId);
+
     // Transaction Row
 
     List<TransactionRow> selectTransactionRowList(Long owner);
 
     void updateTransactionRowList(List<TransactionRow> transactionRowList);
+
+    void dropTransactionRowList(List<Long> transactionIdList);
 }
