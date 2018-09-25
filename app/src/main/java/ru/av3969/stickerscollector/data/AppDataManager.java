@@ -276,7 +276,7 @@ public class AppDataManager implements DataManager {
     public Single<List<StickerVO>> loadTransactionRowList(TransactionVO transaction) {
         return Single.fromCallable(() -> {
             List<StickerVO> stickersVO = new ArrayList<>();
-            List<TransactionRow> transRowList = dbHelper.selectTransactionRowList(transaction.getTransaction().getId());
+            List<TransactionRow> transRowList = dbHelper.selectTransactionRowList(transaction.getId());
             for (TransactionRow transactionRow : transRowList) {
                 stickersVO.add(new StickerVO(transactionRow.getSticker().getSticker(), transactionRow));
             }

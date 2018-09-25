@@ -41,7 +41,7 @@
     <string name="ex_sticker_name" translatable="false">Igor Akinfeev</string>
     <string name="ex_sticker_type" translatable="false">metal</string>
     <string name="ex_number" translatable="false">8</string>
+    <string name="ex_operation_title">Operation title</string>
     <string name="there_is">There is</string>
     <string name="there_is_not">There is not</string>
-    <string name="ex_operation_title">Operation title</string>
 </resources>

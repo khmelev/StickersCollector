@@ -358,6 +358,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
                     }
                     break;
                 case TRANSACTIONS_PAGE:
+                    SoftKeyboard.hide(this);
                     ((TransactionListFragment) fragment).saveTransactionRows();
                     break;
             }
