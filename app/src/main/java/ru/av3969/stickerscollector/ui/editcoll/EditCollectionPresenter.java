@@ -129,7 +129,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     public void loadTransactionRowList(TransactionVO transaction) {
         this.currTransactionVO = transaction;
         compositeDisposable.add(
-                dataManager.loadTransactionRowList(transaction)
+                dataManager.loadTransactionRowList(transaction, stickersVO)
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(stickers -> {

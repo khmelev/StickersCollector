@@ -32,7 +32,7 @@ public interface DataManager {
 
     Single<List<TransactionVO>> loadTransactionList(Long collectionId);
 
-    Single<List<StickerVO>> loadTransactionRowList(TransactionVO transaction);
+    Single<List<StickerVO>> loadTransactionRowList(TransactionVO transaction, List<StickerVO> stickersVO);
 
     Completable saveTransactionRowList(CollectionVO collectionVO, List<StickerVO> stickersVO, TransactionVO transaction, List<StickerVO> tranStickersVO);
 

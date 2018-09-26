@@ -15,6 +15,7 @@ public class StickerVO {
     private String type;
     private Short quantity;
     private Short startQuantity;
+    private Boolean active;
     private StickerVO linkedSticker;
     private DepositoryStickers depSticker;
     private TransactionRow transactionRow;
@@ -32,16 +33,18 @@ public class StickerVO {
         this.depSticker = depSticker;
     }
 
-    public StickerVO(CatalogStickers catSticker, TransactionRow transactionRow) {
+    public StickerVO(StickerVO stickerVO, TransactionRow transactionRow, TransactionVO transaction) {
         this.id = transactionRow.getId();
         this.ownerId = transactionRow.getOwnerId();
         this.stickerId = transactionRow.getStickerId();
-        this.number = catSticker.getNumber();
-        this.name = catSticker.getName();
-        this.section = catSticker.getSection();
-        this.type = catSticker.getType();
+        this.number = stickerVO.getNumber();
+        this.name = stickerVO.getName();
+        this.section = stickerVO.getSection();
+        this.type = stickerVO.getType();
         this.quantity = transactionRow.getQuantity();
         this.startQuantity = this.quantity;
+        this.active = transaction.getActive();
+        this.linkedSticker = stickerVO;
         this.transactionRow = transactionRow;
     }
 
@@ -158,5 +161,9 @@ public class StickerVO {
 
     public TransactionRow getTransactionRow() {
         return transactionRow;
+    }
+
+    public Boolean getActive() {
+        return active;
     }
 }

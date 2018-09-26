@@ -273,14 +273,22 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Single<List<StickerVO>> loadTransactionRowList(TransactionVO transaction) {
+    public Single<List<StickerVO>> loadTransactionRowList(TransactionVO transaction, List<StickerVO> stickersVO) {
         return Single.fromCallable(() -> {
-            List<StickerVO> stickersVO = new ArrayList<>();
+            Map<String, StickerVO> stickersMap = new HashMap<>();
+            for (StickerVO stickerVO : stickersVO) {
+                //Добавляем в Map только сохраненные стикеры
+                if(stickerVO.getId() != null && stickerVO.getId() > 0) stickersMap.put(stickerVO.getNumber(), stickerVO);
+            }
+
+            List<StickerVO> transStickersVO = new ArrayList<>();
             List<TransactionRow> transRowList = dbHelper.selectTransactionRowList(transaction.getId());
             for (TransactionRow transactionRow : transRowList) {
-                stickersVO.add(new StickerVO(transactionRow.getSticker().getSticker(), transactionRow));
+                CatalogStickers catalogSticker = transactionRow.getSticker().getSticker();
+                StickerVO stickerVO = stickersMap.get(catalogSticker.getNumber());
+                transStickersVO.add(new StickerVO(stickerVO, transactionRow, transaction));
             }
-            return stickersVO;
+            return transStickersVO;
         });
     }
 

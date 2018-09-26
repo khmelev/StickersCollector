@@ -66,13 +66,20 @@ public class StickersListAdapter extends RecyclerView.Adapter<StickersListAdapte
                 quantity.setText(String.valueOf(sticker.getQuantity()));
             });
             btMinus.setOnClickListener(l -> {
-                StickerVO stiker = stickers.get(getAdapterPosition());
+                StickerVO sticker = stickers.get(getAdapterPosition());
                 if(mode == EDIT_TRANS_MODE) {
-                    stiker.decQuantity();
-                } else if(stiker.getQuantity() > 0) {
-                    stiker.decQuantity();
+                    StickerVO linkedSticker = sticker.getLinkedSticker();
+                    if(linkedSticker != null) {
+                        if(sticker.getActive()) {
+                            if(linkedSticker.getQuantity() + sticker.getQuantity() - sticker.getStartQuantity() > 0) sticker.decQuantity();
+                        } else {
+                            if(linkedSticker.getQuantity() + sticker.getQuantity() > 0) sticker.decQuantity();
+                        }
+                    }
+                } else if(sticker.getQuantity() > 0) {
+                    sticker.decQuantity();
                 }
-                quantity.setText(String.valueOf(stiker.getQuantity()));
+                quantity.setText(String.valueOf(sticker.getQuantity()));
             });
         }
     }
