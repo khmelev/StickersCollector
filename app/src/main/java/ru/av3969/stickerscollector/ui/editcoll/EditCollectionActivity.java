@@ -157,7 +157,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @Override
     public void loadStickersList() {
-        presenter.loadStickersList();
+        presenter.loadStickersList(false);
     }
 
     @Override
@@ -291,8 +291,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
-    public void showAlertDialog(CharSequence text) {
-        AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance();
+    public void showAlertDialog(String title, String message) {
+        AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(title, message);
         alertDialogFragment.show(getSupportFragmentManager(), "alert_dialog");
     }
 

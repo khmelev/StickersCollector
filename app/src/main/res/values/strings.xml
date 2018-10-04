@@ -44,4 +44,5 @@
     <string name="ex_operation_title">Operation title</string>
     <string name="there_is">There is</string>
     <string name="there_is_not">There is not</string>
+    <string name="negative_balance">Negative balance</string>
 </resources>

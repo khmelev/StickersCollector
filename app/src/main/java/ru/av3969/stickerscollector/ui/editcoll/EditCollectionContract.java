@@ -28,7 +28,7 @@ public interface EditCollectionContract {
         void showMsg(CharSequence msg);
         void showTransactionRow(List<StickerVO> stickers, TransactionVO transaction);
         void showAvailableStickersAsText(CharSequence text);
-        void showAlertDialog(CharSequence text);
+        void showAlertDialog(String title, String message);
         String getStringFromRes(@StringRes int resId);
     }
 
@@ -37,7 +37,7 @@ public interface EditCollectionContract {
         Long getParentCollection();
         void setView(View view);
         void loadCollectionHead(Long parentCollection, Long collectionId);
-        void loadStickersList();
+        void loadStickersList(Boolean forceLoad);
         void loadTransactionList(Boolean forceLoad);
         void loadTransactionRowList(TransactionVO transaction);
         void saveTransactionRows(CharSequence transTitle);

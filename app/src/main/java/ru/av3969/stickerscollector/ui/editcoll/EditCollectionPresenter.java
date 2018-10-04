@@ -77,8 +77,8 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
-    public void loadStickersList() {
-        if (stickersVO != null && !stickersVO.isEmpty()) {
+    public void loadStickersList(Boolean forceLoad) {
+        if (stickersVO != null && !stickersVO.isEmpty() && !forceLoad) {
             view.updateStickersList(stickersVO);
             return;
         }
@@ -291,7 +291,9 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                                     : view.getStringFromRes(R.string.transaction_deactivated)
                             );
                         } else if(e != null && e instanceof NegativeBalanceException) {
-                            view.showAlertDialog(((NegativeBalanceException) e).getStickersAsString());
+                            view.showAlertDialog(view.getStringFromRes(R.string.negative_balance), ((NegativeBalanceException) e).getStickersAsString());
+                            loadStickersList(true);
+                            loadTransactionList(true);
                         }
                     })
         );
