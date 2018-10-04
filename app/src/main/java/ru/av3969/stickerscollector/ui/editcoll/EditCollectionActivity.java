@@ -291,6 +291,12 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     @Override
+    public void showAlertDialog(CharSequence text) {
+        AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance();
+        alertDialogFragment.show(getSupportFragmentManager(), "alert_dialog");
+    }
+
+    @Override
     public void updateTransactionList(List<TransactionVO> transactionList) {
         Fragment fragment = pagerAdapter.getItem(TransactionListFragment.class);
         if (fragment != null) {

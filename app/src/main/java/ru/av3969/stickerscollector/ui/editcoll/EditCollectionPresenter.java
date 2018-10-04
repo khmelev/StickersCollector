@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.BiConsumer;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.DataManager;
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
@@ -18,6 +19,7 @@ import ru.av3969.stickerscollector.ui.base.BasePresenter;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 import ru.av3969.stickerscollector.ui.vo.TransactionVO;
+import ru.av3969.stickerscollector.utils.NegativeBalanceException;
 import ru.av3969.stickerscollector.utils.SchedulerProvider;
 
 public class EditCollectionPresenter extends BasePresenter implements EditCollectionContract.Presenter {
@@ -282,11 +284,15 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                 dataManager.deactivateTransaction(collectionVO, stickersVO, transaction)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe((t) -> {
-                        view.showMsg(t.getActive()
-                                ? view.getStringFromRes(R.string.transaction_activated)
-                                : view.getStringFromRes(R.string.transaction_deactivated)
-                        );
+                    .subscribe((t, e) -> {
+                        if(t != null) {
+                            view.showMsg(t.getActive()
+                                    ? view.getStringFromRes(R.string.transaction_activated)
+                                    : view.getStringFromRes(R.string.transaction_deactivated)
+                            );
+                        } else if(e != null && e instanceof NegativeBalanceException) {
+                            view.showAlertDialog(((NegativeBalanceException) e).getStickersAsString());
+                        }
                     })
         );
     }

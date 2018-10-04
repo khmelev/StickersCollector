@@ -29,6 +29,7 @@ import ru.av3969.stickerscollector.data.remote.LaststickerHelper;
 import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 import ru.av3969.stickerscollector.ui.vo.TransactionVO;
+import ru.av3969.stickerscollector.utils.NegativeBalanceException;
 
 public class AppDataManager implements DataManager {
 
@@ -419,6 +420,7 @@ public class AppDataManager implements DataManager {
                     savedStickers.put(stickerVO.getId(), stickerVO);
             }
 
+            List<StickerVO> negativeBalanceList = new ArrayList<>();
             List<TransactionRow> transactionRowList = dbHelper.selectTransactionRowList(transaction.getId());
             for (TransactionRow transactionRow : transactionRowList) {
                 StickerVO stickerVO = savedStickers.get(transactionRow.getStickerId());
@@ -427,8 +429,12 @@ public class AppDataManager implements DataManager {
                         stickerVO.decQuantityVal(transactionRow.getQuantity());
                     else
                         stickerVO.incQuantityVal(transactionRow.getQuantity());
+                    if(stickerVO.getQuantity() < 0)
+                        negativeBalanceList.add(stickerVO);
                 }
             }
+
+            if(negativeBalanceList.size() > 0) throw new NegativeBalanceException(negativeBalanceList);
 
             saveCollectionNow(collectionVO, stickersVO, transaction);
 
