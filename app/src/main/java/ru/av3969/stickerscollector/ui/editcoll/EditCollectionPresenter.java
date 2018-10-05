@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.BiConsumer;
 import ru.av3969.stickerscollector.R;
@@ -38,6 +40,8 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     private SchedulerProvider schedulerProvider;
     private CompositeDisposable compositeDisposable;
 
+    private ObservableEmitter<TransactionVO> transDeactivateEmitter;
+
     @Inject
     EditCollectionPresenter(DataManager dataManager, SchedulerProvider schedulerProvider,
                                    CompositeDisposable compositeDisposable) {
@@ -59,6 +63,37 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     @Override
     public void setView(EditCollectionContract.View view) {
         this.view = view;
+
+        initEventProcessor();
+    }
+
+    public void initEventProcessor() {
+        compositeDisposable.add(
+                Observable.create(new ObservableOnSubscribe<TransactionVO>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<TransactionVO> emitter) throws Exception {
+                        transDeactivateEmitter = emitter;
+                    }
+                }).subscribe(transaction -> {
+                    compositeDisposable.add(
+                            dataManager.deactivateTransaction(collectionVO, stickersVO, transaction)
+                                    .subscribeOn(schedulerProvider.io())
+                                    .observeOn(schedulerProvider.ui())
+                                    .subscribe((t, e) -> {
+                                        if(t != null) {
+                                            view.showMsg(t.getActive()
+                                                    ? view.getStringFromRes(R.string.transaction_activated)
+                                                    : view.getStringFromRes(R.string.transaction_deactivated)
+                                            );
+                                        } else if(e != null && e instanceof NegativeBalanceException) {
+                                            view.showAlertDialog(view.getStringFromRes(R.string.negative_balance), ((NegativeBalanceException) e).getStickersAsString());
+                                            loadStickersList(true);
+                                            loadTransactionList(true);
+                                        }
+                                    })
+                    );
+                })
+        );
     }
 
     @Override
@@ -280,7 +315,7 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
 
     @Override
     public void deactivateTransaction(TransactionVO transaction) {
-        compositeDisposable.add(
+        /*compositeDisposable.add(
                 dataManager.deactivateTransaction(collectionVO, stickersVO, transaction)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
@@ -296,7 +331,10 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
                             loadTransactionList(true);
                         }
                     })
-        );
+        );*/
+        if (transDeactivateEmitter != null) {
+            transDeactivateEmitter.onNext(transaction);
+        }
     }
 
     @Override

@@ -460,6 +460,8 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
             public void onPageSelected(int position) {
                 setupFabVisibility(position);
                 closeSoftKeyboard(position);
+                //Что бы не было падений после поворота экрана
+                presenter.loadStickersList(false);
             }
 
             @Override
