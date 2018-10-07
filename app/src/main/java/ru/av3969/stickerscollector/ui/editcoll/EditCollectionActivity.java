@@ -87,6 +87,9 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
+    @BindView(R.id.textError)
+    TextView textError;
+
     MenuItem miSave;
 
     @Override
@@ -136,7 +139,10 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.miSave:
-                presenter.saveCollection();
+                if(progressBar != null && progressBar.getVisibility() == View.VISIBLE)
+                    return true;
+                else
+                    presenter.saveCollection();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -206,10 +212,10 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         if (progressBar != null) {
             progressBar.setVisibility(View.VISIBLE);
         }
+        if (miSave != null) {
+            miSave.setVisible(false);
+        }
         updateFabVisibility();
-//        if (miSave != null) {
-//            miSave.setVisible(false);
-//        }
     }
 
     @Override
@@ -217,10 +223,10 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         if (progressBar != null) {
             progressBar.setVisibility(View.INVISIBLE);
         }
+        if (miSave != null) {
+            miSave.setVisible(true);
+        }
         updateFabVisibility();
-//        if (miSave != null) {
-//            miSave.setVisible(true);
-//        }
     }
 
     @Override
@@ -294,6 +300,24 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     public void showAlertDialog(String title, String message) {
         AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(title, message);
         alertDialogFragment.show(getSupportFragmentManager(), "alert_dialog");
+    }
+
+    @Override
+    public void showError(int resId) {
+        textError.setText(resId);
+        textError.setVisibility(View.VISIBLE);
+        updateFabVisibility();
+        miSave.setVisible(false);
+        tabLayout.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showError(String errorMsg) {
+        textError.setText(errorMsg);
+        textError.setVisibility(View.VISIBLE);
+        updateFabVisibility();
+        miSave.setVisible(false);
+        tabLayout.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -373,7 +397,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     }
 
     private void setupFabVisibility(int position) {
-        if(progressBar.getVisibility() == View.VISIBLE) {
+        if(progressBar.getVisibility() == View.VISIBLE || textError.getVisibility() == View.VISIBLE) {
             floatingActionButton.setVisibility(View.INVISIBLE);
             return;
         }

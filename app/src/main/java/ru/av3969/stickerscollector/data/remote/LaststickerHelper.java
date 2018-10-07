@@ -3,7 +3,6 @@ package ru.av3969.stickerscollector.data.remote;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import javax.inject.Inject;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCategory;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.data.db.entity.CatalogStickers;
+import ru.av3969.stickerscollector.utils.NoInternetException;
 
 public class LaststickerHelper {
 
@@ -41,7 +41,7 @@ public class LaststickerHelper {
         return baseUrl + categoryPath + collectionsPath + categoryName + "/";
     }
 
-    public List<CatalogCategory> getCategoryList() {
+    public List<CatalogCategory> getCategoryList() throws NoInternetException {
 
         List<CatalogCategory> categoryList = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public class LaststickerHelper {
         try {
             doc = Jsoup.connect(getCategoryUrl()).get();
         } catch (IOException e) {
-            return categoryList;
+            throw new NoInternetException();
         }
 
         Element content = doc.selectFirst("div#content table");
@@ -77,7 +77,7 @@ public class LaststickerHelper {
         return categoryList;
     }
 
-    public List<CatalogCollection> getCollectionList(String categoryName, Long categoryId) {
+    public List<CatalogCollection> getCollectionList(String categoryName, Long categoryId) throws NoInternetException {
         List<CatalogCollection> collectionList = new ArrayList<>();
 
         Document doc;
@@ -88,7 +88,7 @@ public class LaststickerHelper {
         try {
             doc = Jsoup.connect(getCollectionsUrl(categoryName)).get();
         } catch (IOException e) {
-            return collectionList;
+            throw new NoInternetException();
         }
 
         Element content = doc.selectFirst("div#content table");
@@ -133,10 +133,16 @@ public class LaststickerHelper {
         return collectionList;
     }
 
-    public List<CatalogStickers> getStickersList(String collectionName, Long ownerId) throws IOException {
+    public List<CatalogStickers> getStickersList(String collectionName, Long ownerId) throws NoInternetException {
         List<CatalogStickers> stickers = new ArrayList<>();
 
-        Document doc = Jsoup.connect(getCollectionUrl(collectionName)).get();
+        Document doc;
+
+        try {
+            doc = Jsoup.connect(getCollectionUrl(collectionName)).get();
+        } catch (IOException e) {
+            throw new NoInternetException();
+        }
 
         Element content = doc.selectFirst("table#checklist tbody");
 

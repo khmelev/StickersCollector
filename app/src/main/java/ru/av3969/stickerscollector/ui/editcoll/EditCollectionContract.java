@@ -29,6 +29,8 @@ public interface EditCollectionContract {
         void showTransactionRow(List<StickerVO> stickers, TransactionVO transaction);
         void showAvailableStickersAsText(CharSequence text);
         void showAlertDialog(String title, String message);
+        void showError(@StringRes int resId);
+        void showError(String errorMsg);
         String getStringFromRes(@StringRes int resId);
     }
 

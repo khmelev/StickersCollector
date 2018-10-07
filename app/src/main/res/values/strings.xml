@@ -42,7 +42,9 @@
     <string name="ex_sticker_type" translatable="false">metal</string>
     <string name="ex_number" translatable="false">8</string>
     <string name="ex_operation_title">Operation title</string>
+    <string name="ex_no_internet_connection">No internet connection</string>
     <string name="there_is">There is</string>
     <string name="there_is_not">There is not</string>
     <string name="negative_balance">Negative balance</string>
+    <string name="error_no_internet_connection">No Internet connection</string>
 </resources>

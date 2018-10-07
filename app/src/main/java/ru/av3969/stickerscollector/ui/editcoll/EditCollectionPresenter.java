@@ -13,7 +13,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.BiConsumer;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.DataManager;
 import ru.av3969.stickerscollector.data.db.entity.Transaction;
@@ -22,6 +21,7 @@ import ru.av3969.stickerscollector.ui.vo.CollectionVO;
 import ru.av3969.stickerscollector.ui.vo.StickerVO;
 import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 import ru.av3969.stickerscollector.utils.NegativeBalanceException;
+import ru.av3969.stickerscollector.utils.NoInternetException;
 import ru.av3969.stickerscollector.utils.SchedulerProvider;
 
 public class EditCollectionPresenter extends BasePresenter implements EditCollectionContract.Presenter {
@@ -64,10 +64,10 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     public void setView(EditCollectionContract.View view) {
         this.view = view;
 
-        initEventProcessor();
+        initTransactionProcessor();
     }
 
-    public void initEventProcessor() {
+    public void initTransactionProcessor() {
         compositeDisposable.add(
                 Observable.create(new ObservableOnSubscribe<TransactionVO>() {
                     @Override
@@ -120,13 +120,20 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
         view.showLoading(0);
         compositeDisposable.add(
                 dataManager.loadStickerVOList(getParentCollection(), getCollectionId())
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(stickers -> {
-                    this.stickersVO = stickers;
-                    view.updateStickersList(stickers);
-                    view.hideLoading();
-                })
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(stickers -> {
+                        this.stickersVO = stickers;
+                        view.updateStickersList(stickers);
+                        view.hideLoading();
+                    }, e -> {
+                        view.hideLoading();
+                        if(e instanceof NoInternetException)
+                            view.showError(R.string.error_no_internet_connection);
+                        else
+                            view.showError(e.getCause().toString());
+                    }
+                )
         );
     }
 

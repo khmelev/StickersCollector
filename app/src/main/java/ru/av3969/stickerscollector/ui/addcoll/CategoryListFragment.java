@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,12 @@ public class CategoryListFragment extends BaseFragment implements CategoryListCo
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+
+    @BindView(R.id.textError)
+    TextView textError;
 
     @Override
     public void onAttach(Context context) {
@@ -99,17 +107,30 @@ public class CategoryListFragment extends BaseFragment implements CategoryListCo
 
     @Override
     public void showLoading() {
-        activityCallback.showLoading();
+        //activityCallback.showLoading();
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-        activityCallback.hideLoading();
+        //activityCallback.hideLoading();
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showError(int resId) {
+        textError.setText(resId);
+        textError.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showError(String errorMsg) {
+        textError.setText(errorMsg);
+        textError.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void updateCategoryList(List<CatalogCategory> catalogCategoryList) {
-        int a = 5;
         adapter.replaceDataSet(catalogCategoryList);
     }
 }

@@ -3,8 +3,10 @@ package ru.av3969.stickerscollector.ui.addcoll;
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
+import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.DataManager;
 import ru.av3969.stickerscollector.ui.base.BasePresenter;
+import ru.av3969.stickerscollector.utils.NoInternetException;
 import ru.av3969.stickerscollector.utils.SchedulerProvider;
 
 public class CategoryListPresenter extends BasePresenter implements CategoryListContract.Presenter {
@@ -38,8 +40,15 @@ public class CategoryListPresenter extends BasePresenter implements CategoryList
                         .subscribe(catalogCategories -> {
                                 view.updateCategoryList(catalogCategories);
                                 view.hideLoading();
+                            }, e -> {
+                                view.hideLoading();
+                                if(e instanceof NoInternetException)
+                                    view.showError(R.string.error_no_internet_connection);
+                                else
+                                    view.showError(e.getCause().toString());
                             }
-                        ));
+                        )
+        );
     }
 
     @Override

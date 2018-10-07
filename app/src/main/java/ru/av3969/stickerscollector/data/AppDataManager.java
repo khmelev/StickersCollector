@@ -467,7 +467,8 @@ public class AppDataManager implements DataManager {
             for (CollectionVO collectionVO : collectionsForDestroy) {
                 dbHelper.dropDepositoryCollection(collectionVO.getId());
                 List<DepositoryStickers> depStickers = dbHelper.selectDepositoryStickersList(collectionVO.getId());
-                Observable.fromIterable(depStickers).map(DepositoryStickers::getId).toList().subscribe(v -> dbHelper.dropDepositoryStickersList(v));
+                //Observable.fromIterable(depStickers).map(DepositoryStickers::getId).toList().subscribe(v -> dbHelper.dropDepositoryStickersList(v));
+                dbHelper.dropDepositoryStickersList(Observable.fromIterable(depStickers).map(DepositoryStickers::getId).toList().blockingGet());
                 List<Transaction> transList = dbHelper.selectTransactionList(collectionVO.getId());
                 for (Transaction transaction : transList) {
                     Observable.fromIterable(dbHelper.selectTransactionRowList(transaction.getId()))

@@ -120,4 +120,13 @@
         android:visibility="invisible"
         android:layout_gravity="bottom|center_horizontal" />
 
+    <TextView
+        android:id="@+id/textError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/ex_no_internet_connection"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:visibility="gone" />
+
 </android.support.design.widget.CoordinatorLayout>

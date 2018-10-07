@@ -3,7 +3,9 @@ package ru.av3969.stickerscollector.ui.addcoll;
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
+import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.DataManager;
+import ru.av3969.stickerscollector.utils.NoInternetException;
 import ru.av3969.stickerscollector.ui.base.BasePresenter;
 import ru.av3969.stickerscollector.utils.SchedulerProvider;
 
@@ -36,9 +38,16 @@ public class CollectionListPresenter extends BasePresenter implements Collection
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(collectionList -> {
-                        view.updateCollectionList(collectionList);
-                        view.hideLoading();
-                    })
+                            view.updateCollectionList(collectionList);
+                            view.hideLoading();
+                        }, e -> {
+                            view.hideLoading();
+                            if(e instanceof NoInternetException)
+                                view.showError(R.string.error_no_internet_connection);
+                            else
+                                view.showError(e.getCause().toString());
+                        }
+                    )
         );
     }
 
