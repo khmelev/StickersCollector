@@ -42,4 +42,5 @@
     <string name="there_is_not">Нет</string>
     <string name="negative_balance">Отрицательный остаток</string>
     <string name="error_no_internet_connection">Нет подключения к интернету</string>
+    <string name="ex_collection_description">Коллекция наклеек от Panini посвящена чемпионату мира по футболу 2018 в России.</string>
 </resources>

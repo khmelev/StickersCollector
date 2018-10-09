@@ -20,9 +20,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -90,6 +93,9 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
     @BindView(R.id.textError)
     TextView textError;
 
+    @BindView(R.id.collCover)
+    ImageView collCover;
+
     MenuItem miSave;
 
     @Override
@@ -110,6 +116,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
             presenter.loadCollectionHead(intent.getLongExtra(PARENT_COLLECTION, 0L),
                                             intent.getLongExtra(COLLECTION_ID, 0L));
         }
+        Glide.with(this).load(presenter.getCollectionCoverUrl()).into(collCover);
 
         // Set up the toolbar.
         setSupportActionBar(mToolbar);

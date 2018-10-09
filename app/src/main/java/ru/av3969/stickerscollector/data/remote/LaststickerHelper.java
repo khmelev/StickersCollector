@@ -21,6 +21,8 @@ public class LaststickerHelper {
 
     private final String baseUrl = "https://www.laststicker.ru/";
     private final String categoryPath = "cards/";
+    private final String imagePath = "i/album/";
+    private final String imageExt = ".jpg";
     private final String collectionsPath = "s/";
 
     private final Pattern patternUrlSplit = Pattern.compile("[/]");
@@ -35,6 +37,10 @@ public class LaststickerHelper {
 
     private String getCollectionUrl(String collectionName) {
         return baseUrl + categoryPath + collectionName + "/";
+    }
+
+    public String getCollectionCoverUrl(Long collectionId) {
+        return baseUrl + imagePath + collectionId.toString() + imageExt;
     }
 
     private String getCollectionsUrl(String categoryName) {

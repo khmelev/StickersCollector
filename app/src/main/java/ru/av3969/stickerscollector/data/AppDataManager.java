@@ -46,6 +46,11 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
+    public String getCollectionCoverUrl(Long collectionId) {
+        return laststickerHelper.getCollectionCoverUrl(collectionId);
+    }
+
+    @Override
     public Single<List<CatalogCategory>> loadCategoryList(Long parentId) {
          return Single.fromCallable(() -> {
              List<CatalogCategory> categoryList = dbHelper.selectCategoryList(parentId);

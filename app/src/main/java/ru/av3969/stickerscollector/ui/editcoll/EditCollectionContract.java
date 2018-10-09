@@ -37,6 +37,7 @@ public interface EditCollectionContract {
     interface Presenter {
         Long getCollectionId();
         Long getParentCollection();
+        String getCollectionCoverUrl();
         void setView(View view);
         void loadCollectionHead(Long parentCollection, Long collectionId);
         void loadStickersList(Boolean forceLoad);

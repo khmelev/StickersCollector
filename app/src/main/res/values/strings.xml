@@ -43,8 +43,11 @@
     <string name="ex_number" translatable="false">8</string>
     <string name="ex_operation_title">Operation title</string>
     <string name="ex_no_internet_connection">No internet connection</string>
+    <string name="ex_year" translatable="false">2018</string>
+    <string name="ex_collection_size" translatable="false">614</string>
     <string name="there_is">There is</string>
     <string name="there_is_not">There is not</string>
     <string name="negative_balance">Negative balance</string>
     <string name="error_no_internet_connection">No Internet connection</string>
+    <string name="ex_collection_description">Collections of stickers from Panini about FIFA World Cup 2018 in Russia</string>
 </resources>

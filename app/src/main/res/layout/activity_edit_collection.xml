@@ -24,68 +24,90 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <LinearLayout
-            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/padding_small"
-            android:paddingEnd="@dimen/padding_small"
-            android:paddingLeft="@dimen/padding_small"
-            android:paddingRight="@dimen/padding_small"
-            android:paddingStart="@dimen/padding_small"
+            android:orientation="horizontal"
+            android:weightSum="10"
             app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
 
-            <TextView
-                android:id="@+id/collTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Title" />
-
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/linearLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_weight="8"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/padding_small"
+                android:paddingLeft="@dimen/padding_small"
+                android:paddingStart="@dimen/padding_small">
 
                 <TextView
-                    android:id="@+id/textReleaseYear"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/collTitle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/year_of_release"
-                    android:textAppearance="@style/Small" />
+                    android:text="@string/ex_collection_title"
+                    android:textAppearance="@style/Title" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textReleaseYear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/year_of_release"
+                        android:textAppearance="@style/Small" />
+
+                    <TextView
+                        android:id="@+id/releaseYear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/padding_tiny"
+                        android:text="@string/ex_year"
+                        android:textAppearance="@style/Small" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textStickersOrCards"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/year_of_release"
+                        android:textAppearance="@style/Small" />
+
+                    <TextView
+                        android:id="@+id/textNumberOfStickers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/padding_tiny"
+                        android:text="@string/ex_collection_size"
+                        android:textAppearance="@style/Small" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/releaseYear"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/collDescription"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/padding_tiny"
-                    android:textAppearance="@style/Small" />
+                    android:text="@string/ex_collection_description"
+                    android:textAppearance="@style/Body1" />
+
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_weight="2">
 
-                <TextView
-                    android:id="@+id/textStickersOrCards"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/year_of_release"
-                    android:textAppearance="@style/Small" />
-
-                <TextView
-                    android:id="@+id/textNumberOfStickers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/padding_tiny"
-                    android:textAppearance="@style/Small" />
+                <ImageView
+                    android:id="@+id/collCover"
+                    android:layout_width="60dp"
+                    android:layout_height="80dp" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/collDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Body1" />
 
         </LinearLayout>
 
