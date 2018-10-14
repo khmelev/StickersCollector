@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +48,9 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
         @BindView(R.id.imageMenu)
         ImageView imageMenu;
 
+        @BindView(R.id.collCover)
+        ImageView collCover;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -76,6 +81,7 @@ public class MyCollectionsListAdapter extends RecyclerView.Adapter<MyCollections
         holder.quantity.setText(String.format(Locale.US,"%d (%d)", collection.getUnique(), collection.getQuantity()));
         holder.remains_to_collect.setText(String.valueOf(collection.getSize() - collection.getUnique()));
         holder.imageMenu.setVisibility(editMode ? View.VISIBLE : View.INVISIBLE);
+        Glide.with(holder.collCover).load(collection.getCollectionSmallCoverUrl()).into(holder.collCover);
     }
 
     @Override

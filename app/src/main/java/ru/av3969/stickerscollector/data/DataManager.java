@@ -14,8 +14,6 @@ import ru.av3969.stickerscollector.ui.vo.TransactionVO;
 
 public interface DataManager {
 
-    String getCollectionCoverUrl(Long collectionId);
-
     Single<List<CatalogCategory>> loadCategoryList(Long parentId);
 
     Single<CatalogCollection> loadCatalogCollection(Long id);

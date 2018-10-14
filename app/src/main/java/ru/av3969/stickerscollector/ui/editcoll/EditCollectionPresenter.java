@@ -61,15 +61,15 @@ public class EditCollectionPresenter extends BasePresenter implements EditCollec
     }
 
     @Override
-    public String getCollectionCoverUrl() {
-        return dataManager.getCollectionCoverUrl(getParentCollection());
-    }
-
-    @Override
     public void setView(EditCollectionContract.View view) {
         this.view = view;
 
         initTransactionProcessor();
+    }
+
+    @Override
+    public String getCollectionCoverUrl() {
+        return collectionVO.getCollectionCoverUrl();
     }
 
     public void initTransactionProcessor() {

@@ -116,7 +116,6 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
             presenter.loadCollectionHead(intent.getLongExtra(PARENT_COLLECTION, 0L),
                                             intent.getLongExtra(COLLECTION_ID, 0L));
         }
-        Glide.with(this).load(presenter.getCollectionCoverUrl()).into(collCover);
 
         // Set up the toolbar.
         setSupportActionBar(mToolbar);
@@ -130,6 +129,12 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
         tabLayout.setupWithViewPager(viewPager);
 
         setupFabClickListener();
+
+        collCover.setOnClickListener(l -> {
+            FragmentManager fm = getSupportFragmentManager();
+            ImageDialogFragment imageDialogFragment = ImageDialogFragment.newInstance(presenter.getCollectionCoverUrl());
+            imageDialogFragment.show(fm, "fragment_image_tag");
+        });
     }
 
     @Override
@@ -209,6 +214,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
                 ? R.string.quantity_of_stickers : R.string.quantity_of_cards);
         textNumberOfStickers.setText(String.valueOf(collectionVO.getSize()));
         collDescription.setText(collectionVO.getDesc());
+        Glide.with(this).load(collectionVO.getCollectionCoverUrl()).into(collCover);
     }
 
     @Override

@@ -46,11 +46,6 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public String getCollectionCoverUrl(Long collectionId) {
-        return laststickerHelper.getCollectionCoverUrl(collectionId);
-    }
-
-    @Override
     public Single<List<CatalogCategory>> loadCategoryList(Long parentId) {
          return Single.fromCallable(() -> {
              List<CatalogCategory> categoryList = dbHelper.selectCategoryList(parentId);
@@ -90,12 +85,17 @@ public class AppDataManager implements DataManager {
     @Override
     public Single<CollectionVO> loadCollectionVO(Long parentCollection, Long collectionId) {
         return Single.fromCallable(() -> {
+            CollectionVO collectionVO;
             DepositoryCollection depCollection = dbHelper.selectDepositoryCollection(collectionId);
             if (depCollection == null) {
-                return new CollectionVO(dbHelper.selectCatalogCollection(parentCollection));
+                collectionVO = new CollectionVO(dbHelper.selectCatalogCollection(parentCollection));
             } else {
-                return new CollectionVO(dbHelper.selectCatalogCollection(parentCollection), depCollection);
+                collectionVO = new CollectionVO(dbHelper.selectCatalogCollection(parentCollection), depCollection);
             }
+            collectionVO.setCollectionCoverUrl(laststickerHelper.getCollectionCoverUrl(parentCollection));
+            collectionVO.setCollectionSmallCoverUrl(laststickerHelper.getCollectionCoverSmallUrl(parentCollection));
+
+            return collectionVO;
         });
     }
 
@@ -105,7 +105,10 @@ public class AppDataManager implements DataManager {
             List<CollectionVO> collectionsVO = new ArrayList<>();
             List<DepositoryCollection> depCollections = dbHelper.selectDepositoryCollectionList();
             for(DepositoryCollection depCollection : depCollections) {
-                collectionsVO.add(new CollectionVO(depCollection.getCollection(), depCollection));
+                CollectionVO collectionVO = new CollectionVO(depCollection.getCollection(), depCollection);
+                collectionVO.setCollectionCoverUrl(laststickerHelper.getCollectionCoverUrl(collectionVO.getCollectionId()));
+                collectionVO.setCollectionSmallCoverUrl(laststickerHelper.getCollectionCoverSmallUrl(collectionVO.getCollectionId()));
+                collectionsVO.add(collectionVO);
             }
             return collectionsVO;
         });

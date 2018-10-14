@@ -18,6 +18,8 @@ public class CollectionVO {
     private Integer quantity;
     private Long order;
     private Long startOrder;
+    private String collectionCoverUrl;
+    private String collectionSmallCoverUrl;
 
     public CollectionVO(Long id, Long collectionId) {
         this.id = id;
@@ -116,4 +118,20 @@ public class CollectionVO {
     }
 
     public Boolean isNew() { return id == null || id == 0L; }
+
+    public void setCollectionCoverUrl(String collectionCoverUrl) {
+        this.collectionCoverUrl = collectionCoverUrl;
+    }
+
+    public void setCollectionSmallCoverUrl(String collectionSmallCoverUrl) {
+        this.collectionSmallCoverUrl = collectionSmallCoverUrl;
+    }
+
+    public String getCollectionCoverUrl() {
+        return collectionCoverUrl;
+    }
+
+    public String getCollectionSmallCoverUrl() {
+        return collectionSmallCoverUrl;
+    }
 }

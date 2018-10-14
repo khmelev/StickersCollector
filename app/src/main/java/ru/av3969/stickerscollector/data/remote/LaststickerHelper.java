@@ -23,6 +23,7 @@ public class LaststickerHelper {
     private final String categoryPath = "cards/";
     private final String imagePath = "i/album/";
     private final String imageExt = ".jpg";
+    private final String smallVersionSuffix = "_s";
     private final String collectionsPath = "s/";
 
     private final Pattern patternUrlSplit = Pattern.compile("[/]");
@@ -41,6 +42,10 @@ public class LaststickerHelper {
 
     public String getCollectionCoverUrl(Long collectionId) {
         return baseUrl + imagePath + collectionId.toString() + imageExt;
+    }
+
+    public String getCollectionCoverSmallUrl(Long collectionId) {
+        return baseUrl + imagePath + collectionId.toString() + smallVersionSuffix + imageExt;
     }
 
     private String getCollectionsUrl(String categoryName) {
