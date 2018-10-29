@@ -6,43 +6,37 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/windowBackground</item>
-    </style>
-
-    <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@android:color/white</item>
-    </style>
-
-    <style name="AppTheme.WhiteAccent">
-        <item name="colorAccent">@android:color/white</item>
+        <item name="android:windowBackground">@color/colorPrimaryLight</item>
     </style>
 
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="TabLayout">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
 
     <style name="Title" parent="TextAppearance.AppCompat.Title">
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="Subhead" parent="TextAppearance.AppCompat.Subhead">
+    <style name="SubheadLight" parent="TextAppearance.AppCompat.Subhead">
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="Small" parent="TextAppearance.AppCompat.Small">
+    <style name="SmallLight" parent="TextAppearance.AppCompat.Small">
         <item name="android:textColor">@color/almostWhite1</item>
     </style>
 
-    <style name="Body1" parent="TextAppearance.AppCompat.Body1">
+    <style name="Medium" parent="TextAppearance.AppCompat.Medium">
+    </style>
+
+    <style name="Body1Light" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textColor">@color/almostWhite1</item>
     </style>
 
     <style name="FAB" parent="Widget.Design.FloatingActionButton">
         <item name="android:tint">@android:color/white</item>
-    </style>
-
-    <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
     </style>
 
     <style name="Widget.Card" parent="android:Widget">

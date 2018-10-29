@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/ex_number"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/Medium" />
 
             <ImageButton
                 android:id="@+id/imageButtonPlus"

@@ -46,18 +46,8 @@ public class AddCollectionActivity extends BaseActivity implements AddCollection
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.fragment_progress_bar, menu);
-
-        miActionProgressItem = menu.findItem(R.id.miActionProgress);
 
         showCategoryList(startCatId); //запуск выбора категории
-
-        return true;
     }
 
     @Override
@@ -70,20 +60,6 @@ public class AddCollectionActivity extends BaseActivity implements AddCollection
     public void setActionBarTitle(int resId) {
         if (actionBar != null) {
             actionBar.setTitle(resId);
-        }
-    }
-
-    @Override
-    public void showLoading() {
-        if (miActionProgressItem != null) {
-            miActionProgressItem.setVisible(true);
-        }
-    }
-
-    @Override
-    public void hideLoading() {
-        if (miActionProgressItem != null) {
-            miActionProgressItem.setVisible(false);
         }
     }
 

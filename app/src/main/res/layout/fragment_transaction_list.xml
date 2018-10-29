@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:text="@string/ex_operation_title"
-                android:textAppearance="@style/Subhead"
+                android:textAppearance="@style/SubheadLight"
                 android:textColor="@color/white"
                 android:theme="@style/EditTitle"/>
         </LinearLayout>

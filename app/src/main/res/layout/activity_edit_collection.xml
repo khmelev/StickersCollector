@@ -57,7 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/year_of_release"
-                        android:textAppearance="@style/Small" />
+                        android:textAppearance="@style/SmallLight" />
 
                     <TextView
                         android:id="@+id/releaseYear"
@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:paddingLeft="@dimen/padding_tiny"
                         android:text="@string/ex_year"
-                        android:textAppearance="@style/Small" />
+                        android:textAppearance="@style/SmallLight" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -78,7 +78,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/year_of_release"
-                        android:textAppearance="@style/Small" />
+                        android:textAppearance="@style/SmallLight" />
 
                     <TextView
                         android:id="@+id/textNumberOfStickers"
@@ -86,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:paddingLeft="@dimen/padding_tiny"
                         android:text="@string/ex_collection_size"
-                        android:textAppearance="@style/Small" />
+                        android:textAppearance="@style/SmallLight" />
                 </LinearLayout>
 
                 <TextView
@@ -94,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/ex_collection_description"
-                    android:textAppearance="@style/Body1" />
+                    android:textAppearance="@style/Body1Light" />
 
             </LinearLayout>
 
@@ -115,7 +115,8 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppThemeDark" />
+            android:theme="@style/TabLayout"
+            />
 
     </android.support.design.widget.AppBarLayout>
 

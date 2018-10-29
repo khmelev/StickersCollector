@@ -12,7 +12,4 @@ public interface AddCollectionActivityCallback {
 
     void startEditCollectionActivity(Long parentColl);
 
-    void showLoading();
-
-    void hideLoading();
 }

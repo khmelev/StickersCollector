@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:text="Operation title"
-                android:textAppearance="@style/Subhead" />
+                android:textAppearance="@style/SubheadLight" />
         </LinearLayout>
 
         <TextView
