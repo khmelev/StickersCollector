@@ -33,6 +33,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 import ru.av3969.stickerscollector.R;
 import ru.av3969.stickerscollector.data.db.entity.CatalogCollection;
 import ru.av3969.stickerscollector.ui.base.BaseActivity;
@@ -367,7 +368,7 @@ public class EditCollectionActivity extends BaseActivity implements EditCollecti
 
     @Override
     public void showMsg(CharSequence msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Toasty.success(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
